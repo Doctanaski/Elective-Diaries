@@ -34,10 +34,10 @@ export default function HospitalForm({ hospital }: HospitalFormProps) {
     const payload = { name, slug, description: description || null, image_url: imageUrl || null, status }
 
     if (isEditing) {
-      const { error } = await supabase.from('hospitals').update(payload).eq('id', hospital.id)
+      const { error } = await supabase.from('hospitals').update(payload as any).eq('id', hospital.id)
       if (error) { setError(error.message); setSaving(false); return }
     } else {
-      const { error } = await supabase.from('hospitals').insert(payload)
+      const { error } = await supabase.from('hospitals').insert(payload as any)
       if (error) { setError(error.message); setSaving(false); return }
     }
 

@@ -48,13 +48,14 @@ export default function DiaryForm({ hospitals, diary }: DiaryFormProps) {
     }
 
     if (isEditing) {
+      const updateData = { ...payload, updated_at: new Date().toISOString() } as any
       const { error } = await supabase
         .from('diaries')
-        .update({ ...payload, updated_at: new Date().toISOString() })
+        .update(updateData)
         .eq('id', diary.id)
       if (error) { setError(error.message); setSaving(false); return }
     } else {
-      const { error } = await supabase.from('diaries').insert(payload)
+      const { error } = await supabase.from('diaries').insert(payload as any)
       if (error) { setError(error.message); setSaving(false); return }
     }
 
