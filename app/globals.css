@@ -1,0 +1,53 @@
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-surface text-on-surface font-body antialiased;
+  }
+
+  .material-symbols-outlined {
+    font-family: 'Material Symbols Outlined';
+    font-weight: normal;
+    font-style: normal;
+    font-size: 24px;
+    line-height: 1;
+    letter-spacing: normal;
+    text-transform: none;
+    display: inline-block;
+    white-space: nowrap;
+    word-wrap: normal;
+    direction: ltr;
+    -webkit-font-feature-settings: 'liga';
+    -webkit-font-smoothing: antialiased;
+  }
+}
+
+@layer components {
+  /* Rich text editor output styling */
+  .prose-diary h1 { @apply text-3xl font-bold font-headline text-on-surface mb-4 mt-8; }
+  .prose-diary h2 { @apply text-2xl font-bold font-headline text-on-surface mb-3 mt-6; }
+  .prose-diary h3 { @apply text-xl font-semibold font-headline text-on-surface mb-2 mt-5; }
+  .prose-diary p  { @apply text-on-surface-variant leading-relaxed mb-4; }
+  .prose-diary ul { @apply list-disc list-inside space-y-1 mb-4 text-on-surface-variant; }
+  .prose-diary ol { @apply list-decimal list-inside space-y-1 mb-4 text-on-surface-variant; }
+  .prose-diary a  { @apply text-primary underline hover:text-primary-container transition-colors; }
+  .prose-diary blockquote { @apply border-l-4 border-primary pl-4 italic text-on-surface-variant my-4; }
+  .prose-diary strong { @apply font-semibold text-on-surface; }
+  .prose-diary img { @apply rounded-xl my-6 w-full object-cover; }
+
+  /* Tiptap editor styling */
+  .tiptap { @apply outline-none min-h-[400px]; }
+  .tiptap p.is-editor-empty:first-child::before {
+    @apply text-outline float-left h-0 pointer-events-none;
+    content: attr(data-placeholder);
+  }
+}
