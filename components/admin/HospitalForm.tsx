@@ -11,7 +11,8 @@ interface HospitalFormProps {
 
 export default function HospitalForm({ hospital }: HospitalFormProps) {
   const router = useRouter()
-  const supabase = createClient()
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const supabase = createClient() as any
   const isEditing = !!hospital
 
   const [name, setName] = useState(hospital?.name ?? '')
@@ -34,10 +35,10 @@ export default function HospitalForm({ hospital }: HospitalFormProps) {
     const payload = { name, slug, description: description || null, image_url: imageUrl || null, status }
 
     if (isEditing) {
-      const { error } = await supabase.from('hospitals').update(payload as any).eq('id', hospital.id)
+      const { error } = await supabase.from('hospitals').update(payload).eq('id', hospital.id)
       if (error) { setError(error.message); setSaving(false); return }
     } else {
-      const { error } = await supabase.from('hospitals').insert(payload as any)
+      const { error } = await supabase.from('hospitals').insert(payload)
       if (error) { setError(error.message); setSaving(false); return }
     }
 

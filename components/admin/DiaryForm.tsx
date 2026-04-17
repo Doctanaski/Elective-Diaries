@@ -15,7 +15,8 @@ interface DiaryFormProps {
 
 export default function DiaryForm({ hospitals, diary }: DiaryFormProps) {
   const router = useRouter()
-  const supabase = createClient()
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const supabase = createClient() as any
   const isEditing = !!diary
 
   const [title, setTitle] = useState(diary?.title ?? '')
@@ -48,14 +49,14 @@ export default function DiaryForm({ hospitals, diary }: DiaryFormProps) {
     }
 
     if (isEditing) {
-      const updateData = { ...payload, updated_at: new Date().toISOString() } as any
+      const updateData = { ...payload, updated_at: new Date().toISOString() }
       const { error } = await supabase
         .from('diaries')
         .update(updateData)
         .eq('id', diary.id)
       if (error) { setError(error.message); setSaving(false); return }
     } else {
-      const { error } = await supabase.from('diaries').insert(payload as any)
+      const { error } = await supabase.from('diaries').insert(payload)
       if (error) { setError(error.message); setSaving(false); return }
     }
 

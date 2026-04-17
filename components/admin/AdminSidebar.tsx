@@ -13,7 +13,8 @@ const navItems = [
 export default function AdminSidebar() {
   const pathname = usePathname()
   const router = useRouter()
-  const supabase = createClient()
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const supabase = createClient() as any
 
   async function handleLogout() {
     await supabase.auth.signOut()
