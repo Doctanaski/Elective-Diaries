@@ -16,29 +16,33 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     .select('name, description')
     .eq('slug', params.slug)
     .single()
+  const hospital = data as { name: string; description: string | null } | null
   return {
-    title: data ? `${data.name} — The Elective Diaries` : 'Hospital',
-    description: data?.description ?? undefined,
+    title: hospital ? `${hospital.name} — The Elective Diaries` : 'Hospital',
+    description: hospital?.description ?? undefined,
   }
 }
 
 export default async function HospitalPage({ params }: Props) {
   const supabase = createClient()
 
-  const { data: hospital } = await supabase
+  const { data: hospitalRaw } = await supabase
     .from('hospitals')
     .select('*')
     .eq('slug', params.slug)
     .single()
 
+  const hospital = hospitalRaw as import('@/types/database').Hospital | null
   if (!hospital) notFound()
 
-  const { data: diaries } = await supabase
+  const { data: diariesRaw } = await supabase
     .from('diaries')
     .select('*')
     .eq('hospital_id', hospital.id)
     .eq('published', true)
     .order('created_at', { ascending: false })
+
+  const diaries = (diariesRaw ?? []) as import('@/types/database').Diary[]
 
   return (
     <div className="pb-24">

@@ -1,14 +1,16 @@
 import { createClient } from '@/lib/supabase/server'
 import HospitalCard from '@/components/public/HospitalCard'
+import type { Hospital } from '@/types/database'
 
 export const revalidate = 60
 
 export default async function HomePage() {
   const supabase = createClient()
-  const { data: hospitals } = await supabase
+  const { data } = await supabase
     .from('hospitals')
     .select('*')
     .order('name')
+  const hospitals = (data ?? []) as Hospital[]
 
   return (
     <div className="flex-grow pt-32 pb-24 px-6 md:px-12 lg:px-24">

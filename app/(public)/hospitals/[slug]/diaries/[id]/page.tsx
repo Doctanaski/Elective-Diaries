@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation'
 import Image from 'next/image'
 import Link from 'next/link'
 import type { Metadata } from 'next'
+import type { Hospital, Diary } from '@/types/database'
 
 export const revalidate = 60
 
@@ -15,24 +16,26 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     .select('title, excerpt')
     .eq('id', params.id)
     .single()
+  const diary = data as { title: string; excerpt: string | null } | null
   return {
-    title: data ? `${data.title} — The Elective Diaries` : 'Diary',
-    description: data?.excerpt ?? undefined,
+    title: diary ? `${diary.title} — The Elective Diaries` : 'Diary',
+    description: diary?.excerpt ?? undefined,
   }
 }
 
 export default async function DiaryPage({ params }: Props) {
   const supabase = createClient()
 
-  const { data: hospital } = await supabase
+  const { data: hospitalRaw } = await supabase
     .from('hospitals')
     .select('id, name, slug')
     .eq('slug', params.slug)
     .single()
 
+  const hospital = hospitalRaw as Pick<Hospital, 'id' | 'name' | 'slug'> | null
   if (!hospital) notFound()
 
-  const { data: diary } = await supabase
+  const { data: diaryRaw } = await supabase
     .from('diaries')
     .select('*')
     .eq('id', params.id)
@@ -40,6 +43,7 @@ export default async function DiaryPage({ params }: Props) {
     .eq('published', true)
     .single()
 
+  const diary = diaryRaw as Diary | null
   if (!diary) notFound()
 
   return (
