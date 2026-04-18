@@ -9,11 +9,6 @@ export default function Navbar() {
   return (
     <nav className="fixed top-0 w-full z-50 bg-surface/80 backdrop-blur-md border-b border-outline-variant/30">
       <div className="flex justify-between items-center px-8 md:px-12 py-4 w-full">
-        {/* Logo */}
-        <Link href="/" className="text-xl font-bold text-primary font-headline tracking-tight">
-          The Elective Diaries
-        </Link>
-
         {/* Nav Links */}
         <div className="hidden md:flex items-center space-x-8">
           <Link

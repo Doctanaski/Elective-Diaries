@@ -1,9 +1,10 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import type { Hospital } from '@/types/database'
+import Image from 'next/image'
 
 interface HospitalFormProps {
   hospital?: Hospital
@@ -23,8 +24,64 @@ export default function HospitalForm({ hospital }: HospitalFormProps) {
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState('')
 
+  // Image upload state
+  const [uploading, setUploading] = useState(false)
+  const [uploadError, setUploadError] = useState('')
+  const [previewUrl, setPreviewUrl] = useState(hospital?.image_url ?? '')
+  const fileInputRef = useRef<HTMLInputElement>(null)
+
   function generateSlug(name: string) {
     return name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '')
+  }
+
+  async function handleImageUpload(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0]
+    if (!file) return
+
+    if (!file.type.startsWith('image/')) {
+      setUploadError('Please select an image file (JPG, PNG, WebP, etc.)')
+      return
+    }
+
+    if (file.size > 5 * 1024 * 1024) {
+      setUploadError('Image must be under 5MB')
+      return
+    }
+
+    setUploading(true)
+    setUploadError('')
+
+    const localPreview = URL.createObjectURL(file)
+    setPreviewUrl(localPreview)
+
+    const ext = file.name.split('.').pop()
+    const filename = `hospitals/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`
+
+    const { data, error: storageError } = await supabase.storage
+      .from('hospital-images')
+      .upload(filename, file, { cacheControl: '3600', upsert: false })
+
+    if (storageError) {
+      setUploadError(storageError.message)
+      setPreviewUrl(imageUrl)
+      setUploading(false)
+      return
+    }
+
+    const { data: publicData } = supabase.storage
+      .from('hospital-images')
+      .getPublicUrl(data.path)
+
+    setImageUrl(publicData.publicUrl)
+    setPreviewUrl(publicData.publicUrl)
+    setUploading(false)
+  }
+
+  function clearImage() {
+    setImageUrl('')
+    setPreviewUrl('')
+    setUploadError('')
+    if (fileInputRef.current) fileInputRef.current.value = ''
   }
 
   async function handleSubmit(e: React.FormEvent) {
@@ -74,7 +131,7 @@ export default function HospitalForm({ hospital }: HospitalFormProps) {
           )}
           <button
             type="submit"
-            disabled={saving}
+            disabled={saving || uploading}
             className="bg-primary text-on-primary px-5 py-2.5 rounded-xl text-sm font-semibold hover:bg-primary-container transition-colors disabled:opacity-50"
           >
             {saving ? 'Saving…' : isEditing ? 'Update' : 'Create Hospital'}
@@ -133,25 +190,88 @@ export default function HospitalForm({ hospital }: HospitalFormProps) {
           />
         </div>
 
+        {/* Cover Image */}
         <div>
-          <label className="block text-sm font-semibold text-on-surface mb-2">Cover Image URL</label>
+          <label className="block text-sm font-semibold text-on-surface mb-2">Cover Image</label>
+
+          {previewUrl && (
+            <div className="relative mb-3 rounded-xl overflow-hidden border border-outline-variant/30 bg-surface-container aspect-video w-full">
+              <Image
+                src={previewUrl}
+                alt="Hospital cover preview"
+                fill
+                className="object-cover"
+                sizes="(max-width: 768px) 100vw, 672px"
+                unoptimized={previewUrl.startsWith('blob:')}
+              />
+              <button
+                type="button"
+                onClick={clearImage}
+                className="absolute top-2 right-2 bg-surface/90 backdrop-blur-sm text-error p-1.5 rounded-lg hover:bg-error-container/30 transition-colors border border-outline-variant/30"
+              >
+                <span className="material-symbols-outlined" style={{ fontSize: 18 }}>delete</span>
+              </button>
+            </div>
+          )}
+
+          <div
+            onClick={() => fileInputRef.current?.click()}
+            className={`flex items-center justify-center gap-3 w-full px-4 py-4 rounded-xl border-2 border-dashed cursor-pointer transition-all text-sm ${
+              uploading
+                ? 'border-primary/30 bg-primary/5 text-primary cursor-wait'
+                : 'border-outline-variant/50 hover:border-primary/50 hover:bg-primary/5 text-on-surface-variant hover:text-primary'
+            }`}
+          >
+            {uploading ? (
+              <>
+                <span className="material-symbols-outlined animate-spin" style={{ fontSize: 20 }}>progress_activity</span>
+                <span>Uploading…</span>
+              </>
+            ) : (
+              <>
+                <span className="material-symbols-outlined" style={{ fontSize: 20 }}>upload</span>
+                <span>{previewUrl ? 'Replace image' : 'Upload image'}</span>
+                <span className="text-xs text-on-surface-variant">(JPG, PNG, WebP · max 5 MB)</span>
+              </>
+            )}
+          </div>
           <input
-            type="url"
-            value={imageUrl}
-            onChange={(e) => setImageUrl(e.target.value)}
-            placeholder="https://..."
-            className={inputClass}
+            ref={fileInputRef}
+            type="file"
+            accept="image/*"
+            onChange={handleImageUpload}
+            className="hidden"
           />
-          <p className="text-xs text-on-surface-variant mt-1">
-            Paste a direct image URL. We'll add file upload support in a future update.
-          </p>
+
+          {uploadError && (
+            <p className="text-xs text-error mt-1.5 flex items-center gap-1">
+              <span className="material-symbols-outlined" style={{ fontSize: 14 }}>error</span>
+              {uploadError}
+            </p>
+          )}
+
+          <details className="mt-3">
+            <summary className="text-xs text-on-surface-variant cursor-pointer hover:text-primary select-none">
+              Or paste an image URL instead
+            </summary>
+            <input
+              type="url"
+              value={imageUrl}
+              onChange={(e) => {
+                setImageUrl(e.target.value)
+                setPreviewUrl(e.target.value)
+              }}
+              placeholder="https://..."
+              className={`${inputClass} mt-2`}
+            />
+          </details>
         </div>
 
         <div>
           <label className="block text-sm font-semibold text-on-surface mb-2">Status</label>
           <select
             value={status}
-            onChange={(e) => setStatus(e.target.value as any)}
+            onChange={(e) => setStatus(e.target.value as 'active' | 'inactive' | 'new_data')}
             className={inputClass}
           >
             <option value="active">Active</option>

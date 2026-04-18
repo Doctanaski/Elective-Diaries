@@ -25,7 +25,7 @@ export default async function HomePage() {
       {/* Hero */}
       <header className="text-center mb-24 relative max-w-4xl mx-auto">
         <div className="absolute inset-0 -z-10 bg-primary/5 rounded-full blur-3xl opacity-70 w-full h-full transform scale-150 pointer-events-none" />
-        <h1 className="font-headline font-extrabold text-5xl md:text-6xl leading-tight text-on-surface tracking-tight mb-6">
+        <h1 className="font-headline font-extrabold text-5xl md:text-6xl leading-tight text-primary tracking-tight mb-6">
           The Elective Diaries
         </h1>
         <div className="flex items-center justify-center space-x-2 bg-surface-container-high/50 w-fit mx-auto px-4 py-2 rounded-full border border-outline-variant/20">
