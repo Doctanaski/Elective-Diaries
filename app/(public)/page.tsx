@@ -16,7 +16,7 @@ export default async function HomePage() {
   const supabase = createClient()
   const { data } = await supabase
     .from('hospitals')
-    .select('id, name, slug, description, image_url, status') // select only needed columns
+    .select('id, name, slug, description, image_url, status')
     .order('name')
   const hospitals = (data ?? []) as Hospital[]
 

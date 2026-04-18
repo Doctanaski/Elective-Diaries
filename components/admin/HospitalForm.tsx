@@ -50,7 +50,6 @@ export default function HospitalForm({ hospital }: HospitalFormProps) {
 
     setUploading(true)
     setUploadError('')
-
     const localPreview = URL.createObjectURL(file)
     setPreviewUrl(localPreview)
 
@@ -169,6 +168,7 @@ export default function HospitalForm({ hospital }: HospitalFormProps) {
               (used in URL: /hospitals/<strong>{slug || 'slug'}</strong>)
             </span>
           </label>
+
           <input
             required
             type="text"
