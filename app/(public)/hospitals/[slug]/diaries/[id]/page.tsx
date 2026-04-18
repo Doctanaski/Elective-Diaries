@@ -1,4 +1,5 @@
 import { createClient } from '@/lib/supabase/server'
+import { createStaticClient } from '@/lib/supabase/static'
 import { notFound } from 'next/navigation'
 import Image from 'next/image'
 import Link from 'next/link'
@@ -12,7 +13,7 @@ type Props = { params: { slug: string; id: string } }
 
 // Pre-build all published diary pages at deploy time
 export async function generateStaticParams() {
-  const supabase = createClient()
+  const supabase = createStaticClient()
   const { data: hospitals } = await supabase.from('hospitals').select('id, slug')
   const { data: diaries } = await supabase
     .from('diaries')

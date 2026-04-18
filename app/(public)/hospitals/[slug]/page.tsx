@@ -1,4 +1,5 @@
 import { createClient } from '@/lib/supabase/server'
+import { createStaticClient } from '@/lib/supabase/static'
 import { notFound } from 'next/navigation'
 import Image from 'next/image'
 import Link from 'next/link'
@@ -13,7 +14,7 @@ type Props = { params: { slug: string } }
 
 // Pre-build all hospital pages at deploy time → no cold starts, no DB hit on first load
 export async function generateStaticParams() {
-  const supabase = createClient()
+  const supabase = createStaticClient()
   const { data } = await supabase.from('hospitals').select('slug')
   return ((data ?? []) as { slug: string }[]).map((h) => ({ slug: h.slug }))
 }
