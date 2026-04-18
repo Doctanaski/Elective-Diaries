@@ -1,14 +1,22 @@
 import { createClient } from '@/lib/supabase/server'
 import HospitalCard from '@/components/public/HospitalCard'
 import type { Hospital } from '@/types/database'
+import type { Metadata } from 'next'
 
-export const revalidate = 60
+// ISR: regenerate homepage every 5 minutes after a request
+export const revalidate = 300
+
+export const metadata: Metadata = {
+  title: 'The Elective Diaries — KMC Local Council',
+  description:
+    'A precision archive documenting clinical elective experiences at hospitals affiliated with Khyber Medical College, Peshawar.',
+}
 
 export default async function HomePage() {
   const supabase = createClient()
   const { data } = await supabase
     .from('hospitals')
-    .select('*')
+    .select('id, name, slug, description, image_url, status') // select only needed columns
     .order('name')
   const hospitals = (data ?? []) as Hospital[]
 
@@ -34,7 +42,7 @@ export default async function HomePage() {
 
       {/* Hospital Grid */}
       <section className="max-w-7xl mx-auto">
-        {hospitals && hospitals.length > 0 ? (
+        {hospitals.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {hospitals.map((hospital) => (
               <HospitalCard key={hospital.id} hospital={hospital} />

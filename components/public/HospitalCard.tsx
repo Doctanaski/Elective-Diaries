@@ -12,7 +12,7 @@ export default function HospitalCard({ hospital }: { hospital: Hospital }) {
   const status = statusConfig[hospital.status] ?? statusConfig.inactive
 
   return (
-    <Link href={`/hospitals/${hospital.slug}`}>
+    <Link href={`/hospitals/${hospital.slug}`} prefetch={true}>
       <div className="group relative rounded-2xl overflow-hidden transition-all duration-300 hover:shadow-xl cursor-pointer aspect-[4/5] bg-surface-container border border-outline-variant/20 hover:border-primary/30">
         {hospital.image_url && (
           <Image
@@ -20,7 +20,9 @@ export default function HospitalCard({ hospital }: { hospital: Hospital }) {
             alt={hospital.name}
             fill
             className="object-cover group-hover:scale-105 transition-transform duration-700"
+            // Responsive sizes: full width on mobile, 1/3 on desktop
             sizes="(max-width: 768px) 100vw, 33vw"
+            // Not priority — below the fold on most screens; let LCP image load first
           />
         )}
         <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent" />

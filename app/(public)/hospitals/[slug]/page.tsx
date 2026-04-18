@@ -4,10 +4,19 @@ import Image from 'next/image'
 import Link from 'next/link'
 import DiaryCard from '@/components/public/DiaryCard'
 import type { Metadata } from 'next'
+import type { Hospital, Diary } from '@/types/database'
 
-export const revalidate = 60
+// ISR: revalidate this page at most every 5 minutes
+export const revalidate = 300
 
 type Props = { params: { slug: string } }
+
+// Pre-build all hospital pages at deploy time → no cold starts, no DB hit on first load
+export async function generateStaticParams() {
+  const supabase = createClient()
+  const { data } = await supabase.from('hospitals').select('slug')
+  return ((data ?? []) as { slug: string }[]).map((h) => ({ slug: h.slug }))
+}
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const supabase = createClient()
@@ -32,7 +41,7 @@ export default async function HospitalPage({ params }: Props) {
     .eq('slug', params.slug)
     .single()
 
-  const hospital = hospitalRaw as import('@/types/database').Hospital | null
+  const hospital = hospitalRaw as Hospital | null
   if (!hospital) notFound()
 
   const { data: diariesRaw } = await supabase
@@ -42,7 +51,7 @@ export default async function HospitalPage({ params }: Props) {
     .eq('published', true)
     .order('created_at', { ascending: false })
 
-  const diaries = (diariesRaw ?? []) as import('@/types/database').Diary[]
+  const diaries = (diariesRaw ?? []) as Diary[]
 
   return (
     <div className="pb-24">
@@ -55,6 +64,7 @@ export default async function HospitalPage({ params }: Props) {
             fill
             className="object-cover"
             priority
+            sizes="100vw"
           />
         ) : (
           <div className="absolute inset-0 bg-surface-container-high" />
@@ -83,12 +93,12 @@ export default async function HospitalPage({ params }: Props) {
           <h2 className="font-headline font-bold text-2xl text-on-surface">
             Elective Diaries
             <span className="ml-3 text-sm font-normal text-on-surface-variant">
-              ({diaries?.length ?? 0} {diaries?.length === 1 ? 'entry' : 'entries'})
+              ({diaries.length} {diaries.length === 1 ? 'entry' : 'entries'})
             </span>
           </h2>
         </div>
 
-        {diaries && diaries.length > 0 ? (
+        {diaries.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {diaries.map((diary) => (
               <DiaryCard key={diary.id} diary={diary} hospitalSlug={params.slug} />

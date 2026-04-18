@@ -3,5 +3,24 @@
   "buildCommand": "next build",
   "outputDirectory": ".next",
   "installCommand": "npm install",
-  "devCommand": "next dev"
+
+  "regions": ["sin1"],
+
+  "functions": {
+    "app/(admin)/admin/**": {
+      "maxDuration": 10
+    }
+  },
+
+  "headers": [
+    {
+      "source": "/fonts/(.*)",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=31536000, immutable"
+        }
+      ]
+    }
+  ]
 }

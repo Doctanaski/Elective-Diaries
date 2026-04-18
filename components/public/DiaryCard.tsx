@@ -4,7 +4,7 @@ import type { Diary } from '@/types/database'
 
 export default function DiaryCard({ diary, hospitalSlug }: { diary: Diary; hospitalSlug: string }) {
   return (
-    <Link href={`/hospitals/${hospitalSlug}/diaries/${diary.id}`}>
+    <Link href={`/hospitals/${hospitalSlug}/diaries/${diary.id}`} prefetch={false}>
       <article className="group bg-surface-container-lowest border border-outline-variant/20 rounded-2xl overflow-hidden hover:shadow-lg hover:border-primary/30 transition-all duration-300 cursor-pointer h-full flex flex-col">
         {diary.cover_image_url && (
           <div className="relative h-48 overflow-hidden">
@@ -13,7 +13,8 @@ export default function DiaryCard({ diary, hospitalSlug }: { diary: Diary; hospi
               alt={diary.title}
               fill
               className="object-cover group-hover:scale-105 transition-transform duration-500"
-              sizes="(max-width: 768px) 100vw, 50vw"
+              sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
+              loading="lazy"
             />
           </div>
         )}
@@ -32,7 +33,7 @@ export default function DiaryCard({ diary, hospitalSlug }: { diary: Diary; hospi
             </p>
           )}
           <div className="flex items-center space-x-3 mt-4 pt-4 border-t border-outline-variant/20">
-            <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
+            <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
               <span className="text-primary text-xs font-bold">
                 {diary.author_name.charAt(0).toUpperCase()}
               </span>

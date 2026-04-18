@@ -5,9 +5,31 @@ import Link from 'next/link'
 import type { Metadata } from 'next'
 import type { Hospital, Diary } from '@/types/database'
 
-export const revalidate = 60
+// ISR: revalidate diary pages every 5 minutes
+export const revalidate = 300
 
 type Props = { params: { slug: string; id: string } }
+
+// Pre-build all published diary pages at deploy time
+export async function generateStaticParams() {
+  const supabase = createClient()
+  const { data: hospitals } = await supabase.from('hospitals').select('id, slug')
+  const { data: diaries } = await supabase
+    .from('diaries')
+    .select('id, hospital_id')
+    .eq('published', true)
+
+  const hospitalMap = new Map(
+    ((hospitals ?? []) as { id: string; slug: string }[]).map((h) => [h.id, h.slug])
+  )
+
+  return ((diaries ?? []) as { id: string; hospital_id: string }[])
+    .filter((d) => hospitalMap.has(d.hospital_id))
+    .map((d) => ({
+      slug: hospitalMap.get(d.hospital_id)!,
+      id: d.id,
+    }))
+}
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const supabase = createClient()
@@ -57,6 +79,7 @@ export default async function DiaryPage({ params }: Props) {
             fill
             className="object-cover"
             priority
+            sizes="100vw"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-surface via-transparent to-transparent" />
         </div>
