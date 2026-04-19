@@ -3,16 +3,13 @@ import { createStaticClient } from '@/lib/supabase/static'
 import { notFound } from 'next/navigation'
 import Image from 'next/image'
 import Link from 'next/link'
-import DiaryCard from '@/components/public/DiaryCard'
 import type { Metadata } from 'next'
 import type { Hospital, Diary } from '@/types/database'
 
-// ISR: revalidate this page at most every 5 minutes
 export const revalidate = 300
 
 type Props = { params: { slug: string } }
 
-// Pre-build all hospital pages at deploy time → no cold starts, no DB hit on first load
 export async function generateStaticParams() {
   const supabase = createStaticClient()
   const { data } = await supabase.from('hospitals').select('slug')
@@ -55,64 +52,234 @@ export default async function HospitalPage({ params }: Props) {
   const diaries = (diariesRaw ?? []) as Diary[]
 
   return (
-    <div className="pb-24">
-      {/* Hero banner */}
-      <div className="relative h-72 md:h-96 w-full overflow-hidden">
-        {hospital.image_url ? (
+    <>
+      {/* ── Back button – floats above everything ── */}
+      <Link
+        href="/"
+        className="fixed top-20 left-6 z-50 inline-flex items-center gap-1.5 px-3 py-2 rounded-xl
+                   bg-surface-container-lowest/80 backdrop-blur-md border border-outline-variant/20
+                   text-on-surface-variant hover:text-primary text-sm font-label font-semibold
+                   transition-all hover:border-primary/40 shadow-lg"
+      >
+        <span className="material-symbols-outlined" style={{ fontSize: 16 }}>arrow_back</span>
+        All Hospitals
+      </Link>
+
+      {diaries.length === 0 ? (
+        /* ── Empty state ── */
+        <div className="min-h-screen flex flex-col items-center justify-center px-6 pt-32 pb-24">
+          {hospital.image_url && (
+            <div className="absolute inset-0 -z-10">
+              <Image src={hospital.image_url} alt={hospital.name} fill className="object-cover opacity-10" sizes="100vw" />
+              <div className="absolute inset-0 bg-gradient-to-t from-surface via-surface/90 to-surface/60" />
+            </div>
+          )}
+          <h1 className="font-headline font-extrabold text-4xl md:text-5xl text-primary mb-3 text-center">{hospital.name}</h1>
+          {hospital.description && (
+            <p className="text-on-surface-variant text-lg max-w-xl text-center mb-12">{hospital.description}</p>
+          )}
+          <div className="bg-surface-container rounded-2xl border border-outline-variant/20 px-12 py-16 text-center">
+            <span className="material-symbols-outlined text-5xl mb-4 block text-outline opacity-40">description</span>
+            <p className="text-lg font-medium text-on-surface">No diaries published yet.</p>
+            <p className="text-sm mt-1 text-on-surface-variant">Check back soon — experiences will appear here.</p>
+          </div>
+        </div>
+      ) : (
+        /* ── Scroll-snap diary viewer ── */
+        <div
+          className="h-screen overflow-y-scroll"
+          style={{ scrollSnapType: 'y mandatory' }}
+        >
+          {diaries.map((diary, index) => (
+            <DiarySlide
+              key={diary.id}
+              diary={diary}
+              hospitalName={hospital.name}
+              hospitalSlug={params.slug}
+              index={index}
+              total={diaries.length}
+            />
+          ))}
+        </div>
+      )}
+    </>
+  )
+}
+
+/* ─────────────────────────────────────────────────────────────
+   DiarySlide — one full-screen entry in the scroll-snap viewer
+───────────────────────────────────────────────────────────── */
+function DiarySlide({
+  diary,
+  hospitalName,
+  hospitalSlug,
+  index,
+  total,
+}: {
+  diary: Diary
+  hospitalName: string
+  hospitalSlug: string
+  index: number
+  total: number
+}) {
+  const isEven = index % 2 === 0
+
+  return (
+    <section
+      className="relative flex items-center justify-center overflow-hidden"
+      style={{ scrollSnapAlign: 'start', height: '100vh' }}
+    >
+      {/* ── Background image + overlays ── */}
+      <div className="absolute inset-0 z-0">
+        {diary.cover_image_url ? (
           <Image
-            src={hospital.image_url}
-            alt={hospital.name}
+            src={diary.cover_image_url}
+            alt={diary.title}
             fill
-            className="object-cover"
-            priority
+            className="object-cover opacity-30"
             sizes="100vw"
+            priority={index === 0}
           />
         ) : (
           <div className="absolute inset-0 bg-surface-container-high" />
         )}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent" />
-        <div className="absolute bottom-0 left-0 right-0 px-8 md:px-16 pb-10">
-          <Link
-            href="/"
-            className="inline-flex items-center space-x-1 text-white/70 hover:text-white text-sm mb-4 transition-colors"
-          >
-            <span className="material-symbols-outlined" style={{ fontSize: 16 }}>arrow_back</span>
-            <span>All Hospitals</span>
-          </Link>
-          <h1 className="font-headline font-extrabold text-4xl md:text-5xl text-white tracking-tight">
-            {hospital.name}
-          </h1>
-          {hospital.description && (
-            <p className="text-white/80 mt-2 max-w-xl text-base">{hospital.description}</p>
-          )}
-        </div>
-      </div>
-
-      {/* Diaries */}
-      <div className="px-6 md:px-12 lg:px-24 mt-12 max-w-7xl mx-auto">
-        <div className="flex items-center justify-between mb-8">
-          <h2 className="font-headline font-bold text-2xl text-on-surface">
-            Elective Diaries
-            <span className="ml-3 text-sm font-normal text-on-surface-variant">
-              ({diaries.length} {diaries.length === 1 ? 'entry' : 'entries'})
-            </span>
-          </h2>
-        </div>
-
-        {diaries.length > 0 ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {diaries.map((diary) => (
-              <DiaryCard key={diary.id} diary={diary} hospitalSlug={params.slug} />
-            ))}
-          </div>
+        {isEven ? (
+          <div className="absolute inset-0 bg-gradient-to-t from-surface via-surface/80 to-transparent" />
         ) : (
-          <div className="text-center py-24 text-on-surface-variant bg-surface-container rounded-2xl border border-outline-variant/20">
-            <span className="material-symbols-outlined text-5xl mb-3 block opacity-30">description</span>
-            <p className="text-lg font-medium">No diaries published yet.</p>
-            <p className="text-sm mt-1">Check back soon — experiences will appear here.</p>
-          </div>
+          <div className="absolute inset-0 bg-gradient-to-b from-surface via-surface/90 to-surface" />
         )}
       </div>
-    </div>
+
+      {/* ── Main content ── */}
+      <div
+        className={`relative z-10 w-full max-w-5xl px-6 md:px-12 flex items-center justify-between gap-12
+                    ${isEven ? 'flex-col md:flex-row' : 'flex-col-reverse md:flex-row-reverse'}`}
+      >
+        {/* Text column */}
+        <div className="flex-1 space-y-5">
+          {/* Hospital badge */}
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full
+                          bg-surface-container border border-outline-variant/30
+                          text-on-surface-variant font-label text-xs uppercase tracking-widest">
+            <span className="material-symbols-outlined" style={{ fontSize: 14 }}>local_hospital</span>
+            {hospitalName}
+          </div>
+
+          {/* Author name */}
+          <h2 className="font-headline text-5xl md:text-6xl font-extrabold text-on-surface leading-tight">
+            {diary.author_name.split(' ')[0]}
+            <br />
+            <span className="text-primary">{diary.author_name.split(' ').slice(1).join(' ')}</span>
+          </h2>
+
+          {/* Specialty strip */}
+          {diary.specialty && (
+            <div className="flex items-center gap-4 py-4 pl-6 pr-4
+                            border-l-4 border-primary
+                            bg-surface-container-lowest/60 backdrop-blur-md rounded-r-xl">
+              <span className="material-symbols-outlined text-primary text-2xl">stethoscope</span>
+              <div>
+                <p className="font-label text-xs text-on-surface-variant uppercase tracking-wider">Department</p>
+                <p className="font-headline text-lg text-on-surface font-semibold">{diary.specialty}</p>
+              </div>
+            </div>
+          )}
+
+          {/* Year badge */}
+          <p className="font-label text-sm text-on-surface-variant">
+            {diary.author_year}
+            {diary.created_at && (
+              <span className="ml-3 opacity-60">
+                · {new Date(diary.created_at).toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
+              </span>
+            )}
+          </p>
+
+          {/* Excerpt */}
+          {diary.excerpt && (
+            <p className="font-body text-on-surface-variant text-base max-w-md leading-relaxed line-clamp-3">
+              {diary.excerpt}
+            </p>
+          )}
+
+          {/* CTA button */}
+          <Link
+            href={`/hospitals/${hospitalSlug}/diaries/${diary.id}`}
+            className="mt-4 inline-flex items-center gap-3 px-7 py-4 rounded-xl
+                       bg-primary text-on-primary font-headline font-semibold text-sm
+                       hover:opacity-90 hover:shadow-[0_0_24px_rgba(181,36,52,0.35)]
+                       transition-all group"
+          >
+            <span>Read Diary</span>
+            <span className="material-symbols-outlined group-hover:translate-x-1 transition-transform" style={{ fontSize: 18 }}>
+              arrow_forward
+            </span>
+          </Link>
+        </div>
+
+        {/* Cover image column */}
+        <div className="hidden md:block w-full max-w-xs relative flex-shrink-0">
+          <div className="aspect-[3/4] rounded-2xl overflow-hidden relative
+                          shadow-[0_0_40px_rgba(0,0,0,0.6)]
+                          border border-outline-variant/20">
+            {diary.cover_image_url ? (
+              <Image
+                src={diary.cover_image_url}
+                alt={diary.title}
+                fill
+                className="object-cover"
+                sizes="320px"
+              />
+            ) : (
+              <div className="absolute inset-0 bg-surface-container-high flex items-center justify-center">
+                <span className="material-symbols-outlined text-outline opacity-30" style={{ fontSize: 48 }}>
+                  description
+                </span>
+              </div>
+            )}
+            <div className="absolute inset-0 bg-gradient-to-t from-surface/70 via-transparent to-transparent" />
+          </div>
+          {/* Glow accent */}
+          <div className={`absolute -bottom-6 ${isEven ? '-right-6' : '-left-6'} w-28 h-28 bg-primary/10 rounded-full blur-2xl`} />
+        </div>
+      </div>
+
+      {/* ── Entry counter (top-right) ── */}
+      <div className="absolute top-6 right-6 z-20 font-label text-xs text-on-surface-variant
+                      bg-surface-container-lowest/70 backdrop-blur-sm px-3 py-1.5 rounded-full
+                      border border-outline-variant/20">
+        {index + 1} / {total}
+      </div>
+
+      {/* ── Scroll indicator (bottom centre) ── */}
+      {index < total - 1 && (
+        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-20
+                        flex flex-col items-center gap-1 opacity-50 hover:opacity-100
+                        transition-opacity cursor-pointer select-none">
+          <span className="font-label text-xs uppercase tracking-widest text-on-surface-variant">
+            Next Entry
+          </span>
+          <span className="material-symbols-outlined text-primary animate-bounce">keyboard_arrow_down</span>
+        </div>
+      )}
+
+      {/* ── Last slide: link back ── */}
+      {index === total - 1 && (
+        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-20
+                        flex flex-col items-center gap-2 opacity-60 hover:opacity-100 transition-opacity">
+          <span className="font-label text-xs uppercase tracking-widest text-on-surface-variant">
+            All caught up
+          </span>
+          <Link
+            href="/"
+            className="inline-flex items-center gap-1.5 text-primary font-label text-xs font-semibold
+                       hover:underline transition-colors"
+          >
+            <span className="material-symbols-outlined" style={{ fontSize: 14 }}>arrow_back</span>
+            Back to Hospitals
+          </Link>
+        </div>
+      )}
+    </section>
   )
 }
