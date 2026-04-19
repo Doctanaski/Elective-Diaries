@@ -2,9 +2,14 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
+import ThemeToggle from './ThemeToggle'
 
 export default function Navbar() {
   const pathname = usePathname()
+
+  // Hide navbar entirely on hospital detail pages (the cinematic scroll viewer)
+  const isHospitalPage = /^\/hospitals\/[^/]+(\/)?$/.test(pathname)
+  if (isHospitalPage) return null
 
   return (
     <nav className="fixed top-0 w-full z-50 bg-surface/80 backdrop-blur-md border-b border-outline-variant/30">
@@ -33,14 +38,17 @@ export default function Navbar() {
           </Link>
         </div>
 
-        {/* Admin Login Button */}
-        <Link
-          href="/admin/login"
-          className="text-on-surface-variant hover:text-primary px-4 py-2 rounded-lg font-label text-sm font-semibold hover:bg-surface-variant/50 transition-all duration-200 flex items-center space-x-2 border border-outline-variant/50"
-        >
-          <span className="material-symbols-outlined" style={{ fontSize: 18 }}>login</span>
-          <span>Admin Login</span>
-        </Link>
+        {/* Right side actions */}
+        <div className="flex items-center gap-3">
+          <ThemeToggle />
+          <Link
+            href="/admin/login"
+            className="text-on-surface-variant hover:text-primary px-4 py-2 rounded-lg font-label text-sm font-semibold hover:bg-surface-variant/50 transition-all duration-200 flex items-center space-x-2 border border-outline-variant/50"
+          >
+            <span className="material-symbols-outlined" style={{ fontSize: 18 }}>login</span>
+            <span>Admin Login</span>
+          </Link>
+        </div>
       </div>
     </nav>
   )
