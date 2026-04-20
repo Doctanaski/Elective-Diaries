@@ -151,8 +151,8 @@ function DiarySlide({
       className="relative flex items-center justify-center overflow-hidden"
       style={{ scrollSnapAlign: 'start', height: '100vh' }}
     >
-      {/* Background */}
-      <div className="absolute inset-0 z-0">
+      {/* Background — desktop only */}
+      <div className="hidden md:block absolute inset-0 z-0">
         {diary.cover_image_url ? (
           <Image src={diary.cover_image_url} alt={diary.title} fill className="object-cover opacity-30" sizes="100vw" priority={index === 0} />
         ) : (
@@ -164,8 +164,80 @@ function DiarySlide({
         }
       </div>
 
-      {/* Main content */}
-      <div className={`relative z-10 w-full max-w-5xl px-6 md:px-12 flex items-center justify-between gap-12 ${isEven ? 'flex-col md:flex-row' : 'flex-col-reverse md:flex-row-reverse'}`}>
+      {/* ── MOBILE layout (< md) ── */}
+      <div className="md:hidden relative z-10 w-full h-full flex flex-col">
+        {/* Top half: cover image */}
+        <div className="relative w-full flex-shrink-0" style={{ height: '45vh' }}>
+          {diary.cover_image_url ? (
+            <Image
+              src={diary.cover_image_url}
+              alt={diary.title}
+              fill
+              className="object-cover"
+              sizes="100vw"
+              priority={index === 0}
+            />
+          ) : (
+            <div className="absolute inset-0 bg-surface-container-high flex items-center justify-center">
+              <span className="material-symbols-outlined text-outline opacity-20" style={{ fontSize: 64 }}>description</span>
+            </div>
+          )}
+          {/* Fade bottom into content area */}
+          <div className="absolute inset-0 bg-gradient-to-t from-surface via-surface/40 to-transparent" />
+        </div>
+
+        {/* Bottom half: text content */}
+        <div className="flex-1 overflow-y-auto px-6 pb-20 pt-4 space-y-4 bg-surface">
+          {/* Hospital badge */}
+          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-surface-container border border-outline-variant/30 text-on-surface-variant font-label text-xs uppercase tracking-widest">
+            <span className="material-symbols-outlined" style={{ fontSize: 13 }}>local_hospital</span>
+            {hospitalName}
+          </div>
+
+          {/* Author name */}
+          <h2 className="font-headline text-4xl font-extrabold text-on-surface leading-tight">
+            {diary.author_name.split(' ')[0]}
+            <br />
+            <span className="text-primary">{diary.author_name.split(' ').slice(1).join(' ')}</span>
+          </h2>
+
+          {/* Specialty strip */}
+          {diary.specialty && (
+            <div className="flex items-center gap-3 py-3 pl-4 pr-3 border-l-4 border-primary bg-surface-container-lowest rounded-r-xl">
+              <span className="material-symbols-outlined text-primary" style={{ fontSize: 22 }}>{getSpecialtyIcon(diary.specialty)}</span>
+              <div>
+                <p className="font-label text-xs text-on-surface-variant uppercase tracking-wider">Department</p>
+                <p className="font-headline text-base text-on-surface font-semibold">{diary.specialty}</p>
+              </div>
+            </div>
+          )}
+
+          {/* Year + date */}
+          <p className="font-label text-sm text-on-surface-variant">
+            {diary.author_year}
+            {diary.created_at && (
+              <span className="ml-2 opacity-60">· {new Date(diary.created_at).toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}</span>
+            )}
+          </p>
+
+          {/* Excerpt */}
+          {diary.excerpt && (
+            <p className="font-body text-on-surface-variant text-sm leading-relaxed line-clamp-4">{diary.excerpt}</p>
+          )}
+
+          {/* CTA */}
+          <Link
+            href={`/hospitals/${hospitalSlug}/diaries/${diary.id}`}
+            className="inline-flex items-center gap-2 px-6 py-3.5 rounded-xl bg-primary text-on-primary font-headline font-semibold text-sm hover:opacity-90 transition-all group w-full justify-center"
+          >
+            <span>Read Diary</span>
+            <span className="material-symbols-outlined group-hover:translate-x-1 transition-transform" style={{ fontSize: 18 }}>arrow_forward</span>
+          </Link>
+        </div>
+      </div>
+
+      {/* ── DESKTOP layout (md+) ── */}
+      <div className={`hidden md:flex relative z-10 w-full max-w-5xl px-12 items-center justify-between gap-12 ${isEven ? 'flex-row' : 'flex-row-reverse'}`}>
         {/* Text column */}
         <div className="flex-1 space-y-5">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-surface-container border border-outline-variant/30 text-on-surface-variant font-label text-xs uppercase tracking-widest">
@@ -210,7 +282,7 @@ function DiarySlide({
         </div>
 
         {/* Cover image column */}
-        <div className="hidden md:block w-full max-w-xs relative flex-shrink-0">
+        <div className="w-full max-w-xs relative flex-shrink-0">
           <div className="aspect-[3/4] rounded-2xl overflow-hidden relative shadow-[0_0_40px_rgba(0,0,0,0.6)] border border-outline-variant/20">
             {diary.cover_image_url ? (
               <Image src={diary.cover_image_url} alt={diary.title} fill className="object-cover" sizes="320px" />
@@ -225,21 +297,21 @@ function DiarySlide({
         </div>
       </div>
 
-      {/* Entry counter */}
-      <div className="absolute top-6 right-6 z-20 font-label text-xs text-on-surface-variant bg-surface-container-lowest/70 backdrop-blur-sm px-3 py-1.5 rounded-full border border-outline-variant/20">
+      {/* Entry counter — desktop only */}
+      <div className="hidden md:block absolute top-6 right-6 z-20 font-label text-xs text-on-surface-variant bg-surface-container-lowest/70 backdrop-blur-sm px-3 py-1.5 rounded-full border border-outline-variant/20">
         {index + 1} / {total}
       </div>
 
-      {/* Scroll indicator */}
+      {/* Scroll indicator — desktop only */}
       {index < total - 1 && (
-        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-20 flex flex-col items-center gap-1 opacity-50 hover:opacity-100 transition-opacity cursor-pointer select-none">
+        <div className="hidden md:flex absolute bottom-8 left-1/2 -translate-x-1/2 z-20 flex-col items-center gap-1 opacity-50 hover:opacity-100 transition-opacity cursor-pointer select-none">
           <span className="font-label text-xs uppercase tracking-widest text-on-surface-variant">Next Entry</span>
           <span className="material-symbols-outlined text-primary animate-bounce">keyboard_arrow_down</span>
         </div>
       )}
 
       {index === total - 1 && (
-        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-20 flex flex-col items-center gap-2 opacity-60 hover:opacity-100 transition-opacity">
+        <div className="hidden md:flex absolute bottom-8 left-1/2 -translate-x-1/2 z-20 flex-col items-center gap-2 opacity-60 hover:opacity-100 transition-opacity">
           <span className="font-label text-xs uppercase tracking-widest text-on-surface-variant">All caught up</span>
           <Link href="/" className="inline-flex items-center gap-1.5 text-primary font-label text-xs font-semibold hover:underline">
             <span className="material-symbols-outlined" style={{ fontSize: 14 }}>arrow_back</span>
