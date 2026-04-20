@@ -23,6 +23,8 @@ export interface Diary {
   author_year: string
   specialty: string | null
   cover_image_url: string | null
+  pros: string[] | null
+  cons: string[] | null
   published: boolean
   created_at: string
   updated_at: string

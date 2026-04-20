@@ -28,6 +28,8 @@ export default function DiaryForm({ hospitals, diary }: DiaryFormProps) {
   const [authorYear, setAuthorYear] = useState(diary?.author_year ?? '')
   const [specialty, setSpecialty] = useState(diary?.specialty ?? '')
   const [coverImageUrl, setCoverImageUrl] = useState(diary?.cover_image_url ?? '')
+  const [pros, setPros] = useState<string[]>(diary?.pros ?? [])
+  const [cons, setCons] = useState<string[]>(diary?.cons ?? [])
   const [published, setPublished] = useState(diary?.published ?? false)
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState('')
@@ -75,6 +77,16 @@ export default function DiaryForm({ hospitals, diary }: DiaryFormProps) {
     if (fileInputRef.current) fileInputRef.current.value = ''
   }
 
+  function addItem(list: string[], setList: (v: string[]) => void) {
+    setList([...list, ''])
+  }
+  function updateItem(list: string[], setList: (v: string[]) => void, idx: number, val: string) {
+    const updated = [...list]; updated[idx] = val; setList(updated)
+  }
+  function removeItem(list: string[], setList: (v: string[]) => void, idx: number) {
+    setList(list.filter((_, i) => i !== idx))
+  }
+
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     setSaving(true)
@@ -89,6 +101,8 @@ export default function DiaryForm({ hospitals, diary }: DiaryFormProps) {
       author_year: authorYear,
       specialty: specialty || null,
       cover_image_url: coverImageUrl || null,
+      pros: pros.filter(p => p.trim()),
+      cons: cons.filter(c => c.trim()),
       published,
     }
 
@@ -237,6 +251,69 @@ export default function DiaryForm({ hospitals, diary }: DiaryFormProps) {
             onChange={(e) => { setCoverImageUrl(e.target.value); setPreviewUrl(e.target.value) }}
             placeholder="https://…" className={`${inputClass} mt-2`} />
         </details>
+      </div>
+
+      {/* Pros / Cons */}
+      <div className="bg-surface-container-lowest border border-outline-variant/20 rounded-2xl p-6 space-y-6">
+        <p className="text-sm font-semibold text-on-surface">Rotation Analysis</p>
+
+        {/* Pros */}
+        <div className="space-y-3">
+          <div className="flex items-center justify-between">
+            <label className="text-sm font-semibold text-secondary flex items-center gap-2">
+              <span className="material-symbols-outlined" style={{ fontSize: 16 }}>thumb_up</span>
+              Pros
+            </label>
+            <button type="button" onClick={() => addItem(pros, setPros)}
+              className="text-xs text-secondary border border-secondary/30 px-3 py-1 rounded-full hover:bg-secondary/10 transition-colors flex items-center gap-1">
+              <span className="material-symbols-outlined" style={{ fontSize: 14 }}>add</span>
+              Add Pro
+            </button>
+          </div>
+          {pros.length === 0 && (
+            <p className="text-xs text-on-surface-variant italic">No pros added yet.</p>
+          )}
+          {pros.map((pro, i) => (
+            <div key={i} className="flex gap-2 items-center">
+              <span className="material-symbols-outlined text-secondary shrink-0" style={{ fontSize: 16 }}>check_circle</span>
+              <input type="text" value={pro} onChange={e => updateItem(pros, setPros, i, e.target.value)}
+                placeholder="e.g. Excellent teaching culture…" className={`${inputClass} flex-1`} />
+              <button type="button" onClick={() => removeItem(pros, setPros, i)}
+                className="text-error hover:bg-error-container/20 p-1.5 rounded-lg transition-colors shrink-0">
+                <span className="material-symbols-outlined" style={{ fontSize: 16 }}>delete</span>
+              </button>
+            </div>
+          ))}
+        </div>
+
+        {/* Cons */}
+        <div className="space-y-3">
+          <div className="flex items-center justify-between">
+            <label className="text-sm font-semibold text-primary flex items-center gap-2">
+              <span className="material-symbols-outlined" style={{ fontSize: 16 }}>warning</span>
+              Cons
+            </label>
+            <button type="button" onClick={() => addItem(cons, setCons)}
+              className="text-xs text-primary border border-primary/30 px-3 py-1 rounded-full hover:bg-primary/10 transition-colors flex items-center gap-1">
+              <span className="material-symbols-outlined" style={{ fontSize: 14 }}>add</span>
+              Add Con
+            </button>
+          </div>
+          {cons.length === 0 && (
+            <p className="text-xs text-on-surface-variant italic">No cons added yet.</p>
+          )}
+          {cons.map((con, i) => (
+            <div key={i} className="flex gap-2 items-center">
+              <span className="material-symbols-outlined text-primary shrink-0" style={{ fontSize: 16 }}>remove_circle</span>
+              <input type="text" value={con} onChange={e => updateItem(cons, setCons, i, e.target.value)}
+                placeholder="e.g. High patient volumes…" className={`${inputClass} flex-1`} />
+              <button type="button" onClick={() => removeItem(cons, setCons, i)}
+                className="text-error hover:bg-error-container/20 p-1.5 rounded-lg transition-colors shrink-0">
+                <span className="material-symbols-outlined" style={{ fontSize: 16 }}>delete</span>
+              </button>
+            </div>
+          ))}
+        </div>
       </div>
 
       {/* Rich text content */}
