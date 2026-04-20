@@ -42,6 +42,38 @@
     --inverse-primary:          #ffb3b6;
   }
 
+  /* ── Dark mode tokens (matches screenshot palette) ── */
+  .dark {
+    --surface:                  #131313;
+    --surface-container-low:    #1c1b1b;
+    --surface-container:        #201f1f;
+    --surface-container-high:   #2a2a2a;
+    --surface-container-highest:#353535;
+    --surface-container-lowest: #0e0e0e;
+    --surface-dim:              #131313;
+    --surface-bright:           #393939;
+    --surface-variant:          #353535;
+    --on-surface:               #e5e2e1;
+    --on-surface-variant:       #d8c0be;
+    --on-background:            #e5e2e1;
+    --background:               #131313;
+    --primary:                  #ffb3b1;
+    --primary-container:        #ff525c;
+    --on-primary:               #680012;
+    --on-primary-container:     #5b000e;
+    --outline:                  #aa8987;
+    --outline-variant:          #5b403f;
+    --error:                    #ffb4ab;
+    --error-container:          #93000a;
+    --secondary:                #e7bdbb;
+    --secondary-container:      #5d3f3e;
+    --on-secondary:             #442a2a;
+    --on-secondary-container:   #ffdad8;
+    --inverse-surface:          #e5e2e1;
+    --inverse-on-surface:       #313030;
+    --inverse-primary:          #ba182e;
+  }
+
   body {
     background-color: var(--surface);
     color: var(--on-surface);
@@ -85,6 +117,10 @@
     @apply text-outline float-left h-0 pointer-events-none;
     content: attr(data-placeholder);
   }
+
+  /* Dark mode — invert heavy shadows so they still look natural */
+  .dark .shadow-lg   { box-shadow: 0 4px 16px rgba(0,0,0,0.6); }
+  .dark .shadow-sm   { box-shadow: 0 1px 4px  rgba(0,0,0,0.5); }
 
   /* Hide scrollbar utility */
   .scrollbar-hide {
