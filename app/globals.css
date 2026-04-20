@@ -42,38 +42,6 @@
     --inverse-primary:          #ffb3b6;
   }
 
-  /* ── Dark mode tokens ── */
-  .dark {
-    --surface:                  #181212;
-    --surface-container-low:    #201a1a;
-    --surface-container:        #251e1e;
-    --surface-container-high:   #2e2626;
-    --surface-container-highest:#3a3030;
-    --surface-container-lowest: #110d0d;
-    --surface-dim:              #181212;
-    --surface-bright:           #3e3535;
-    --surface-variant:          #3a2c2c;
-    --on-surface:               #ede0df;
-    --on-surface-variant:       #d8bcbc;
-    --on-background:            #ede0df;
-    --background:               #181212;
-    --primary:                  #ffb3b6;
-    --primary-container:        #710014;
-    --on-primary:               #680012;
-    --on-primary-container:     #ffdadb;
-    --outline:                  #a08c8b;
-    --outline-variant:          #52393a;
-    --error:                    #ffb4ab;
-    --error-container:          #93000a;
-    --secondary:                #e7bdbb;
-    --secondary-container:      #5d3f3e;
-    --on-secondary:             #442a2a;
-    --on-secondary-container:   #ffdad8;
-    --inverse-surface:          #ede0df;
-    --inverse-on-surface:       #362f2f;
-    --inverse-primary:          #b52434;
-  }
-
   body {
     background-color: var(--surface);
     color: var(--on-surface);

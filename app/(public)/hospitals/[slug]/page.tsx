@@ -106,6 +106,38 @@ export default async function HospitalPage({ params }: Props) {
   )
 }
 
+/* ─────────────────────────────────────────────────────────────
+   Specialty → Material Symbol icon mapping
+───────────────────────────────────────────────────────────── */
+function getSpecialtyIcon(specialty: string): string {
+  const s = specialty.toLowerCase()
+  if (s.includes('cardio'))                                       return 'monitor_heart'
+  if (s.includes('neuro') || s.includes('brain'))                return 'neurology'
+  if (s.includes('surg'))                                         return 'surgical'
+  if (s.includes('paed') || s.includes('pedi'))                  return 'child_care'
+  if (s.includes('ortho') || s.includes('bone'))                 return 'orthopedics'
+  if (s.includes('ophthal') || s.includes('eye'))                return 'ophthalmology'
+  if (s.includes('derma') || s.includes('skin'))                 return 'dermatology'
+  if (s.includes('gyn') || s.includes('obstet'))                 return 'obstetrics'
+  if (s.includes('oncol') || s.includes('cancer'))               return 'oncology'
+  if (s.includes('psych') || s.includes('mental'))               return 'psychiatry'
+  if (s.includes('radio') || s.includes('imaging'))              return 'radiology'
+  if (s.includes('ent') || s.includes('ear'))                    return 'hearing'
+  if (s.includes('urol'))                                         return 'urology'
+  if (s.includes('nephro') || s.includes('renal'))               return 'nephrology'
+  if (s.includes('gastro') || s.includes('gi'))                  return 'gastroenterology'
+  if (s.includes('pulmo') || s.includes('respir') || s.includes('lung')) return 'pulmonology'
+  if (s.includes('endocrin') || s.includes('diabet'))            return 'endocrinology'
+  if (s.includes('haem') || s.includes('hema') || s.includes('blood'))   return 'hematology'
+  if (s.includes('anae') || s.includes('anest'))                 return 'anesthesiology'
+  if (s.includes('emerg') || s.includes('a&e'))                  return 'emergency'
+  if (s.includes('icu') || s.includes('critical') || s.includes('intensive')) return 'ecg_heart'
+  if (s.includes('path'))                                         return 'biotech'
+  if (s.includes('rheum'))                                        return 'rheumatology'
+  if (s.includes('infect'))                                       return 'microbiology'
+  return 'stethoscope'
+}
+
 /* DiarySlide — one full-screen entry in the scroll-snap viewer */
 function DiarySlide({
   diary, hospitalName, hospitalSlug, index, total,
@@ -149,7 +181,7 @@ function DiarySlide({
 
           {diary.specialty && (
             <div className="flex items-center gap-4 py-4 pl-6 pr-4 border-l-4 border-primary bg-surface-container-lowest/60 backdrop-blur-md rounded-r-xl">
-              <span className="material-symbols-outlined text-primary text-2xl">stethoscope</span>
+              <span className="material-symbols-outlined text-primary text-2xl">{getSpecialtyIcon(diary.specialty)}</span>
               <div>
                 <p className="font-label text-xs text-on-surface-variant uppercase tracking-wider">Department</p>
                 <p className="font-headline text-lg text-on-surface font-semibold">{diary.specialty}</p>
