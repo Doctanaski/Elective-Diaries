@@ -6,8 +6,8 @@ import Footer from '@/components/ui/Footer'
 
 export default function PublicLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname()
-  // Hospital detail pages (/hospitals/[slug]) get full-screen treatment — no chrome
-  const isHospitalPage = /^\/hospitals\/[^/]+(\/)?$/.test(pathname)
+  // Hospital detail pages AND diary reader pages get full-screen — no chrome
+  const isHospitalPage = /^\/hospitals\/[^/]+(\/diaries\/[^/]+)?\/?$/.test(pathname)
 
   if (isHospitalPage) {
     return <>{children}</>

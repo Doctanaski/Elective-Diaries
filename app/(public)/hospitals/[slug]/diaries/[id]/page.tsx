@@ -89,17 +89,6 @@ export default async function DiaryPage({ params }: Props) {
         </div>
       </div>
 
-      {/* ── Breadcrumb ── */}
-      <div className="px-6 md:px-12 pt-5 pb-1">
-        <div className="flex items-center gap-1.5 text-xs text-on-surface-variant font-label flex-wrap">
-          <Link href="/" className="hover:text-primary transition-colors">Hospitals</Link>
-          <span className="material-symbols-outlined opacity-40" style={{ fontSize: 12 }}>chevron_right</span>
-          <Link href={`/hospitals/${hospital.slug}`} className="hover:text-primary transition-colors">{hospital.name}</Link>
-          <span className="material-symbols-outlined opacity-40" style={{ fontSize: 12 }}>chevron_right</span>
-          <span className="text-on-surface truncate max-w-xs">{diary.title}</span>
-        </div>
-      </div>
-
       {/* ── Bento grid ── */}
       <div className="px-6 md:px-12 mt-6 grid grid-cols-1 lg:grid-cols-12 gap-6 max-w-screen-xl mx-auto">
 
