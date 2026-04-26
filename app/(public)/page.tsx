@@ -34,7 +34,7 @@ export default async function HomePage() {
             KMC Local Council · IFMSA Pakistan
           </p>
         </div>
-        <p className="mt-8 text-on-surface-variant font-body max-w-2xl mx-auto text-lg md:text-xl leading-relaxed">
+        <p className="mt-8 text-primary font-body max-w-2xl mx-auto text-lg md:text-xl leading-relaxed">
           A precision archive documenting clinical experiences, resource availability, and
           operational protocols across affiliated medical facilities.
         </p>

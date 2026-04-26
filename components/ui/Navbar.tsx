@@ -2,7 +2,6 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import ThemeToggle from './ThemeToggle'
 
 export default function Navbar() {
   const pathname = usePathname()
@@ -24,14 +23,11 @@ export default function Navbar() {
             About
           </Link>
         </div>
-        <div className="flex items-center gap-3">
-          <ThemeToggle />
-          <Link href="/admin/login"
-            className="text-on-surface-variant hover:text-primary px-4 py-2 rounded-lg font-label text-sm font-semibold hover:bg-surface-variant/50 transition-all duration-200 flex items-center space-x-2 border border-outline-variant/50">
-            <span className="material-symbols-outlined" style={{ fontSize: 18 }}>login</span>
-            <span>Admin Login</span>
-          </Link>
-        </div>
+        <Link href="/admin/login"
+          className="text-on-surface-variant hover:text-primary px-4 py-2 rounded-lg font-label text-sm font-semibold hover:bg-surface-variant/50 transition-all duration-200 flex items-center gap-2 border border-outline-variant/50">
+          <span className="material-symbols-outlined" style={{ fontSize: 18 }}>login</span>
+          <span>Admin Login</span>
+        </Link>
       </div>
     </nav>
   )

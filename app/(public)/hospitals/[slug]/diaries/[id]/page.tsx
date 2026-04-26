@@ -50,7 +50,7 @@ export default async function DiaryPage({ params }: Props) {
     <div className="min-h-screen bg-surface pb-32">
 
       {/* ── Hero Banner ── */}
-      <div className="relative w-full rounded-b-2xl overflow-hidden bg-surface-container-low border-b border-outline-variant/20" style={{ height: 300 }}>
+      <div className="relative w-full rounded-b-2xl overflow-hidden bg-surface-container-low border-b border-white/5" style={{ height: 300 }}>
         <div className="absolute inset-0 z-0">
           {diary.cover_image_url
             ? <Image src={diary.cover_image_url} alt={diary.title} fill className="object-cover opacity-50 mix-blend-overlay" sizes="100vw" priority />
@@ -96,7 +96,7 @@ export default async function DiaryPage({ params }: Props) {
         <div className="lg:col-span-8 space-y-6">
 
           {/* Clinical Narrative */}
-          <section className="relative bg-surface-container-low rounded-2xl p-7 overflow-hidden border border-outline-variant/20">
+          <section className="relative bg-surface-container-low rounded-2xl p-7 overflow-hidden border border-white/5">
             <div className="absolute top-0 left-0 w-1 h-full bg-gradient-to-b from-primary via-primary/60 to-transparent rounded-l-2xl" />
             <h2 className="font-headline text-xl font-bold text-on-surface flex items-center gap-3 mb-5">
               <span className="material-symbols-outlined text-secondary p-2 bg-secondary/10 rounded-lg" style={{ fontSize: 20 }}>history_edu</span>
@@ -107,13 +107,13 @@ export default async function DiaryPage({ params }: Props) {
 
           {/* Pivotal Observations */}
           {diary.excerpt && (
-            <section className="bg-surface-container-lowest rounded-2xl p-7 border border-outline-variant/20">
+            <section className="bg-surface-container-lowest rounded-2xl p-7 border border-white/5 shadow-[inset_0_1px_0_rgba(255,255,255,0.04)]">
               <h2 className="font-headline text-xl font-bold text-on-surface mb-5 flex items-center gap-3">
                 <span className="material-symbols-outlined text-primary p-2 bg-primary/10 rounded-lg" style={{ fontSize: 20 }}>visibility</span>
                 Pivotal Observations
               </h2>
               <div className="space-y-4">
-                <div className="p-5 bg-surface-container-low rounded-xl flex gap-4 hover:bg-surface-container-high transition-colors border border-outline-variant/15">
+                <div className="p-5 bg-surface-container-low rounded-xl flex gap-4 hover:bg-surface-container-high transition-colors border border-white/5">
                   <div className="w-12 h-12 rounded-full bg-secondary/10 flex items-center justify-center shrink-0">
                     <span className="material-symbols-outlined text-secondary" style={{ fontSize: 20 }}>lightbulb</span>
                   </div>
@@ -122,7 +122,7 @@ export default async function DiaryPage({ params }: Props) {
                     <p className="font-body text-sm text-on-surface-variant leading-relaxed">{diary.excerpt}</p>
                   </div>
                 </div>
-                <div className="p-5 bg-surface-container-low rounded-xl flex gap-4 hover:bg-surface-container-high transition-colors border border-outline-variant/15">
+                <div className="p-5 bg-surface-container-low rounded-xl flex gap-4 hover:bg-surface-container-high transition-colors border border-white/5">
                   <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
                     <span className="material-symbols-outlined text-primary" style={{ fontSize: 20 }}>clinical_notes</span>
                   </div>
@@ -141,7 +141,7 @@ export default async function DiaryPage({ params }: Props) {
         {/* RIGHT sidebar — Skills Matrix only */}
         <div className="lg:col-span-4 space-y-6">
           {specialtyTags.length > 0 && (
-            <section className="bg-surface-container-low rounded-2xl p-6 border border-outline-variant/20">
+            <section className="bg-surface-container-low rounded-2xl p-6 border border-white/5">
               <h2 className="font-headline text-base font-bold text-on-surface mb-4 flex items-center gap-2">
                 <span className="material-symbols-outlined text-secondary" style={{ fontSize: 18 }}>psychology</span>
                 Skills Matrix
@@ -152,7 +152,7 @@ export default async function DiaryPage({ params }: Props) {
                     className={`px-3 py-1.5 rounded-full font-label text-xs border cursor-default transition-colors ${
                       i === 0 ? 'bg-secondary/20 text-secondary border-secondary/30'
                       : i % 3 === 1 ? 'bg-primary/20 text-primary border-primary/30'
-                      : 'bg-surface-container-highest text-on-surface border-outline-variant/20 hover:border-secondary/50'
+                      : 'bg-surface-container-highest text-on-surface border-white/5 hover:border-secondary/50'
                     }`}>
                     {tag}
                   </span>
@@ -186,7 +186,7 @@ export default async function DiaryPage({ params }: Props) {
 
             {/* Pros */}
             {pros.length > 0 && (
-              <div className="bg-surface-container-low rounded-2xl p-6 border-t-2 border-secondary/60 border border-outline-variant/20">
+              <div className="bg-surface-container-low rounded-2xl p-6 border-t-2 border-secondary/60 border border-white/5">
                 <h3 className="font-headline text-lg font-bold text-secondary mb-4 flex items-center gap-2">
                   <span className="material-symbols-outlined" style={{ fontSize: 20 }}>thumb_up</span>
                   Pros
@@ -204,7 +204,7 @@ export default async function DiaryPage({ params }: Props) {
 
             {/* Cons */}
             {cons.length > 0 && (
-              <div className="bg-surface-container-lowest rounded-2xl p-6 border-t-2 border-primary/60 border border-outline-variant/20">
+              <div className="bg-surface-container-lowest rounded-2xl p-6 border-t-2 border-primary/60 border border-white/5 shadow-[inset_0_1px_0_rgba(255,255,255,0.04)]">
                 <h3 className="font-headline text-lg font-bold text-primary mb-4 flex items-center gap-2">
                   <span className="material-symbols-outlined" style={{ fontSize: 20 }}>warning</span>
                   Cons
