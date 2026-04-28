@@ -14,7 +14,7 @@ export default function AboutPage() {
         <h1 className="font-headline font-extrabold text-4xl md:text-5xl text-on-surface mb-6">
           What is The Elective Diaries?
         </h1>
-        <p className="text-on-surface-variant text-lg leading-relaxed">
+        <p className="text-primary text-lg leading-relaxed">
           The Elective Diaries is a student-led initiative by the{' '}
           <strong className="text-on-surface">KMC Local Council of IFMSA Pakistan</strong> to
           document and share clinical elective experiences at hospitals affiliated with Khyber
@@ -22,8 +22,8 @@ export default function AboutPage() {
         </p>
       </div>
 
-      <div className="space-y-8 text-on-surface-variant leading-relaxed">
-        <div className="bg-surface-container rounded-2xl p-8 border border-outline-variant/20">
+      <div className="space-y-8 text-primary leading-relaxed">
+        <div className="bg-surface-container rounded-2xl p-8 border border-white/5">
           <div className="flex items-start space-x-4">
             <span className="material-symbols-outlined text-primary mt-1">menu_book</span>
             <div>

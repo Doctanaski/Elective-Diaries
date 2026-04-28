@@ -41,7 +41,7 @@ export default function LoginPage() {
               </span>
             </div>
             <h1 className="font-headline font-bold text-2xl text-on-surface">Admin Login</h1>
-            <p className="text-on-surface-variant text-sm mt-1">
+            <p className="text-primary text-sm mt-1">
               KMC Local Council · IFMSA Pakistan
             </p>
           </div>
@@ -99,7 +99,7 @@ export default function LoginPage() {
           </form>
         </div>
 
-        <p className="text-center text-xs text-on-surface-variant mt-6">
+        <p className="text-center text-xs text-primary mt-6">
           Access restricted to authorised KMC LC administrators only.
         </p>
       </div>

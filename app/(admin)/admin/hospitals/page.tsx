@@ -12,7 +12,7 @@ export default async function AdminHospitalsPage() {
       <div className="flex items-center justify-between mb-8">
         <div>
           <h1 className="font-headline font-bold text-3xl text-on-surface">Hospitals</h1>
-          <p className="text-on-surface-variant mt-1">{hospitals?.length ?? 0} total</p>
+          <p className="text-primary mt-1">{hospitals?.length ?? 0} total</p>
         </div>
         <Link
           href="/admin/hospitals/new"
@@ -28,7 +28,7 @@ export default async function AdminHospitalsPage() {
           hospitals.map((hospital) => (
             <div
               key={hospital.id}
-              className="bg-surface-container-lowest border border-outline-variant/20 rounded-2xl p-5 flex items-center justify-between hover:border-primary/30 transition-all"
+              className="bg-surface-container-lowest border border-white/5 rounded-2xl p-5 flex items-center justify-between hover:border-primary/30 transition-all"
             >
               <div className="flex items-center space-x-4">
                 <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center flex-shrink-0">
@@ -36,7 +36,7 @@ export default async function AdminHospitalsPage() {
                 </div>
                 <div>
                   <p className="font-semibold text-on-surface">{hospital.name}</p>
-                  <p className="text-sm text-on-surface-variant">/hospitals/{hospital.slug}</p>
+                  <p className="text-sm text-primary">/hospitals/{hospital.slug}</p>
                 </div>
               </div>
               <div className="flex items-center space-x-4">
@@ -45,7 +45,7 @@ export default async function AdminHospitalsPage() {
                     ? 'bg-[#34A853]/10 text-[#34A853]'
                     : hospital.status === 'new_data'
                     ? 'bg-[#4285F4]/10 text-[#4285F4]'
-                    : 'bg-surface-container text-on-surface-variant'
+                    : 'bg-surface-container text-primary'
                 }`}>
                   {hospital.status === 'new_data' ? 'New Data' : hospital.status.charAt(0).toUpperCase() + hospital.status.slice(1)}
                 </span>
@@ -59,7 +59,7 @@ export default async function AdminHospitalsPage() {
             </div>
           ))
         ) : (
-          <div className="text-center py-16 text-on-surface-variant bg-surface-container-lowest border border-outline-variant/20 rounded-2xl">
+          <div className="text-center py-16 text-primary bg-surface-container-lowest border border-white/5 rounded-2xl">
             <span className="material-symbols-outlined text-5xl block mb-3 opacity-30">local_hospital</span>
             <p className="font-medium">No hospitals yet.</p>
             <Link href="/admin/hospitals/new" className="text-primary hover:underline text-sm mt-1 inline-block">

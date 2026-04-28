@@ -14,7 +14,7 @@ export default async function AdminDiariesPage() {
       <div className="flex items-center justify-between mb-8">
         <div>
           <h1 className="font-headline font-bold text-3xl text-on-surface">Diaries</h1>
-          <p className="text-on-surface-variant mt-1">{diaries?.length ?? 0} total entries</p>
+          <p className="text-primary mt-1">{diaries?.length ?? 0} total entries</p>
         </div>
         <Link
           href="/admin/diaries/new"
@@ -25,35 +25,35 @@ export default async function AdminDiariesPage() {
         </Link>
       </div>
 
-      <div className="bg-surface-container-lowest border border-outline-variant/20 rounded-2xl overflow-hidden">
+      <div className="bg-surface-container-lowest border border-white/5 rounded-2xl overflow-hidden">
         {diaries && diaries.length > 0 ? (
           <table className="w-full text-sm">
             <thead>
-              <tr className="border-b border-outline-variant/20 bg-surface-container/50">
-                <th className="text-left px-6 py-3 font-semibold text-on-surface-variant">Title</th>
-                <th className="text-left px-6 py-3 font-semibold text-on-surface-variant">Hospital</th>
-                <th className="text-left px-6 py-3 font-semibold text-on-surface-variant">Author</th>
-                <th className="text-left px-6 py-3 font-semibold text-on-surface-variant">Status</th>
-                <th className="text-left px-6 py-3 font-semibold text-on-surface-variant">Date</th>
+              <tr className="border-b border-white/5 bg-surface-container/50">
+                <th className="text-left px-6 py-3 font-semibold text-primary">Title</th>
+                <th className="text-left px-6 py-3 font-semibold text-primary">Hospital</th>
+                <th className="text-left px-6 py-3 font-semibold text-primary">Author</th>
+                <th className="text-left px-6 py-3 font-semibold text-primary">Status</th>
+                <th className="text-left px-6 py-3 font-semibold text-primary">Date</th>
                 <th className="px-6 py-3" />
               </tr>
             </thead>
             <tbody>
               {diaries.map((diary: any) => (
-                <tr key={diary.id} className="border-b border-outline-variant/10 hover:bg-surface-container/30 transition-colors">
+                <tr key={diary.id} className="border-b border-white/5 hover:bg-surface-container/30 transition-colors">
                   <td className="px-6 py-4 font-medium text-on-surface max-w-xs truncate">{diary.title}</td>
-                  <td className="px-6 py-4 text-on-surface-variant">{diary.hospitals?.name ?? '—'}</td>
-                  <td className="px-6 py-4 text-on-surface-variant">{diary.author_name}</td>
+                  <td className="px-6 py-4 text-primary">{diary.hospitals?.name ?? '—'}</td>
+                  <td className="px-6 py-4 text-primary">{diary.author_name}</td>
                   <td className="px-6 py-4">
                     <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold ${
                       diary.published
                         ? 'bg-[#34A853]/10 text-[#34A853]'
-                        : 'bg-surface-container text-on-surface-variant'
+                        : 'bg-surface-container text-primary'
                     }`}>
                       {diary.published ? 'Published' : 'Draft'}
                     </span>
                   </td>
-                  <td className="px-6 py-4 text-on-surface-variant">
+                  <td className="px-6 py-4 text-primary">
                     {new Date(diary.created_at).toLocaleDateString()}
                   </td>
                   <td className="px-6 py-4 text-right">
@@ -69,7 +69,7 @@ export default async function AdminDiariesPage() {
             </tbody>
           </table>
         ) : (
-          <div className="text-center py-16 text-on-surface-variant">
+          <div className="text-center py-16 text-primary bg-surface-container-lowest border border-white/5 rounded-2xl">
             <span className="material-symbols-outlined text-5xl block mb-3 opacity-30">menu_book</span>
             <p className="font-medium">No diaries yet.</p>
             <Link href="/admin/diaries/new" className="text-primary hover:underline text-sm mt-1 inline-block">

@@ -30,7 +30,7 @@ export default async function HomePage() {
         </h1>
         <div className="flex items-center justify-center space-x-2 bg-surface-container-high/50 w-fit mx-auto px-4 py-2 rounded-full border border-outline-variant/20">
           <span className="material-symbols-outlined text-secondary" style={{ fontSize: 20 }}>account_balance</span>
-          <p className="font-label text-sm font-semibold tracking-widest text-on-surface-variant uppercase">
+          <p className="font-label text-sm font-semibold tracking-widest text-primary uppercase">
             KMC Local Council · IFMSA Pakistan
           </p>
         </div>

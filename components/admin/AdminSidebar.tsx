@@ -27,7 +27,7 @@ export default function AdminSidebar() {
       {/* Logo */}
       <div className="px-6 py-6 border-b border-outline-variant/20">
         <p className="font-headline font-bold text-primary text-base">The Elective Diaries</p>
-        <p className="text-xs text-on-surface-variant mt-0.5">Admin Panel</p>
+        <p className="text-xs text-primary mt-0.5">Admin Panel</p>
       </div>
 
       {/* Nav */}
@@ -42,7 +42,7 @@ export default function AdminSidebar() {
               className={`flex items-center space-x-3 px-4 py-2.5 rounded-xl text-sm font-medium transition-all duration-150 ${
                 isActive
                   ? 'bg-primary/10 text-primary font-semibold'
-                  : 'text-on-surface-variant hover:bg-surface-container hover:text-on-surface'
+                  : 'text-primary/70 hover:bg-surface-container hover:text-primary'
               }`}
             >
               <span className="material-symbols-outlined" style={{ fontSize: 20 }}>{icon}</span>
@@ -57,7 +57,7 @@ export default function AdminSidebar() {
         <Link
           href="/"
           target="_blank"
-          className="flex items-center space-x-3 px-4 py-2.5 rounded-xl text-sm font-medium text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-all"
+          className="flex items-center space-x-3 px-4 py-2.5 rounded-xl text-sm font-medium text-primary/70 hover:bg-surface-container hover:text-primary transition-all"
         >
           <span className="material-symbols-outlined" style={{ fontSize: 20 }}>open_in_new</span>
           <span>View Site</span>
