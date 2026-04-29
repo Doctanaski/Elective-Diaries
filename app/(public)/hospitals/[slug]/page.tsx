@@ -151,18 +151,8 @@ function DiarySlide({
       className="relative flex items-center justify-center overflow-hidden"
       style={{ scrollSnapAlign: 'start', height: '100vh' }}
     >
-      {/* Background — desktop only */}
-      <div className="hidden md:block absolute inset-0 z-0">
-        {diary.cover_image_url ? (
-          <Image src={diary.cover_image_url} alt={diary.title} fill className="object-cover opacity-30" sizes="100vw" priority={index === 0} />
-        ) : (
-          <div className="absolute inset-0 bg-surface-container-high" />
-        )}
-        {isEven
-          ? <div className="absolute inset-0 bg-gradient-to-t from-surface via-surface/80 to-transparent" />
-          : <div className="absolute inset-0 bg-gradient-to-b from-surface via-surface/90 to-surface" />
-        }
-      </div>
+      {/* Background — solid dark, no faded image */}
+      <div className="hidden md:block absolute inset-0 z-0 bg-surface" />
 
       {/* ── MOBILE layout (< md) ── */}
       <div className="md:hidden relative z-10 w-full h-full flex flex-col">

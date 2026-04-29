@@ -62,41 +62,41 @@ export default async function DiaryPage({ params }: Props) {
         <div className="absolute inset-0 bg-gradient-to-t from-[#080808] via-[#0d0d0d]/90 to-transparent z-10" />
 
         {/* Hero text */}
-        <div className="absolute bottom-0 left-0 right-0 z-20 px-6 md:px-12 pb-8 flex flex-col md:flex-row justify-between items-end gap-4">
-          <div>
-            <div className="flex items-center gap-3 mb-2 flex-wrap">
-              <span className="px-3 py-1 bg-primary/20 text-primary rounded-full font-label text-xs uppercase tracking-widest border border-primary/40">
+        <div className="absolute bottom-0 left-0 right-0 z-20 px-4 md:px-12 pb-6 md:pb-8 flex flex-col md:flex-row justify-between items-start md:items-end gap-3 md:gap-4">
+          <div className="flex-1 min-w-0">
+            <div className="flex items-center gap-2 mb-2 flex-wrap">
+              <span className="px-2.5 py-0.5 bg-primary/20 text-primary rounded-full font-label text-xs uppercase tracking-widest border border-primary/40">
                 Elective Rotation
               </span>
-              <span className="font-label text-sm text-on-surface-variant flex items-center gap-1.5">
-                <span className="material-symbols-outlined" style={{ fontSize: 14 }}>calendar_month</span>
+              <span className="font-label text-xs text-on-surface-variant flex items-center gap-1">
+                <span className="material-symbols-outlined" style={{ fontSize: 12 }}>calendar_month</span>
                 {publishedMonthYear}
               </span>
             </div>
-            <h1 className="font-headline text-4xl md:text-5xl font-bold text-on-surface tracking-tight mb-2 leading-tight">
+            <h1 className="font-headline text-2xl sm:text-3xl md:text-5xl font-bold text-on-surface tracking-tight mb-1.5 leading-tight">
               {diary.title}
             </h1>
-            <p className="font-body text-base text-on-surface-variant flex items-center gap-1.5">
-              <span className="material-symbols-outlined text-primary" style={{ fontSize: 16 }}>location_on</span>
+            <p className="font-body text-sm md:text-base text-on-surface-variant flex items-center gap-1.5">
+              <span className="material-symbols-outlined text-primary" style={{ fontSize: 14 }}>location_on</span>
               {hospital.name}
             </p>
           </div>
-          <div className="text-left md:text-right shrink-0">
-            <p className="font-label text-xs text-on-surface-variant uppercase tracking-wider mb-0.5">Curator</p>
-            <p className="font-headline text-xl font-bold text-on-surface">{diary.author_name}</p>
-            <p className="font-label text-xs text-on-surface-variant mt-0.5">{diary.author_year}</p>
+          <div className="shrink-0 flex flex-row md:flex-col items-center md:items-end gap-3 md:gap-0 bg-surface/40 md:bg-transparent backdrop-blur-sm md:backdrop-blur-none px-3 py-2 md:p-0 rounded-xl md:rounded-none border border-white/10 md:border-0">
+            <p className="font-label text-xs text-on-surface-variant uppercase tracking-wider">Curator</p>
+            <p className="font-headline text-base md:text-xl font-bold text-on-surface">{diary.author_name}</p>
+            <p className="font-label text-xs text-on-surface-variant md:mt-0.5">{diary.author_year}</p>
           </div>
         </div>
       </div>
 
       {/* ── Bento grid ── */}
-      <div className="px-6 md:px-12 mt-6 grid grid-cols-1 lg:grid-cols-12 gap-6 max-w-screen-xl mx-auto">
+      <div className="px-4 md:px-12 mt-5 grid grid-cols-1 lg:grid-cols-12 gap-4 md:gap-6 max-w-screen-xl mx-auto">
 
         {/* LEFT — 8 cols */}
         <div className="lg:col-span-8 space-y-6">
 
           {/* Clinical Narrative */}
-          <section className="relative bg-surface-container-low rounded-2xl p-7 overflow-hidden border border-white/5">
+          <section className="relative bg-surface-container-low rounded-2xl p-5 md:p-7 overflow-hidden border border-white/5">
             <div className="absolute top-0 left-0 w-1 h-full bg-gradient-to-b from-primary via-primary/60 to-transparent rounded-l-2xl" />
             <h2 className="font-headline text-xl font-bold text-on-surface flex items-center gap-3 mb-5">
               <span className="material-symbols-outlined text-secondary p-2 bg-secondary/10 rounded-lg" style={{ fontSize: 20 }}>history_edu</span>
@@ -107,7 +107,7 @@ export default async function DiaryPage({ params }: Props) {
 
           {/* Pivotal Observations */}
           {diary.excerpt && (
-            <section className="bg-surface-container-lowest rounded-2xl p-7 border border-white/5 shadow-[inset_0_1px_0_rgba(255,255,255,0.04)]">
+          <section className="bg-surface-container-lowest rounded-2xl p-5 md:p-7 border border-white/5 shadow-[inset_0_1px_0_rgba(255,255,255,0.04)]">
               <h2 className="font-headline text-xl font-bold text-on-surface mb-5 flex items-center gap-3">
                 <span className="material-symbols-outlined text-primary p-2 bg-primary/10 rounded-lg" style={{ fontSize: 20 }}>visibility</span>
                 Pivotal Observations
@@ -141,7 +141,7 @@ export default async function DiaryPage({ params }: Props) {
         {/* RIGHT sidebar — Skills Matrix only */}
         <div className="lg:col-span-4 space-y-6">
           {specialtyTags.length > 0 && (
-            <section className="bg-surface-container-low rounded-2xl p-6 border border-white/5">
+            <section className="bg-surface-container-low rounded-2xl p-5 md:p-6 border border-white/5">
               <h2 className="font-headline text-base font-bold text-on-surface mb-4 flex items-center gap-2">
                 <span className="material-symbols-outlined text-secondary" style={{ fontSize: 18 }}>psychology</span>
                 Skills Matrix
@@ -175,18 +175,18 @@ export default async function DiaryPage({ params }: Props) {
 
       {/* ── Rotation Analysis — full width, shown only if pros/cons exist ── */}
       {hasAnalysis && (
-        <div className="px-6 md:px-12 mt-8 max-w-screen-xl mx-auto">
-          <h2 className="font-headline text-2xl font-bold text-on-surface mb-6 flex items-center gap-3">
+      <div className="px-4 md:px-12 mt-6 md:mt-8 max-w-screen-xl mx-auto">
+          <h2 className="font-headline text-xl md:text-2xl font-bold text-on-surface mb-4 md:mb-6 flex items-center gap-3">
             <span className="material-symbols-outlined text-on-surface p-2 bg-surface-container-high rounded-lg" style={{ fontSize: 20 }}>
               compare_arrows
             </span>
             Rotation Analysis
           </h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-6">
 
             {/* Pros */}
             {pros.length > 0 && (
-              <div className="bg-surface-container-low rounded-2xl p-6 border-t-2 border-secondary/60 border border-white/5">
+              <div className="bg-surface-container-low rounded-2xl p-5 md:p-6 border-t-2 border-secondary/60 border border-white/5">
                 <h3 className="font-headline text-lg font-bold text-secondary mb-4 flex items-center gap-2">
                   <span className="material-symbols-outlined" style={{ fontSize: 20 }}>thumb_up</span>
                   Pros
@@ -204,7 +204,7 @@ export default async function DiaryPage({ params }: Props) {
 
             {/* Cons */}
             {cons.length > 0 && (
-              <div className="bg-surface-container-lowest rounded-2xl p-6 border-t-2 border-primary/60 border border-white/5 shadow-[inset_0_1px_0_rgba(255,255,255,0.04)]">
+              <div className="bg-surface-container-lowest rounded-2xl p-5 md:p-6 border-t-2 border-primary/60 border border-white/5 shadow-[inset_0_1px_0_rgba(255,255,255,0.04)]">
                 <h3 className="font-headline text-lg font-bold text-primary mb-4 flex items-center gap-2">
                   <span className="material-symbols-outlined" style={{ fontSize: 20 }}>warning</span>
                   Cons
