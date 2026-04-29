@@ -8,7 +8,7 @@ const statusConfig = {
   inactive: { color: '#857372', label: 'Inactive' },
 }
 
-export default function HospitalCard({ hospital }: { hospital: Hospital }) {
+export default function HospitalCard({ hospital, priority = false }: { hospital: Hospital; priority?: boolean }) {
   const status = statusConfig[hospital.status] ?? statusConfig.inactive
 
   return (
@@ -20,9 +20,8 @@ export default function HospitalCard({ hospital }: { hospital: Hospital }) {
             alt={hospital.name}
             fill
             className="object-cover group-hover:scale-105 transition-transform duration-700"
-            // Responsive sizes: full width on mobile, 1/3 on desktop
             sizes="(max-width: 768px) 100vw, 33vw"
-            // Not priority — below the fold on most screens; let LCP image load first
+            priority={priority}
           />
         )}
         <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent" />

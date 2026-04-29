@@ -3,8 +3,8 @@ import HospitalCard from '@/components/public/HospitalCard'
 import type { Hospital } from '@/types/database'
 import type { Metadata } from 'next'
 
-// ISR: regenerate homepage every 5 minutes after a request
-export const revalidate = 300
+// ISR: regenerate homepage every hour (content changes infrequently)
+export const revalidate = 3600
 
 export const metadata: Metadata = {
   title: 'The Elective Diaries — KMC Local Council',
@@ -44,8 +44,8 @@ export default async function HomePage() {
       <section className="max-w-7xl mx-auto">
         {hospitals.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {hospitals.map((hospital) => (
-              <HospitalCard key={hospital.id} hospital={hospital} />
+            {hospitals.map((hospital, index) => (
+              <HospitalCard key={hospital.id} hospital={hospital} priority={index < 3} />
             ))}
           </div>
         ) : (

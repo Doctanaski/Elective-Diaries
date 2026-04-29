@@ -6,7 +6,7 @@ import Link from 'next/link'
 import type { Metadata } from 'next'
 import type { Hospital, Diary } from '@/types/database'
 
-export const revalidate = 300
+export const revalidate = 3600
 type Props = { params: { slug: string; id: string } }
 
 export async function generateStaticParams() {
