@@ -49,31 +49,55 @@ export default async function DiaryPage({ params }: Props) {
   return (
     <div className="min-h-screen bg-surface pb-32">
 
-      {/* ── Hero Banner ── */}
-      <div className="relative w-full rounded-b-2xl overflow-hidden bg-surface-container-low border-b border-white/5" style={{ height: 300 }}>
+      {/* ── Fixed top navbar with back button ── */}
+      <div className="fixed top-0 left-0 right-0 z-50 bg-surface/80 backdrop-blur-md border-b border-white/5">
+        <div className="max-w-screen-xl mx-auto px-4 md:px-12 py-3 flex items-center justify-between gap-4">
+          <Link
+            href={`/hospitals/${hospital.slug}`}
+            className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl
+                       bg-surface-container border border-white/10
+                       text-on-surface-variant hover:text-primary font-label text-sm font-semibold
+                       transition-all hover:border-primary/40"
+          >
+            <span className="material-symbols-outlined" style={{ fontSize: 16 }}>arrow_back</span>
+            <span className="hidden sm:inline">Back to {hospital.name}</span>
+            <span className="sm:hidden">Back</span>
+          </Link>
+
+          {/* Centre — diary title (truncated) */}
+          <p className="font-headline font-semibold text-sm text-on-surface-variant truncate max-w-xs md:max-w-md text-center hidden sm:block">
+            {diary.title}
+          </p>
+
+          {/* Right — rotation badge */}
+          <span className="px-2.5 py-1 bg-primary/15 text-primary rounded-full font-label text-xs uppercase tracking-widest border border-primary/30 shrink-0">
+            Elective Rotation
+          </span>
+        </div>
+      </div>
+
+      {/* ── Hero Banner — expanded to fit metadata grid ── */}
+      <div
+        className="relative w-full overflow-hidden bg-surface-container-low border-b border-white/5"
+        style={{ paddingTop: '56px' /* navbar height */ }}
+      >
+        {/* Background image */}
         <div className="absolute inset-0 z-0">
           {diary.cover_image_url
-            ? <Image src={diary.cover_image_url} alt={diary.title} fill className="object-cover opacity-50 mix-blend-overlay" sizes="100vw" priority />
+            ? <Image src={diary.cover_image_url} alt={diary.title} fill className="object-cover opacity-40 mix-blend-overlay" sizes="100vw" priority />
             : hospital.image_url
-            ? <Image src={hospital.image_url} alt={hospital.name} fill className="object-cover opacity-35 mix-blend-overlay" sizes="100vw" priority />
+            ? <Image src={hospital.image_url} alt={hospital.name} fill className="object-cover opacity-30 mix-blend-overlay" sizes="100vw" priority />
             : null}
         </div>
-        {/* Deep dark gradient overlay */}
-        <div className="absolute inset-0 bg-gradient-to-t from-[#080808] via-[#0d0d0d]/90 to-transparent z-10" />
+        {/* Gradient overlay */}
+        <div className="absolute inset-0 bg-gradient-to-b from-[#080808]/60 via-[#0d0d0d]/80 to-[#080808] z-10" />
 
-        {/* Hero text */}
-        <div className="absolute bottom-0 left-0 right-0 z-20 px-4 md:px-12 pb-6 md:pb-8 flex flex-col md:flex-row justify-between items-start md:items-end gap-3 md:gap-4">
-          <div className="flex-1 min-w-0">
-            <div className="flex items-center gap-2 mb-2 flex-wrap">
-              <span className="px-2.5 py-0.5 bg-primary/20 text-primary rounded-full font-label text-xs uppercase tracking-widest border border-primary/40">
-                Elective Rotation
-              </span>
-              <span className="font-label text-xs text-on-surface-variant flex items-center gap-1">
-                <span className="material-symbols-outlined" style={{ fontSize: 12 }}>calendar_month</span>
-                {publishedMonthYear}
-              </span>
-            </div>
-            <h1 className="font-headline text-2xl sm:text-3xl md:text-5xl font-bold text-on-surface tracking-tight mb-1.5 leading-tight">
+        {/* Content */}
+        <div className="relative z-20 max-w-screen-xl mx-auto px-4 md:px-12 pt-8 pb-10">
+
+          {/* Diary title */}
+          <div className="mb-6">
+            <h1 className="font-headline text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-on-surface tracking-tight leading-tight mb-2">
               {diary.title}
             </h1>
             <p className="font-body text-sm md:text-base text-on-surface-variant flex items-center gap-1.5">
@@ -81,10 +105,68 @@ export default async function DiaryPage({ params }: Props) {
               {hospital.name}
             </p>
           </div>
-          <div className="shrink-0 flex flex-row md:flex-col items-center md:items-end gap-3 md:gap-0 bg-surface/40 md:bg-transparent backdrop-blur-sm md:backdrop-blur-none px-3 py-2 md:p-0 rounded-xl md:rounded-none border border-white/10 md:border-0">
-            <p className="font-label text-xs text-on-surface-variant uppercase tracking-wider">Curator</p>
-            <p className="font-headline text-base md:text-xl font-bold text-on-surface">{diary.author_name}</p>
-            <p className="font-label text-xs text-on-surface-variant md:mt-0.5">{diary.author_year}</p>
+
+          {/* ── Metadata grid — 2 cols on mobile, 4 on desktop ── */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">
+
+            {/* Curator */}
+            <MetaCard
+              icon="person"
+              label="Curator"
+              value={diary.author_name}
+              sub={diary.author_year}
+            />
+
+            {/* Specialty */}
+            <MetaCard
+              icon="stethoscope"
+              label="Specialty"
+              value={specialtyTags.length > 0 ? specialtyTags[0] : 'General Medicine'}
+              sub={specialtyTags.length > 1 ? `+${specialtyTags.length - 1} more` : undefined}
+            />
+
+            {/* Elective Duration */}
+            <MetaCard
+              icon="schedule"
+              label="Duration"
+              value={diary.elective_duration ?? '—'}
+            />
+
+            {/* Supervisor */}
+            <MetaCard
+              icon="supervisor_account"
+              label="Supervisor"
+              value={diary.supervisor ?? '—'}
+            />
+
+            {/* Published */}
+            <MetaCard
+              icon="calendar_month"
+              label="Published"
+              value={publishedMonthYear}
+            />
+
+            {/* Hospital (always shown) */}
+            <MetaCard
+              icon="local_hospital"
+              label="Hospital"
+              value={hospital.name}
+            />
+
+            {/* Rotation type */}
+            <MetaCard
+              icon="flight_takeoff"
+              label="Rotation Type"
+              value="Clinical Elective"
+            />
+
+            {/* Diaries badge */}
+            <MetaCard
+              icon="auto_stories"
+              label="Series"
+              value="The Elective Diaries"
+              accent
+            />
           </div>
         </div>
       </div>
@@ -108,33 +190,33 @@ export default async function DiaryPage({ params }: Props) {
           {/* Pivotal Observations */}
           {diary.excerpt && (
           <section className="bg-surface-container-lowest rounded-2xl p-5 md:p-7 border border-white/5 shadow-[inset_0_1px_0_rgba(255,255,255,0.04)]">
-              <h2 className="font-headline text-xl font-bold text-on-surface mb-5 flex items-center gap-3">
-                <span className="material-symbols-outlined text-primary p-2 bg-primary/10 rounded-lg" style={{ fontSize: 20 }}>visibility</span>
-                Pivotal Observations
-              </h2>
-              <div className="space-y-4">
-                <div className="p-5 bg-surface-container-low rounded-xl flex gap-4 hover:bg-surface-container-high transition-colors border border-white/5">
-                  <div className="w-12 h-12 rounded-full bg-secondary/10 flex items-center justify-center shrink-0">
-                    <span className="material-symbols-outlined text-secondary" style={{ fontSize: 20 }}>lightbulb</span>
-                  </div>
-                  <div>
-                    <h3 className="font-headline font-bold text-on-surface mb-1">Key Takeaway</h3>
-                    <p className="font-body text-sm text-on-surface-variant leading-relaxed">{diary.excerpt}</p>
-                  </div>
+            <h2 className="font-headline text-xl font-bold text-on-surface mb-5 flex items-center gap-3">
+              <span className="material-symbols-outlined text-primary p-2 bg-primary/10 rounded-lg" style={{ fontSize: 20 }}>visibility</span>
+              Pivotal Observations
+            </h2>
+            <div className="space-y-4">
+              <div className="p-5 bg-surface-container-low rounded-xl flex gap-4 hover:bg-surface-container-high transition-colors border border-white/5">
+                <div className="w-12 h-12 rounded-full bg-secondary/10 flex items-center justify-center shrink-0">
+                  <span className="material-symbols-outlined text-secondary" style={{ fontSize: 20 }}>lightbulb</span>
                 </div>
-                <div className="p-5 bg-surface-container-low rounded-xl flex gap-4 hover:bg-surface-container-high transition-colors border border-white/5">
-                  <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
-                    <span className="material-symbols-outlined text-primary" style={{ fontSize: 20 }}>clinical_notes</span>
-                  </div>
-                  <div>
-                    <h3 className="font-headline font-bold text-on-surface mb-1">Clinical Setting</h3>
-                    <p className="font-body text-sm text-on-surface-variant leading-relaxed">
-                      {specialtyTags.length > 0 ? specialtyTags.join(' · ') : 'General Medicine'} elective at {hospital.name} — {publishedMonthYear}
-                    </p>
-                  </div>
+                <div>
+                  <h3 className="font-headline font-bold text-on-surface mb-1">Key Takeaway</h3>
+                  <p className="font-body text-sm text-on-surface-variant leading-relaxed">{diary.excerpt}</p>
                 </div>
               </div>
-            </section>
+              <div className="p-5 bg-surface-container-low rounded-xl flex gap-4 hover:bg-surface-container-high transition-colors border border-white/5">
+                <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
+                  <span className="material-symbols-outlined text-primary" style={{ fontSize: 20 }}>clinical_notes</span>
+                </div>
+                <div>
+                  <h3 className="font-headline font-bold text-on-surface mb-1">Clinical Setting</h3>
+                  <p className="font-body text-sm text-on-surface-variant leading-relaxed">
+                    {specialtyTags.length > 0 ? specialtyTags.join(' · ') : 'General Medicine'} elective at {hospital.name} — {publishedMonthYear}
+                  </p>
+                </div>
+              </div>
+            </div>
+          </section>
           )}
         </div>
 
@@ -161,67 +243,121 @@ export default async function DiaryPage({ params }: Props) {
             </section>
           )}
 
-          {/* Back link */}
-          <Link href={`/hospitals/${hospital.slug}`}
-            className="flex items-center gap-2 px-5 py-3.5 rounded-xl border border-outline-variant/30
-                       hover:border-primary/50 text-on-surface-variant hover:text-primary
-                       font-label text-sm font-semibold transition-all w-full justify-center
-                       bg-surface-container-low hover:bg-surface-container">
-            <span className="material-symbols-outlined" style={{ fontSize: 16 }}>arrow_back</span>
-            Back to {hospital.name}
-          </Link>
+          {/* Quick-reference card for duration + supervisor */}
+          {(diary.elective_duration || diary.supervisor) && (
+            <section className="bg-surface-container-low rounded-2xl p-5 md:p-6 border border-white/5">
+              <h2 className="font-headline text-base font-bold text-on-surface mb-4 flex items-center gap-2">
+                <span className="material-symbols-outlined text-primary" style={{ fontSize: 18 }}>info</span>
+                Rotation Details
+              </h2>
+              <div className="space-y-3">
+                {diary.elective_duration && (
+                  <div className="flex items-center gap-3">
+                    <span className="material-symbols-outlined text-on-surface-variant" style={{ fontSize: 16 }}>schedule</span>
+                    <div>
+                      <p className="font-label text-xs text-on-surface-variant uppercase tracking-wider">Duration</p>
+                      <p className="font-body text-sm text-on-surface">{diary.elective_duration}</p>
+                    </div>
+                  </div>
+                )}
+                {diary.supervisor && (
+                  <div className="flex items-center gap-3">
+                    <span className="material-symbols-outlined text-on-surface-variant" style={{ fontSize: 16 }}>supervisor_account</span>
+                    <div>
+                      <p className="font-label text-xs text-on-surface-variant uppercase tracking-wider">Supervisor</p>
+                      <p className="font-body text-sm text-on-surface">{diary.supervisor}</p>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </section>
+          )}
         </div>
       </div>
 
       {/* ── Rotation Analysis — full width, shown only if pros/cons exist ── */}
       {hasAnalysis && (
       <div className="px-4 md:px-12 mt-6 md:mt-8 max-w-screen-xl mx-auto">
-          <h2 className="font-headline text-xl md:text-2xl font-bold text-on-surface mb-4 md:mb-6 flex items-center gap-3">
-            <span className="material-symbols-outlined text-on-surface p-2 bg-surface-container-high rounded-lg" style={{ fontSize: 20 }}>
-              compare_arrows
-            </span>
-            Rotation Analysis
-          </h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-6">
+        <h2 className="font-headline text-xl md:text-2xl font-bold text-on-surface mb-4 md:mb-6 flex items-center gap-3">
+          <span className="material-symbols-outlined text-on-surface p-2 bg-surface-container-high rounded-lg" style={{ fontSize: 20 }}>
+            compare_arrows
+          </span>
+          Rotation Analysis
+        </h2>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-6">
 
-            {/* Pros */}
-            {pros.length > 0 && (
-              <div className="bg-surface-container-low rounded-2xl p-5 md:p-6 border-t-2 border-secondary/60 border border-white/5">
-                <h3 className="font-headline text-lg font-bold text-secondary mb-4 flex items-center gap-2">
-                  <span className="material-symbols-outlined" style={{ fontSize: 20 }}>thumb_up</span>
-                  Pros
-                </h3>
-                <ul className="space-y-3">
-                  {pros.map((pro, i) => (
-                    <li key={i} className="flex gap-3 font-body text-sm text-on-surface-variant">
-                      <span className="material-symbols-outlined text-secondary shrink-0 mt-0.5" style={{ fontSize: 16 }}>check_circle</span>
-                      <span>{pro}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            )}
+          {/* Pros */}
+          {pros.length > 0 && (
+            <div className="bg-surface-container-low rounded-2xl p-5 md:p-6 border-t-2 border-secondary/60 border border-white/5">
+              <h3 className="font-headline text-lg font-bold text-secondary mb-4 flex items-center gap-2">
+                <span className="material-symbols-outlined" style={{ fontSize: 20 }}>thumb_up</span>
+                Pros
+              </h3>
+              <ul className="space-y-3">
+                {pros.map((pro, i) => (
+                  <li key={i} className="flex gap-3 font-body text-sm text-on-surface-variant">
+                    <span className="material-symbols-outlined text-secondary shrink-0 mt-0.5" style={{ fontSize: 16 }}>check_circle</span>
+                    <span>{pro}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
 
-            {/* Cons */}
-            {cons.length > 0 && (
-              <div className="bg-surface-container-lowest rounded-2xl p-5 md:p-6 border-t-2 border-primary/60 border border-white/5 shadow-[inset_0_1px_0_rgba(255,255,255,0.04)]">
-                <h3 className="font-headline text-lg font-bold text-primary mb-4 flex items-center gap-2">
-                  <span className="material-symbols-outlined" style={{ fontSize: 20 }}>warning</span>
-                  Cons
-                </h3>
-                <ul className="space-y-3">
-                  {cons.map((con, i) => (
-                    <li key={i} className="flex gap-3 font-body text-sm text-on-surface-variant">
-                      <span className="material-symbols-outlined text-primary shrink-0 mt-0.5" style={{ fontSize: 16 }}>remove_circle</span>
-                      <span>{con}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            )}
-          </div>
+          {/* Cons */}
+          {cons.length > 0 && (
+            <div className="bg-surface-container-lowest rounded-2xl p-5 md:p-6 border-t-2 border-primary/60 border border-white/5 shadow-[inset_0_1px_0_rgba(255,255,255,0.04)]">
+              <h3 className="font-headline text-lg font-bold text-primary mb-4 flex items-center gap-2">
+                <span className="material-symbols-outlined" style={{ fontSize: 20 }}>warning</span>
+                Cons
+              </h3>
+              <ul className="space-y-3">
+                {cons.map((con, i) => (
+                  <li key={i} className="flex gap-3 font-body text-sm text-on-surface-variant">
+                    <span className="material-symbols-outlined text-primary shrink-0 mt-0.5" style={{ fontSize: 16 }}>remove_circle</span>
+                    <span>{con}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
         </div>
+      </div>
       )}
+    </div>
+  )
+}
+
+/* ── MetaCard — reusable metadata tile ── */
+function MetaCard({
+  icon, label, value, sub, accent = false,
+}: {
+  icon: string
+  label: string
+  value: string
+  sub?: string
+  accent?: boolean
+}) {
+  return (
+    <div className={`rounded-xl px-4 py-3.5 border flex items-start gap-3
+      ${accent
+        ? 'bg-primary/10 border-primary/25'
+        : 'bg-surface-container-lowest/60 border-white/8 backdrop-blur-sm'
+      }`}
+    >
+      <span
+        className={`material-symbols-outlined mt-0.5 shrink-0 ${accent ? 'text-primary' : 'text-on-surface-variant'}`}
+        style={{ fontSize: 18 }}
+      >
+        {icon}
+      </span>
+      <div className="min-w-0">
+        <p className="font-label text-[10px] uppercase tracking-widest text-on-surface-variant mb-0.5">{label}</p>
+        <p className={`font-headline font-semibold text-sm leading-snug truncate ${accent ? 'text-primary' : 'text-on-surface'}`}>
+          {value}
+        </p>
+        {sub && <p className="font-label text-xs text-on-surface-variant mt-0.5">{sub}</p>}
+      </div>
     </div>
   )
 }

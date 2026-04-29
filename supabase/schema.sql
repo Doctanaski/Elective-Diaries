@@ -98,3 +98,10 @@ insert into public.hospitals (name, slug, description, image_url, status) values
   'new_data'
 )
 on conflict (slug) do nothing;
+
+-- ============================================================
+-- v12 MIGRATION — Add elective_duration and supervisor columns
+-- Run this once in: Supabase Dashboard → SQL Editor → New Query
+-- ============================================================
+alter table public.diaries add column if not exists elective_duration text;
+alter table public.diaries add column if not exists supervisor text;

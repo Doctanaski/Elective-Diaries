@@ -30,6 +30,8 @@ export default function DiaryForm({ hospitals, diary }: DiaryFormProps) {
   const [coverImageUrl, setCoverImageUrl] = useState(diary?.cover_image_url ?? '')
   const [pros, setPros] = useState<string[]>(diary?.pros ?? [])
   const [cons, setCons] = useState<string[]>(diary?.cons ?? [])
+  const [electiveDuration, setElectiveDuration] = useState(diary?.elective_duration ?? '')
+  const [supervisor, setSupervisor] = useState(diary?.supervisor ?? '')
   const [published, setPublished] = useState(diary?.published ?? false)
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState('')
@@ -103,6 +105,8 @@ export default function DiaryForm({ hospitals, diary }: DiaryFormProps) {
       cover_image_url: coverImageUrl || null,
       pros: pros.filter(p => p.trim()),
       cons: cons.filter(c => c.trim()),
+      elective_duration: electiveDuration || null,
+      supervisor: supervisor || null,
       published,
     }
 
@@ -191,6 +195,19 @@ export default function DiaryForm({ hospitals, diary }: DiaryFormProps) {
           <label className="block text-sm font-semibold text-on-surface mb-2">Specialty</label>
           <input type="text" value={specialty} onChange={(e) => setSpecialty(e.target.value)}
             placeholder="e.g. Cardiology, Surgery" className={inputClass} />
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+          <div>
+            <label className="block text-sm font-semibold text-on-surface mb-2">Elective Duration</label>
+            <input type="text" value={electiveDuration} onChange={(e) => setElectiveDuration(e.target.value)}
+              placeholder="e.g. 4 weeks" className={inputClass} />
+          </div>
+          <div>
+            <label className="block text-sm font-semibold text-on-surface mb-2">Supervisor</label>
+            <input type="text" value={supervisor} onChange={(e) => setSupervisor(e.target.value)}
+              placeholder="e.g. Dr. Imran Khan" className={inputClass} />
+          </div>
         </div>
 
         <div>

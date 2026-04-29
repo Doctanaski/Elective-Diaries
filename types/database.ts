@@ -25,6 +25,8 @@ export interface Diary {
   cover_image_url: string | null
   pros: string[] | null
   cons: string[] | null
+  elective_duration: string | null
+  supervisor: string | null
   published: boolean
   created_at: string
   updated_at: string
