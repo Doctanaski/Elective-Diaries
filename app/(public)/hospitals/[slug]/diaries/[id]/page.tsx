@@ -51,7 +51,7 @@ export default async function DiaryPage({ params }: Props) {
 
       {/* ── Fixed top navbar with back button ── */}
       <div className="fixed top-0 left-0 right-0 z-50 bg-surface/80 backdrop-blur-md border-b border-white/5">
-        <div className="max-w-screen-xl mx-auto px-4 md:px-12 py-3 flex items-center justify-between gap-4">
+        <div className="max-w-screen-xl mx-auto px-4 md:px-12 py-3 flex items-center">
           <Link
             href={`/hospitals/${hospital.slug}`}
             className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl
@@ -63,16 +63,6 @@ export default async function DiaryPage({ params }: Props) {
             <span className="hidden sm:inline">Back to {hospital.name}</span>
             <span className="sm:hidden">Back</span>
           </Link>
-
-          {/* Centre — diary title (truncated) */}
-          <p className="font-headline font-semibold text-sm text-on-surface-variant truncate max-w-xs md:max-w-md text-center hidden sm:block">
-            {diary.title}
-          </p>
-
-          {/* Right — rotation badge */}
-          <span className="px-2.5 py-1 bg-primary/15 text-primary rounded-full font-label text-xs uppercase tracking-widest border border-primary/30 shrink-0">
-            Elective Rotation
-          </span>
         </div>
       </div>
 
@@ -95,19 +85,8 @@ export default async function DiaryPage({ params }: Props) {
         {/* Content */}
         <div className="relative z-20 max-w-screen-xl mx-auto px-4 md:px-12 pt-8 pb-10">
 
-          {/* Diary title */}
-          <div className="mb-6">
-            <h1 className="font-headline text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-on-surface tracking-tight leading-tight mb-2">
-              {diary.title}
-            </h1>
-            <p className="font-body text-sm md:text-base text-on-surface-variant flex items-center gap-1.5">
-              <span className="material-symbols-outlined text-primary" style={{ fontSize: 14 }}>location_on</span>
-              {hospital.name}
-            </p>
-          </div>
-
-          {/* ── Metadata grid — 2 cols on mobile, 4 on desktop ── */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">
+          {/* ── Metadata grid — 2 cols on mobile, 3 on desktop ── */}
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-3 md:gap-4">
 
             {/* Curator */}
             <MetaCard
@@ -125,6 +104,13 @@ export default async function DiaryPage({ params }: Props) {
               sub={specialtyTags.length > 1 ? `+${specialtyTags.length - 1} more` : undefined}
             />
 
+            {/* Published */}
+            <MetaCard
+              icon="calendar_month"
+              label="Published"
+              value={publishedMonthYear}
+            />
+
             {/* Elective Duration */}
             <MetaCard
               icon="schedule"
@@ -139,34 +125,13 @@ export default async function DiaryPage({ params }: Props) {
               value={diary.supervisor ?? '—'}
             />
 
-            {/* Published */}
-            <MetaCard
-              icon="calendar_month"
-              label="Published"
-              value={publishedMonthYear}
-            />
-
-            {/* Hospital (always shown) */}
-            <MetaCard
-              icon="local_hospital"
-              label="Hospital"
-              value={hospital.name}
-            />
-
-            {/* Rotation type */}
+            {/* Rotation Type */}
             <MetaCard
               icon="flight_takeoff"
               label="Rotation Type"
               value="Clinical Elective"
             />
 
-            {/* Diaries badge */}
-            <MetaCard
-              icon="auto_stories"
-              label="Series"
-              value="The Elective Diaries"
-              accent
-            />
           </div>
         </div>
       </div>
