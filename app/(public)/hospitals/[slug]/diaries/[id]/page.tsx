@@ -42,6 +42,7 @@ export default async function DiaryPage({ params }: Props) {
 
   const publishedMonthYear = new Date(diary.created_at).toLocaleDateString('en-US', { month: 'short', year: 'numeric' })
   const specialtyTags = diary.specialty ? diary.specialty.split(',').map(s => s.trim()).filter(Boolean) : []
+  const skillTags = diary.skills && diary.skills.length > 0 ? diary.skills : specialtyTags
   const pros = diary.pros ?? []
   const cons = diary.cons ?? []
   const hasAnalysis = pros.length > 0 || cons.length > 0
@@ -125,15 +126,34 @@ export default async function DiaryPage({ params }: Props) {
               value={diary.supervisor ?? '—'}
             />
 
+            {/* Skills Matrix */}
+            {skillTags.length > 0 && (
+              <div className="rounded-xl px-4 py-3.5 border flex items-start gap-3 bg-surface-container-lowest/60 border-white/8 backdrop-blur-sm">
+                <span className="material-symbols-outlined mt-0.5 shrink-0 text-on-surface-variant" style={{ fontSize: 18 }}>psychology</span>
+                <div className="min-w-0">
+                  <p className="font-label text-[10px] uppercase tracking-widest text-on-surface-variant mb-1">Skills Matrix</p>
+                  <div className="flex flex-wrap gap-1.5">
+                    {skillTags.map((tag, i) => (
+                      <span key={tag}
+                        className={`px-2 py-0.5 rounded-full font-label text-[11px] border cursor-default transition-colors ${
+                          i === 0 ? 'bg-secondary/20 text-secondary border-secondary/30'
+                          : i % 3 === 1 ? 'bg-primary/20 text-primary border-primary/30'
+                          : 'bg-surface-container-highest text-on-surface border-white/5 hover:border-secondary/50'
+                        }`}>
+                        {tag}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            )}
+
           </div>
         </div>
       </div>
 
       {/* ── Bento grid ── */}
-      <div className="px-4 md:px-12 mt-5 grid grid-cols-1 lg:grid-cols-12 gap-4 md:gap-6 max-w-screen-xl mx-auto">
-
-        {/* LEFT — 8 cols */}
-        <div className="lg:col-span-8 space-y-6">
+      <div className="px-4 md:px-12 mt-5 max-w-screen-xl mx-auto space-y-6">
 
           {/* Clinical Narrative */}
           <section className="relative bg-surface-container-low rounded-2xl p-5 md:p-7 overflow-hidden border border-white/5">
@@ -176,31 +196,6 @@ export default async function DiaryPage({ params }: Props) {
             </div>
           </section>
           )}
-        </div>
-
-        {/* RIGHT sidebar — Skills Matrix only */}
-        <div className="lg:col-span-4 space-y-6">
-          {specialtyTags.length > 0 && (
-            <section className="bg-surface-container-low rounded-2xl p-5 md:p-6 border border-white/5">
-              <h2 className="font-headline text-base font-bold text-on-surface mb-4 flex items-center gap-2">
-                <span className="material-symbols-outlined text-secondary" style={{ fontSize: 18 }}>psychology</span>
-                Skills Matrix
-              </h2>
-              <div className="flex flex-wrap gap-2">
-                {specialtyTags.map((tag, i) => (
-                  <span key={tag}
-                    className={`px-3 py-1.5 rounded-full font-label text-xs border cursor-default transition-colors ${
-                      i === 0 ? 'bg-secondary/20 text-secondary border-secondary/30'
-                      : i % 3 === 1 ? 'bg-primary/20 text-primary border-primary/30'
-                      : 'bg-surface-container-highest text-on-surface border-white/5 hover:border-secondary/50'
-                    }`}>
-                    {tag}
-                  </span>
-                ))}
-              </div>
-            </section>
-          )}
-        </div>
       </div>
 
       {/* ── Rotation Analysis — full width, shown only if pros/cons exist ── */}

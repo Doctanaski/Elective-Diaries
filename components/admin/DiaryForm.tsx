@@ -30,6 +30,7 @@ export default function DiaryForm({ hospitals, diary }: DiaryFormProps) {
   const [coverImageUrl, setCoverImageUrl] = useState(diary?.cover_image_url ?? '')
   const [pros, setPros] = useState<string[]>(diary?.pros ?? [])
   const [cons, setCons] = useState<string[]>(diary?.cons ?? [])
+  const [skills, setSkills] = useState<string[]>(diary?.skills ?? [])
   const [electiveDuration, setElectiveDuration] = useState(diary?.elective_duration ?? '')
   const [supervisor, setSupervisor] = useState(diary?.supervisor ?? '')
   const [published, setPublished] = useState(diary?.published ?? false)
@@ -105,6 +106,7 @@ export default function DiaryForm({ hospitals, diary }: DiaryFormProps) {
       cover_image_url: coverImageUrl || null,
       pros: pros.filter(p => p.trim()),
       cons: cons.filter(c => c.trim()),
+      skills: skills.map(s => s.trim()).filter(Boolean),
       elective_duration: electiveDuration || null,
       supervisor: supervisor || null,
       published,
@@ -195,6 +197,36 @@ export default function DiaryForm({ hospitals, diary }: DiaryFormProps) {
           <label className="block text-sm font-semibold text-on-surface mb-2">Specialty</label>
           <input type="text" value={specialty} onChange={(e) => setSpecialty(e.target.value)}
             placeholder="e.g. Cardiology, Surgery" className={inputClass} />
+        </div>
+
+        <div>
+          <div className="flex items-center justify-between mb-2">
+            <label className="block text-sm font-semibold text-on-surface">Skills Matrix</label>
+            <button type="button" onClick={() => addItem(skills, setSkills)}
+              className="text-xs text-secondary border border-secondary/30 px-3 py-1 rounded-full hover:bg-secondary/10 transition-colors flex items-center gap-1">
+              <span className="material-symbols-outlined" style={{ fontSize: 14 }}>add</span>
+              Add Skill
+            </button>
+          </div>
+          {skills.length === 0 && (
+            <p className="text-xs text-on-surface-variant italic mb-2">No skills added yet.</p>
+          )}
+          <div className="space-y-2">
+            {skills.map((skill, i) => (
+              <div key={i} className="flex gap-2 items-center">
+                <span className="material-symbols-outlined text-secondary shrink-0" style={{ fontSize: 16 }}>psychology</span>
+                <input type="text" value={skill} onChange={e => updateItem(skills, setSkills, i, e.target.value)}
+                  placeholder="e.g. Venipuncture, ECG Interpretation" className={`${inputClass} flex-1`} />
+                <button type="button" onClick={() => removeItem(skills, setSkills, i)}
+                  className="text-error hover:bg-error-container/20 p-1.5 rounded-lg transition-colors shrink-0">
+                  <span className="material-symbols-outlined" style={{ fontSize: 16 }}>delete</span>
+                </button>
+              </div>
+            ))}
+          </div>
+          <p className="text-xs text-on-surface-variant mt-2">
+            These appear as tags in the Skills Matrix on the diary page.
+          </p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-5">

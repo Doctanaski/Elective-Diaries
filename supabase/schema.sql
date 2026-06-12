@@ -105,3 +105,9 @@ on conflict (slug) do nothing;
 -- ============================================================
 alter table public.diaries add column if not exists elective_duration text;
 alter table public.diaries add column if not exists supervisor text;
+
+-- ============================================================
+-- v15 MIGRATION — Add skills column (Skills Matrix tags)
+-- Run this once in: Supabase Dashboard → SQL Editor → New Query
+-- ============================================================
+alter table public.diaries add column if not exists skills text[];
