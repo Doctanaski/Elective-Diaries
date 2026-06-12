@@ -200,36 +200,6 @@ export default async function DiaryPage({ params }: Props) {
               </div>
             </section>
           )}
-
-          {/* Quick-reference card for duration + supervisor */}
-          {(diary.elective_duration || diary.supervisor) && (
-            <section className="bg-surface-container-low rounded-2xl p-5 md:p-6 border border-white/5">
-              <h2 className="font-headline text-base font-bold text-on-surface mb-4 flex items-center gap-2">
-                <span className="material-symbols-outlined text-primary" style={{ fontSize: 18 }}>info</span>
-                Rotation Details
-              </h2>
-              <div className="space-y-3">
-                {diary.elective_duration && (
-                  <div className="flex items-center gap-3">
-                    <span className="material-symbols-outlined text-on-surface-variant" style={{ fontSize: 16 }}>schedule</span>
-                    <div>
-                      <p className="font-label text-xs text-on-surface-variant uppercase tracking-wider">Duration</p>
-                      <p className="font-body text-sm text-on-surface">{diary.elective_duration}</p>
-                    </div>
-                  </div>
-                )}
-                {diary.supervisor && (
-                  <div className="flex items-center gap-3">
-                    <span className="material-symbols-outlined text-on-surface-variant" style={{ fontSize: 16 }}>supervisor_account</span>
-                    <div>
-                      <p className="font-label text-xs text-on-surface-variant uppercase tracking-wider">Supervisor</p>
-                      <p className="font-body text-sm text-on-surface">{diary.supervisor}</p>
-                    </div>
-                  </div>
-                )}
-              </div>
-            </section>
-          )}
         </div>
       </div>
 
