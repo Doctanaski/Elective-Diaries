@@ -125,13 +125,6 @@ export default async function DiaryPage({ params }: Props) {
               value={diary.supervisor ?? '—'}
             />
 
-            {/* Rotation Type */}
-            <MetaCard
-              icon="flight_takeoff"
-              label="Rotation Type"
-              value="Clinical Elective"
-            />
-
           </div>
         </div>
       </div>
