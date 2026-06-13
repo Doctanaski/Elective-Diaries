@@ -1,5 +1,5 @@
 import { createClient } from '@/lib/supabase/server'
-import HospitalCard from '@/components/public/HospitalCard'
+import HospitalCarousel from '@/components/public/HospitalCarousel'
 import type { Hospital } from '@/types/database'
 import type { Metadata } from 'next'
 
@@ -40,14 +40,10 @@ export default async function HomePage() {
         </p>
       </header>
 
-      {/* Hospital Grid */}
+      {/* Hospital Carousel */}
       <section className="max-w-7xl mx-auto">
         {hospitals.length > 0 ? (
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {hospitals.map((hospital, index) => (
-              <HospitalCard key={hospital.id} hospital={hospital} priority={index < 3} />
-            ))}
-          </div>
+          <HospitalCarousel hospitals={hospitals} />
         ) : (
           <div className="text-center py-24 text-on-surface-variant">
             <span className="material-symbols-outlined text-6xl mb-4 block opacity-30">local_hospital</span>
