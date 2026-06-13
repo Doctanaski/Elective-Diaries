@@ -164,38 +164,6 @@ export default async function DiaryPage({ params }: Props) {
             </h2>
             <div className="prose-diary pl-1" dangerouslySetInnerHTML={{ __html: diary.content }} />
           </section>
-
-          {/* Pivotal Observations */}
-          {diary.excerpt && (
-          <section className="bg-surface-container-lowest rounded-2xl p-5 md:p-7 border border-white/5 shadow-[inset_0_1px_0_rgba(255,255,255,0.04)]">
-            <h2 className="font-headline text-xl font-bold text-on-surface mb-5 flex items-center gap-3">
-              <span className="material-symbols-outlined text-primary p-2 bg-primary/10 rounded-lg" style={{ fontSize: 20 }}>visibility</span>
-              Pivotal Observations
-            </h2>
-            <div className="space-y-4">
-              <div className="p-5 bg-surface-container-low rounded-xl flex gap-4 hover:bg-surface-container-high transition-colors border border-white/5">
-                <div className="w-12 h-12 rounded-full bg-secondary/10 flex items-center justify-center shrink-0">
-                  <span className="material-symbols-outlined text-secondary" style={{ fontSize: 20 }}>lightbulb</span>
-                </div>
-                <div>
-                  <h3 className="font-headline font-bold text-on-surface mb-1">Key Takeaway</h3>
-                  <p className="font-body text-sm text-on-surface-variant leading-relaxed">{diary.excerpt}</p>
-                </div>
-              </div>
-              <div className="p-5 bg-surface-container-low rounded-xl flex gap-4 hover:bg-surface-container-high transition-colors border border-white/5">
-                <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
-                  <span className="material-symbols-outlined text-primary" style={{ fontSize: 20 }}>clinical_notes</span>
-                </div>
-                <div>
-                  <h3 className="font-headline font-bold text-on-surface mb-1">Clinical Setting</h3>
-                  <p className="font-body text-sm text-on-surface-variant leading-relaxed">
-                    {specialtyTags.length > 0 ? specialtyTags.join(' · ') : 'General Medicine'} elective at {hospital.name} — {publishedMonthYear}
-                  </p>
-                </div>
-              </div>
-            </div>
-          </section>
-          )}
       </div>
 
       {/* ── Rotation Analysis — full width, shown only if pros/cons exist ── */}
