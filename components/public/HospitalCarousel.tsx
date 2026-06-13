@@ -12,6 +12,7 @@ const statusConfig = {
 }
 
 const CAROUSEL_HEIGHT = 460
+const MOBILE_IMAGE_HEIGHT = 260
 
 export default function HospitalCarousel({ hospitals }: { hospitals: Hospital[] }) {
   const [active, setActive] = useState(0)
@@ -51,12 +52,151 @@ export default function HospitalCarousel({ hospitals }: { hospitals: Hospital[] 
 
   return (
     <div className="relative">
-      {/* ── Track ── */}
+
+      {/* ════════════════════════════════════════════════════════
+          MOBILE LAYOUT (< md) — single full-width card per slide,
+          info stacked below the image, no horizontal overflow.
+          ════════════════════════════════════════════════════════ */}
       <div
-        className="relative flex items-center justify-center overflow-hidden py-6"
-        style={{ minHeight: CAROUSEL_HEIGHT + 48 }}
+        className="md:hidden relative w-full overflow-hidden"
         onTouchStart={handleTouchStart}
         onTouchEnd={handleTouchEnd}
+      >
+        <div className="relative w-full" style={{ height: MOBILE_IMAGE_HEIGHT }}>
+          {hospitals.map((hospital, index) => {
+            const offset = relativeOffset(index)
+            const isActive = offset === 0
+            const isVisible = Math.abs(offset) <= 1
+            if (!isVisible) return null
+
+            return (
+              <Link
+                key={hospital.id}
+                href={`/hospitals/${hospital.slug}`}
+                prefetch={true}
+                className="absolute top-0 left-0 w-full h-full
+                           transition-all duration-500 ease-[cubic-bezier(0.22,1,0.36,1)]"
+                style={{
+                  transform: `translateX(${offset * 100}%)`,
+                  opacity: isActive ? 1 : 0,
+                  zIndex: isActive ? 10 : 0,
+                  pointerEvents: isActive ? 'auto' : 'none',
+                }}
+                tabIndex={isActive ? 0 : -1}
+                aria-hidden={!isActive}
+              >
+                <div className="group relative w-full h-full rounded-2xl overflow-hidden border border-outline-variant/20 bg-surface-container">
+                  {hospital.image_url && (
+                    <Image
+                      src={hospital.image_url}
+                      alt={hospital.name}
+                      fill
+                      className="object-cover"
+                      sizes="100vw"
+                      priority={isActive}
+                    />
+                  )}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent" />
+
+                  {isActive && hospital.status !== 'inactive' && (
+                    <div className="absolute top-4 right-4 bg-surface/90 backdrop-blur-md px-3 py-1.5 rounded-full flex items-center space-x-2 border border-outline-variant/20 shadow-sm">
+                      <div className="w-2 h-2 rounded-full animate-pulse" style={{ backgroundColor: status.color }} />
+                      <span className="font-label text-[11px] uppercase font-bold text-on-surface tracking-wider">
+                        {status.label}
+                      </span>
+                    </div>
+                  )}
+
+                  <div className="absolute bottom-0 left-0 right-0 p-5">
+                    <h3 className="font-headline text-xl font-bold text-white tracking-tight leading-snug">
+                      {hospital.name}
+                    </h3>
+                  </div>
+                </div>
+              </Link>
+            )
+          })}
+        </div>
+
+        {/* Info block — stacked below the image */}
+        <div className="mt-4 px-1">
+          {activeHospital.description ? (
+            <p className="text-on-surface-variant text-sm leading-relaxed mb-4">
+              {activeHospital.description}
+            </p>
+          ) : (
+            <p className="text-on-surface-variant text-sm leading-relaxed mb-4 italic opacity-70">
+              No description added yet.
+            </p>
+          )}
+
+          <Link
+            href={`/hospitals/${activeHospital.slug}`}
+            prefetch={true}
+            className="inline-flex items-center gap-2 px-5 py-3 rounded-xl bg-primary text-on-primary
+                       font-label text-sm font-semibold hover:bg-primary-container transition-colors"
+          >
+            View Diaries
+            <span className="material-symbols-outlined" style={{ fontSize: 18 }}>arrow_forward</span>
+          </Link>
+        </div>
+
+        {/* Prev / Next controls */}
+        {count > 1 && (
+          <>
+            <button
+              type="button"
+              onClick={goPrev}
+              aria-label="Previous hospital"
+              className="absolute left-2 top-[130px] -translate-y-1/2 z-20
+                         w-10 h-10 rounded-full flex items-center justify-center
+                         bg-surface-container/90 backdrop-blur-md border border-outline-variant/30
+                         text-on-surface hover:text-primary hover:border-primary/40
+                         shadow-sm transition-all"
+            >
+              <span className="material-symbols-outlined" style={{ fontSize: 22 }}>chevron_left</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={goNext}
+              aria-label="Next hospital"
+              className="absolute right-2 top-[130px] -translate-y-1/2 z-20
+                         w-10 h-10 rounded-full flex items-center justify-center
+                         bg-surface-container/90 backdrop-blur-md border border-outline-variant/30
+                         text-on-surface hover:text-primary hover:border-primary/40
+                         shadow-sm transition-all"
+            >
+              <span className="material-symbols-outlined" style={{ fontSize: 22 }}>chevron_right</span>
+            </button>
+          </>
+        )}
+
+        {/* Dots */}
+        {count > 1 && (
+          <div className="flex items-center justify-center gap-2 mt-5">
+            {hospitals.map((hospital, index) => (
+              <button
+                key={hospital.id}
+                type="button"
+                onClick={() => goTo(index)}
+                aria-label={`Go to ${hospital.name}`}
+                className={`h-2 rounded-full transition-all duration-300 ${
+                  index === active ? 'w-6 bg-primary' : 'w-2 bg-outline-variant/40 hover:bg-outline-variant/70'
+                }`}
+              />
+            ))}
+          </div>
+        )}
+      </div>
+
+      {/* ════════════════════════════════════════════════════════
+          DESKTOP LAYOUT (md+) — peeking side cards + focused card
+          with adjacent info panel.
+          ════════════════════════════════════════════════════════ */}
+      <div
+        className="hidden md:flex relative items-center justify-center overflow-hidden py-6"
+        style={{ minHeight: CAROUSEL_HEIGHT + 48 }}
       >
         {hospitals.map((hospital, index) => {
           const offset = relativeOffset(index)
@@ -138,7 +278,7 @@ export default function HospitalCarousel({ hospitals }: { hospitals: Hospital[] 
         {/* ── Info panel for the focused hospital — sits flush against the active card ── */}
         <div
           key={activeHospital.id + '-info'}
-          className="hidden md:flex absolute left-1/2 top-1/2 flex-col
+          className="flex absolute left-1/2 top-1/2 flex-col
                      transition-all duration-700 ease-[cubic-bezier(0.22,1,0.36,1)]
                      bg-surface-container-low rounded-2xl border border-outline-variant/20 shadow-xl
                      p-8 overflow-y-auto"
@@ -175,42 +315,42 @@ export default function HospitalCarousel({ hospitals }: { hospitals: Hospital[] 
             </Link>
           </div>
         </div>
+
+        {/* Prev / Next controls */}
+        {count > 1 && (
+          <>
+            <button
+              type="button"
+              onClick={goPrev}
+              aria-label="Previous hospital"
+              className="absolute left-0 md:left-4 top-1/2 -translate-y-1/2 z-30
+                         w-11 h-11 rounded-full flex items-center justify-center
+                         bg-surface-container/90 backdrop-blur-md border border-outline-variant/30
+                         text-on-surface hover:text-primary hover:border-primary/40
+                         shadow-sm transition-all"
+            >
+              <span className="material-symbols-outlined" style={{ fontSize: 24 }}>chevron_left</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={goNext}
+              aria-label="Next hospital"
+              className="absolute right-0 md:right-4 top-1/2 -translate-y-1/2 z-30
+                         w-11 h-11 rounded-full flex items-center justify-center
+                         bg-surface-container/90 backdrop-blur-md border border-outline-variant/30
+                         text-on-surface hover:text-primary hover:border-primary/40
+                         shadow-sm transition-all"
+            >
+              <span className="material-symbols-outlined" style={{ fontSize: 24 }}>chevron_right</span>
+            </button>
+          </>
+        )}
       </div>
 
-      {/* ── Prev / Next controls ── */}
+      {/* Dots — desktop */}
       {count > 1 && (
-        <>
-          <button
-            type="button"
-            onClick={goPrev}
-            aria-label="Previous hospital"
-            className="absolute left-0 md:left-4 top-1/2 -translate-y-1/2 z-30
-                       w-11 h-11 rounded-full flex items-center justify-center
-                       bg-surface-container/90 backdrop-blur-md border border-outline-variant/30
-                       text-on-surface hover:text-primary hover:border-primary/40
-                       shadow-sm transition-all"
-          >
-            <span className="material-symbols-outlined" style={{ fontSize: 24 }}>chevron_left</span>
-          </button>
-
-          <button
-            type="button"
-            onClick={goNext}
-            aria-label="Next hospital"
-            className="absolute right-0 md:right-4 top-1/2 -translate-y-1/2 z-30
-                       w-11 h-11 rounded-full flex items-center justify-center
-                       bg-surface-container/90 backdrop-blur-md border border-outline-variant/30
-                       text-on-surface hover:text-primary hover:border-primary/40
-                       shadow-sm transition-all"
-          >
-            <span className="material-symbols-outlined" style={{ fontSize: 24 }}>chevron_right</span>
-          </button>
-        </>
-      )}
-
-      {/* ── Dots ── */}
-      {count > 1 && (
-        <div className="flex items-center justify-center gap-2 mt-6">
+        <div className="hidden md:flex items-center justify-center gap-2 mt-6">
           {hospitals.map((hospital, index) => (
             <button
               key={hospital.id}

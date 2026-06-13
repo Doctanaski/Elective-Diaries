@@ -21,7 +21,7 @@ export default async function HomePage() {
   const hospitals = (data ?? []) as Hospital[]
 
   return (
-    <div className="flex-grow pt-32 pb-24 px-6 md:px-12 lg:px-24">
+    <div className="flex-grow pt-32 pb-24 px-6 md:px-12 lg:px-24 overflow-x-hidden">
       {/* Hero */}
       <header className="text-center mb-24 relative max-w-4xl mx-auto">
         <div className="absolute inset-0 -z-10 bg-primary/5 rounded-full blur-3xl opacity-70 w-full h-full transform scale-150 pointer-events-none" />
