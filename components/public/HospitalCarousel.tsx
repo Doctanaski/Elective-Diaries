@@ -11,6 +11,8 @@ const statusConfig = {
   inactive: { color: '#857372', label: 'Inactive' },
 }
 
+const CAROUSEL_HEIGHT = 460
+
 export default function HospitalCarousel({ hospitals }: { hospitals: Hospital[] }) {
   const [active, setActive] = useState(0)
   const touchStartX = useRef<number | null>(null)
@@ -52,7 +54,7 @@ export default function HospitalCarousel({ hospitals }: { hospitals: Hospital[] 
       {/* ── Track ── */}
       <div
         className="relative flex items-center justify-center overflow-hidden py-6"
-        style={{ minHeight: '460px' }}
+        style={{ minHeight: CAROUSEL_HEIGHT + 48 }}
         onTouchStart={handleTouchStart}
         onTouchEnd={handleTouchEnd}
       >
@@ -60,117 +62,71 @@ export default function HospitalCarousel({ hospitals }: { hospitals: Hospital[] 
           const offset = relativeOffset(index)
           const isActive = offset === 0
           const isVisible = Math.abs(offset) <= 1
-
           if (!isVisible) return null
 
-          if (isActive) {
-            // ── Focused card: expanded, with info panel on the right ──
-            return (
-              <div
-                key={hospital.id}
-                className="relative z-20 w-full max-w-5xl transition-all duration-500 ease-out px-4"
-              >
-                <div className="grid grid-cols-1 md:grid-cols-2 rounded-2xl overflow-hidden border border-outline-variant/20 bg-surface-container shadow-xl">
-                  {/* Image side */}
-                  <Link href={`/hospitals/${hospital.slug}`} prefetch={true}>
-                    <div className="group relative aspect-[4/5] md:aspect-auto md:h-full cursor-pointer">
-                      {hospital.image_url && (
-                        <Image
-                          src={hospital.image_url}
-                          alt={hospital.name}
-                          fill
-                          className="object-cover group-hover:scale-105 transition-transform duration-700"
-                          sizes="(max-width: 768px) 100vw, 50vw"
-                          priority
-                        />
-                      )}
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent" />
+          // Every card shares the same DOM structure — a single image card —
+          // so transforms animate smoothly between left / center / right slots.
+          let translateX = '-50%'
+          let opacity = 1
+          let zIndex = 20
+          let width = '36rem'
 
-                      {/* Status badge */}
-                      {hospital.status !== 'inactive' && (
-                        <div className="absolute top-6 right-6 bg-surface/90 backdrop-blur-md px-3 py-1.5 rounded-full flex items-center space-x-2 border border-outline-variant/20 shadow-sm">
-                          <div className="w-2 h-2 rounded-full animate-pulse" style={{ backgroundColor: status.color }} />
-                          <span className="font-label text-[11px] uppercase font-bold text-on-surface tracking-wider">
-                            {status.label}
-                          </span>
-                        </div>
-                      )}
-
-                      {/* Name */}
-                      <div className="absolute bottom-0 left-0 right-0 p-8">
-                        <h3 className="font-headline text-2xl font-bold text-white tracking-tight leading-snug">
-                          {hospital.name}
-                        </h3>
-                      </div>
-                    </div>
-                  </Link>
-
-                  {/* Info side */}
-                  <div className="flex flex-col p-8 bg-surface-container-low">
-                    <div className="flex items-center gap-2 mb-4">
-                      <span className="material-symbols-outlined text-primary" style={{ fontSize: 20 }}>local_hospital</span>
-                      <span className="font-label text-xs uppercase tracking-widest text-on-surface-variant">
-                        Affiliated Facility
-                      </span>
-                    </div>
-
-                    <h3 className="font-headline text-2xl md:text-3xl font-bold text-on-surface tracking-tight leading-snug mb-3">
-                      {hospital.name}
-                    </h3>
-
-                    {hospital.description ? (
-                      <p className="text-on-surface-variant text-sm md:text-base leading-relaxed mb-6">
-                        {hospital.description}
-                      </p>
-                    ) : (
-                      <p className="text-on-surface-variant text-sm md:text-base leading-relaxed mb-6 italic opacity-70">
-                        No description added yet.
-                      </p>
-                    )}
-
-                    <div className="mt-auto">
-                      <Link
-                        href={`/hospitals/${hospital.slug}`}
-                        prefetch={true}
-                        className="inline-flex items-center gap-2 px-5 py-3 rounded-xl bg-primary text-on-primary
-                                   font-label text-sm font-semibold hover:bg-primary-container transition-colors"
-                      >
-                        View Diaries
-                        <span className="material-symbols-outlined" style={{ fontSize: 18 }}>arrow_forward</span>
-                      </Link>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            )
+          if (offset < 0) {
+            translateX = '-145%'
+            opacity = 0.35
+            zIndex = 0
+            width = '20rem'
+          } else if (offset > 0) {
+            translateX = '45%'
+            opacity = 0.35
+            zIndex = 0
+            width = '20rem'
           }
 
-          // ── Neighboring cards: peek at the extreme edges ──
-          const side = offset < 0 ? 'left' : 'right'
           return (
             <Link
               key={hospital.id}
               href={`/hospitals/${hospital.slug}`}
               prefetch={true}
-              className={`absolute top-1/2 -translate-y-1/2 z-0 w-64 md:w-80 aspect-[4/5]
-                          transition-all duration-500 ease-out opacity-40 hover:opacity-60
-                          ${side === 'left' ? 'left-0 -translate-x-1/3' : 'right-0 translate-x-1/3'}`}
-              aria-hidden="true"
-              tabIndex={-1}
+              className="absolute left-1/2 top-1/2
+                         transition-all duration-700 ease-[cubic-bezier(0.22,1,0.36,1)]
+                         hover:opacity-60"
+              style={{
+                height: CAROUSEL_HEIGHT,
+                width,
+                transform: `translateX(${translateX}) translateY(-50%)`,
+                opacity: isActive ? 1 : opacity,
+                zIndex,
+                pointerEvents: isActive ? 'none' : 'auto',
+              }}
+              tabIndex={isActive ? -1 : 0}
             >
-              <div className="group relative w-full h-full rounded-2xl overflow-hidden border border-outline-variant/20 bg-surface-container">
+              <div className="group relative w-full h-full rounded-2xl overflow-hidden border border-outline-variant/20 bg-surface-container shadow-xl">
                 {hospital.image_url && (
                   <Image
                     src={hospital.image_url}
                     alt={hospital.name}
                     fill
-                    className="object-cover"
-                    sizes="(max-width: 768px) 50vw, 25vw"
+                    className="object-cover group-hover:scale-105 transition-transform duration-700"
+                    sizes="(max-width: 768px) 100vw, 50vw"
+                    priority={isActive}
                   />
                 )}
-                <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent" />
-                <div className="absolute bottom-0 left-0 right-0 p-6">
-                  <h3 className="font-headline text-lg font-bold text-white tracking-tight leading-snug">
+                <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent" />
+
+                {/* Status badge — active card only */}
+                {isActive && hospital.status !== 'inactive' && (
+                  <div className="absolute top-6 right-6 bg-surface/90 backdrop-blur-md px-3 py-1.5 rounded-full flex items-center space-x-2 border border-outline-variant/20 shadow-sm">
+                    <div className="w-2 h-2 rounded-full animate-pulse" style={{ backgroundColor: status.color }} />
+                    <span className="font-label text-[11px] uppercase font-bold text-on-surface tracking-wider">
+                      {status.label}
+                    </span>
+                  </div>
+                )}
+
+                {/* Name */}
+                <div className="absolute bottom-0 left-0 right-0 p-6 md:p-8">
+                  <h3 className="font-headline text-lg md:text-2xl font-bold text-white tracking-tight leading-snug">
                     {hospital.name}
                   </h3>
                 </div>
@@ -178,6 +134,47 @@ export default function HospitalCarousel({ hospitals }: { hospitals: Hospital[] 
             </Link>
           )
         })}
+
+        {/* ── Info panel for the focused hospital — sits flush against the active card ── */}
+        <div
+          key={activeHospital.id + '-info'}
+          className="hidden md:flex absolute left-1/2 top-1/2 flex-col
+                     transition-all duration-700 ease-[cubic-bezier(0.22,1,0.36,1)]
+                     bg-surface-container-low rounded-2xl border border-outline-variant/20 shadow-xl
+                     p-8 overflow-y-auto"
+          style={{
+            height: CAROUSEL_HEIGHT,
+            width: '22rem',
+            transform: 'translateX(11%) translateY(-50%)',
+            zIndex: 25,
+          }}
+        >
+          <h3 className="font-headline text-2xl md:text-3xl font-bold text-on-surface tracking-tight leading-snug mb-3">
+            {activeHospital.name}
+          </h3>
+
+          {activeHospital.description ? (
+            <p className="text-on-surface-variant text-sm md:text-base leading-relaxed mb-6">
+              {activeHospital.description}
+            </p>
+          ) : (
+            <p className="text-on-surface-variant text-sm md:text-base leading-relaxed mb-6 italic opacity-70">
+              No description added yet.
+            </p>
+          )}
+
+          <div className="mt-auto">
+            <Link
+              href={`/hospitals/${activeHospital.slug}`}
+              prefetch={true}
+              className="inline-flex items-center gap-2 px-5 py-3 rounded-xl bg-primary text-on-primary
+                         font-label text-sm font-semibold hover:bg-primary-container transition-colors"
+            >
+              View Diaries
+              <span className="material-symbols-outlined" style={{ fontSize: 18 }}>arrow_forward</span>
+            </Link>
+          </div>
+        </div>
       </div>
 
       {/* ── Prev / Next controls ── */}
