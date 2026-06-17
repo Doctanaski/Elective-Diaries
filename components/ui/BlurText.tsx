@@ -1,15 +1,17 @@
 'use client'
 
-import { motion } from 'motion/react'
+import { motion, type TargetAndTransition } from 'motion/react'
 import { useEffect, useRef, useState, useMemo } from 'react'
 
-const buildKeyframes = (from: Record<string, unknown>, steps: Record<string, unknown>[]) => {
-  const keys = new Set([...Object.keys(from), ...steps.flatMap(s => Object.keys(s))])
+type Snapshot = TargetAndTransition & { filter?: string }
+
+const buildKeyframes = (from: Snapshot, steps: Snapshot[]): TargetAndTransition => {
+  const keys = new Set([...Object.keys(from), ...steps.flatMap(s => Object.keys(s))]) as Set<keyof Snapshot>
   const keyframes: Record<string, unknown[]> = {}
   keys.forEach(k => {
-    keyframes[k] = [from[k], ...steps.map(s => s[k])]
+    keyframes[k as string] = [from[k], ...steps.map(s => s[k])]
   })
-  return keyframes
+  return keyframes as TargetAndTransition
 }
 
 interface BlurTextProps {
@@ -20,8 +22,8 @@ interface BlurTextProps {
   direction?: 'top' | 'bottom'
   threshold?: number
   rootMargin?: string
-  animationFrom?: Record<string, unknown>
-  animationTo?: Record<string, unknown>[]
+  animationFrom?: Snapshot
+  animationTo?: Snapshot[]
   easing?: (t: number) => number
   onAnimationComplete?: () => void
   stepDuration?: number
@@ -43,24 +45,25 @@ const BlurText = ({
 }: BlurTextProps) => {
   const elements = animateBy === 'words' ? text.split(' ') : text.split('')
   const [inView, setInView] = useState(false)
-  const ref = useRef(null)
+  const ref = useRef<HTMLParagraphElement>(null)
 
   useEffect(() => {
     if (!ref.current) return
+    const el = ref.current
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {
           setInView(true)
-          if (ref.current) observer.unobserve(ref.current)
+          observer.unobserve(el)
         }
       },
       { threshold, rootMargin }
     )
-    observer.observe(ref.current)
+    observer.observe(el)
     return () => observer.disconnect()
   }, [threshold, rootMargin])
 
-  const defaultFrom = useMemo(
+  const defaultFrom: Snapshot = useMemo(
     () =>
       direction === 'top'
         ? { filter: 'blur(10px)', opacity: 0, y: -50 }
@@ -68,7 +71,7 @@ const BlurText = ({
     [direction]
   )
 
-  const defaultTo = useMemo(
+  const defaultTo: Snapshot[] = useMemo(
     () => [
       { filter: 'blur(5px)', opacity: 0.5, y: direction === 'top' ? 5 : -5 },
       { filter: 'blur(0px)', opacity: 1, y: 0 },
@@ -89,6 +92,7 @@ const BlurText = ({
     <p ref={ref} className={className} style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center' }}>
       {elements.map((segment, index) => {
         const animateKeyframes = buildKeyframes(fromSnapshot, toSnapshots)
+
         const spanTransition = {
           duration: totalDuration,
           times,
