@@ -3,13 +3,28 @@
 import { motion } from 'motion/react'
 import { useEffect, useRef, useState, useMemo } from 'react'
 
-const buildKeyframes = (from, steps) => {
+const buildKeyframes = (from: Record<string, unknown>, steps: Record<string, unknown>[]) => {
   const keys = new Set([...Object.keys(from), ...steps.flatMap(s => Object.keys(s))])
-  const keyframes = {}
+  const keyframes: Record<string, unknown[]> = {}
   keys.forEach(k => {
     keyframes[k] = [from[k], ...steps.map(s => s[k])]
   })
   return keyframes
+}
+
+interface BlurTextProps {
+  text?: string
+  delay?: number
+  className?: string
+  animateBy?: 'words' | 'letters'
+  direction?: 'top' | 'bottom'
+  threshold?: number
+  rootMargin?: string
+  animationFrom?: Record<string, unknown>
+  animationTo?: Record<string, unknown>[]
+  easing?: (t: number) => number
+  onAnimationComplete?: () => void
+  stepDuration?: number
 }
 
 const BlurText = ({
@@ -22,10 +37,10 @@ const BlurText = ({
   rootMargin = '0px',
   animationFrom,
   animationTo,
-  easing = t => t,
+  easing = (t: number) => t,
   onAnimationComplete,
   stepDuration = 0.35,
-}) => {
+}: BlurTextProps) => {
   const elements = animateBy === 'words' ? text.split(' ') : text.split('')
   const [inView, setInView] = useState(false)
   const ref = useRef(null)
