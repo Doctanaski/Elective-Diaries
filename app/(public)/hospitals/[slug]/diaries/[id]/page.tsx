@@ -3,6 +3,7 @@ import { createStaticClient } from '@/lib/supabase/static'
 import { notFound } from 'next/navigation'
 import Image from 'next/image'
 import Link from 'next/link'
+import DiaryGallery from '@/components/public/DiaryGallery'
 import type { Metadata } from 'next'
 import type { Hospital, Diary } from '@/types/database'
 
@@ -215,6 +216,13 @@ export default async function DiaryPage({ params }: Props) {
         </div>
       </div>
       )}
+
+      {/* ── Photo Gallery ── */}
+      <DiaryGallery
+        images={diary.gallery_images ?? []}
+        diaryTitle={diary.title}
+      />
+
     </div>
   )
 }

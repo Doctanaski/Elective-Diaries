@@ -26,6 +26,7 @@ export interface Diary {
   pros: string[] | null
   cons: string[] | null
   skills: string[] | null
+  gallery_images: string[] | null
   elective_duration: string | null
   supervisor: string | null
   published: boolean

@@ -111,3 +111,9 @@ alter table public.diaries add column if not exists supervisor text;
 -- Run this once in: Supabase Dashboard → SQL Editor → New Query
 -- ============================================================
 alter table public.diaries add column if not exists skills text[];
+
+-- ============================================================
+-- v25 MIGRATION — Add gallery_images column
+-- Run this once in: Supabase Dashboard → SQL Editor → New Query
+-- ============================================================
+alter table public.diaries add column if not exists gallery_images text[];

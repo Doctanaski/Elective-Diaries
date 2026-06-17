@@ -31,6 +31,7 @@ export default function DiaryForm({ hospitals, diary }: DiaryFormProps) {
   const [pros, setPros] = useState<string[]>(diary?.pros ?? [])
   const [cons, setCons] = useState<string[]>(diary?.cons ?? [])
   const [skills, setSkills] = useState<string[]>(diary?.skills ?? [])
+  const [galleryImages, setGalleryImages] = useState<string[]>(diary?.gallery_images ?? [])
   const [electiveDuration, setElectiveDuration] = useState(diary?.elective_duration ?? '')
   const [supervisor, setSupervisor] = useState(diary?.supervisor ?? '')
   const [published, setPublished] = useState(diary?.published ?? false)
@@ -42,6 +43,9 @@ export default function DiaryForm({ hospitals, diary }: DiaryFormProps) {
   const [uploadError, setUploadError] = useState('')
   const [previewUrl, setPreviewUrl] = useState(diary?.cover_image_url ?? '')
   const fileInputRef = useRef<HTMLInputElement>(null)
+  const [galleryUploading, setGalleryUploading] = useState(false)
+  const [galleryError, setGalleryError] = useState('')
+  const galleryInputRef = useRef<HTMLInputElement>(null)
 
   async function handleImageUpload(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0]
@@ -80,6 +84,34 @@ export default function DiaryForm({ hospitals, diary }: DiaryFormProps) {
     if (fileInputRef.current) fileInputRef.current.value = ''
   }
 
+  async function handleGalleryUpload(e: React.ChangeEvent<HTMLInputElement>) {
+    const files = Array.from(e.target.files ?? [])
+    if (files.length === 0) return
+    const invalid = files.find(f => !f.type.startsWith('image/'))
+    if (invalid) { setGalleryError('Only image files are allowed.'); return }
+    const tooBig = files.find(f => f.size > 5 * 1024 * 1024)
+    if (tooBig) { setGalleryError('Each image must be under 5MB.'); return }
+
+    setGalleryUploading(true)
+    setGalleryError('')
+
+    const urls: string[] = []
+    for (const file of files) {
+      const ext = file.name.split('.').pop()
+      const filename = `gallery/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`
+      const { data, error: storageError } = await supabase.storage
+        .from('diary-images')
+        .upload(filename, file, { cacheControl: '3600', upsert: false })
+      if (storageError) { setGalleryError(storageError.message); setGalleryUploading(false); return }
+      const { data: publicData } = supabase.storage.from('diary-images').getPublicUrl(data.path)
+      urls.push(publicData.publicUrl)
+    }
+
+    setGalleryImages(prev => [...prev, ...urls])
+    setGalleryUploading(false)
+    if (galleryInputRef.current) galleryInputRef.current.value = ''
+  }
+
   function addItem(list: string[], setList: (v: string[]) => void) {
     setList([...list, ''])
   }
@@ -107,6 +139,7 @@ export default function DiaryForm({ hospitals, diary }: DiaryFormProps) {
       pros: pros.filter(p => p.trim()),
       cons: cons.filter(c => c.trim()),
       skills: skills.map(s => s.trim()).filter(Boolean),
+      gallery_images: galleryImages.length > 0 ? galleryImages : null,
       elective_duration: electiveDuration || null,
       supervisor: supervisor || null,
       published,
@@ -300,6 +333,49 @@ export default function DiaryForm({ hospitals, diary }: DiaryFormProps) {
             onChange={(e) => { setCoverImageUrl(e.target.value); setPreviewUrl(e.target.value) }}
             placeholder="https://…" className={`${inputClass} mt-2`} />
         </details>
+      </div>
+
+      {/* Gallery images */}
+      <div className="bg-surface-container-lowest border border-outline-variant/20 rounded-2xl p-6 space-y-4">
+        <div className="flex items-center justify-between">
+          <div>
+            <label className="block text-sm font-semibold text-on-surface">Photo Gallery</label>
+            <p className="text-xs text-on-surface-variant mt-0.5">Images displayed as draggable cards at the end of the diary.</p>
+          </div>
+          <button type="button" onClick={() => galleryInputRef.current?.click()}
+            disabled={galleryUploading}
+            className="text-xs text-secondary border border-secondary/30 px-3 py-1.5 rounded-full hover:bg-secondary/10 transition-colors flex items-center gap-1 disabled:opacity-50">
+            <span className="material-symbols-outlined" style={{ fontSize: 14 }}>{galleryUploading ? 'progress_activity' : 'add_photo_alternate'}</span>
+            {galleryUploading ? 'Uploading…' : 'Add Images'}
+          </button>
+        </div>
+        <input ref={galleryInputRef} type="file" accept="image/*" multiple onChange={handleGalleryUpload} className="hidden" />
+
+        {galleryError && (
+          <p className="text-xs text-error flex items-center gap-1">
+            <span className="material-symbols-outlined" style={{ fontSize: 14 }}>error</span>
+            {galleryError}
+          </p>
+        )}
+
+        {galleryImages.length > 0 ? (
+          <div className="grid grid-cols-3 md:grid-cols-4 gap-3">
+            {galleryImages.map((src, i) => (
+              <div key={i} className="relative group aspect-square rounded-xl overflow-hidden border border-outline-variant/20 bg-surface-container">
+                <img src={src} alt={`Gallery ${i + 1}`} className="w-full h-full object-cover" />
+                <button
+                  type="button"
+                  onClick={() => setGalleryImages(prev => prev.filter((_, idx) => idx !== i))}
+                  className="absolute top-1.5 right-1.5 opacity-0 group-hover:opacity-100 w-6 h-6 rounded-full bg-black/70 flex items-center justify-center text-white transition-opacity"
+                >
+                  <span className="material-symbols-outlined" style={{ fontSize: 14 }}>close</span>
+                </button>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <p className="text-xs text-on-surface-variant italic">No gallery images yet.</p>
+        )}
       </div>
 
       {/* Pros / Cons */}
