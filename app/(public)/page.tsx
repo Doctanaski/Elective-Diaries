@@ -1,5 +1,6 @@
 import { createClient } from '@/lib/supabase/server'
 import HospitalCarousel from '@/components/public/HospitalCarousel'
+import HomeHero from '@/components/public/HomeHero'
 import type { Hospital } from '@/types/database'
 import type { Metadata } from 'next'
 
@@ -23,22 +24,7 @@ export default async function HomePage() {
   return (
     <div className="flex-grow pt-32 pb-24 px-6 md:px-12 lg:px-24 overflow-x-hidden">
       {/* Hero */}
-      <header className="text-center mb-24 relative max-w-4xl mx-auto">
-        <div className="absolute inset-0 -z-10 bg-primary/5 rounded-full blur-3xl opacity-70 w-full h-full transform scale-150 pointer-events-none" />
-        <h1 className="font-headline font-extrabold text-5xl md:text-6xl leading-tight text-primary tracking-tight mb-6">
-          The Elective Diaries
-        </h1>
-        <div className="flex items-center justify-center space-x-2 bg-surface-container-high/50 w-fit mx-auto px-4 py-2 rounded-full border border-outline-variant/20">
-          <span className="material-symbols-outlined text-secondary" style={{ fontSize: 20 }}>account_balance</span>
-          <p className="font-label text-sm font-semibold tracking-widest text-primary uppercase">
-            KMC Local Council · IFMSA Pakistan
-          </p>
-        </div>
-        <p className="mt-8 text-primary font-body max-w-2xl mx-auto text-lg md:text-xl leading-relaxed">
-          A precision archive documenting clinical experiences, resource availability, and
-          operational protocols across affiliated medical facilities.
-        </p>
-      </header>
+      <HomeHero />
 
       {/* Hospital Carousel */}
       <section className="max-w-7xl mx-auto">
