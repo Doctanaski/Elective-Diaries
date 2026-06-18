@@ -164,6 +164,12 @@ export default async function DiaryPage({ params }: Props) {
               Clinical Narrative
             </h2>
             <div className="prose-diary pl-1" dangerouslySetInnerHTML={{ __html: diary.content }} />
+
+            {/* Photo Gallery — embedded below the narrative text */}
+            <DiaryGallery
+              images={diary.gallery_images ?? []}
+              diaryTitle={diary.title}
+            />
           </section>
       </div>
 
@@ -216,12 +222,6 @@ export default async function DiaryPage({ params }: Props) {
         </div>
       </div>
       )}
-
-      {/* ── Photo Gallery ── */}
-      <DiaryGallery
-        images={diary.gallery_images ?? []}
-        diaryTitle={diary.title}
-      />
 
     </div>
   )
