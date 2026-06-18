@@ -20,8 +20,6 @@ interface BlurTextProps {
   className?: string
   animateBy?: 'words' | 'letters'
   direction?: 'top' | 'bottom'
-  threshold?: number
-  rootMargin?: string
   animationFrom?: Snapshot
   animationTo?: Snapshot[]
   easing?: (t: number) => number
@@ -35,8 +33,6 @@ const BlurText = ({
   className = '',
   animateBy = 'words',
   direction = 'top',
-  threshold = 0.1,
-  rootMargin = '0px',
   animationFrom,
   animationTo,
   easing = (t: number) => t,
@@ -48,20 +44,12 @@ const BlurText = ({
   const ref = useRef<HTMLParagraphElement>(null)
 
   useEffect(() => {
-    if (!ref.current) return
-    const el = ref.current
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          setInView(true)
-          observer.unobserve(el)
-        }
-      },
-      { threshold, rootMargin }
-    )
-    observer.observe(el)
-    return () => observer.disconnect()
-  }, [threshold, rootMargin])
+    // Fire immediately on mount — no scroll/click needed.
+    // A small delay lets the page finish its first paint so the
+    // animation is always visible from the start.
+    const timer = setTimeout(() => setInView(true), 80)
+    return () => clearTimeout(timer)
+  }, [])
 
   const defaultFrom: Snapshot = useMemo(
     () =>

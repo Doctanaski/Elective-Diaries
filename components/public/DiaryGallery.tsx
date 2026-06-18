@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useCallback } from 'react'
+import { useState } from 'react'
 import { motion, AnimatePresence } from 'motion/react'
 import { DraggableCardContainer, DraggableCardBody } from '@/components/ui/draggable-card'
 import Image from 'next/image'
@@ -10,142 +10,98 @@ interface DiaryGalleryProps {
   diaryTitle: string
 }
 
-// Distribute cards across the container with scattered positions & rotations
+// Scattered initial positions & rotations — cycles if more than 8 images
 const POSITIONS = [
-  'absolute top-[8%]  left-[8%]   rotate-[-6deg]',
-  'absolute top-[5%]  left-[28%]  rotate-[4deg]',
-  'absolute top-[5%]  left-[50%]  rotate-[-3deg]',
-  'absolute top-[5%]  right-[6%]  rotate-[7deg]',
-  'absolute top-[42%] left-[4%]   rotate-[5deg]',
-  'absolute top-[42%] left-[24%]  rotate-[-8deg]',
-  'absolute top-[42%] left-[46%]  rotate-[3deg]',
-  'absolute top-[42%] right-[4%]  rotate-[-5deg]',
+  { top: '8%',  left: '6%',   rotate: '-6deg' },
+  { top: '6%',  left: '26%',  rotate:  '4deg' },
+  { top: '4%',  left: '48%',  rotate: '-3deg' },
+  { top: '6%',  right: '5%',  rotate:  '7deg' },
+  { top: '46%', left: '4%',   rotate:  '5deg' },
+  { top: '44%', left: '26%',  rotate: '-8deg' },
+  { top: '46%', left: '50%',  rotate:  '3deg' },
+  { top: '44%', right: '4%',  rotate: '-5deg' },
 ]
 
 export default function DiaryGallery({ images, diaryTitle }: DiaryGalleryProps) {
-  const [open, setOpen] = useState(false)
   const [focused, setFocused] = useState<number | null>(null)
-
-  const close = useCallback(() => {
-    setOpen(false)
-    setFocused(null)
-  }, [])
 
   if (images.length === 0) return null
 
   return (
-    <>
-      {/* ── Trigger button ── */}
-      <section className="px-4 md:px-12 max-w-screen-xl mx-auto mt-8 mb-4">
-        <button
-          type="button"
-          onClick={() => setOpen(true)}
-          className="w-full flex items-center justify-between gap-4
-                     bg-surface-container-low rounded-2xl px-6 py-5
-                     border border-white/5 hover:border-primary/30
-                     transition-all group"
-        >
-          <div className="flex items-center gap-4">
-            {/* Mini preview strip */}
-            <div className="flex -space-x-3">
-              {images.slice(0, 4).map((src, i) => (
-                <div
-                  key={i}
-                  className="w-10 h-10 rounded-lg overflow-hidden border-2 border-surface-container-low ring-1 ring-white/10"
-                  style={{ zIndex: 4 - i }}
-                >
-                  <img src={src} alt="" className="w-full h-full object-cover" />
-                </div>
-              ))}
-            </div>
-            <div className="text-left">
-              <p className="font-headline font-bold text-on-surface text-sm">Photo Gallery</p>
-              <p className="font-label text-xs text-on-surface-variant">
-                {images.length} image{images.length !== 1 ? 's' : ''} · drag &amp; explore
-              </p>
-            </div>
-          </div>
-          <span className="material-symbols-outlined text-on-surface-variant group-hover:text-primary transition-colors" style={{ fontSize: 22 }}>
-            photo_library
-          </span>
-        </button>
-      </section>
+    <section className="relative mt-10 mb-8">
+      {/* Section header */}
+      <div className="px-4 md:px-12 max-w-screen-xl mx-auto mb-4 flex items-center gap-3">
+        <span className="material-symbols-outlined text-secondary p-2 bg-secondary/10 rounded-lg" style={{ fontSize: 20 }}>
+          photo_library
+        </span>
+        <div>
+          <h2 className="font-headline text-xl font-bold text-on-surface">Photo Gallery</h2>
+          <p className="font-label text-xs text-on-surface-variant mt-0.5">
+            Drag cards to explore · tap to enlarge
+          </p>
+        </div>
+      </div>
 
-      {/* ── Modal ── */}
-      <AnimatePresence>
-        {open && (
-          <motion.div
-            className="fixed inset-0 z-50 flex flex-col"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.2 }}
-          >
-            {/* Backdrop */}
-            <div
-              className="absolute inset-0 bg-black/85 backdrop-blur-md"
-              onClick={close}
+      {/* Canvas — fixed height, cards scattered inside */}
+      <div className="relative w-full overflow-hidden rounded-2xl border border-white/5 bg-surface-container-low"
+           style={{ height: 480 }}>
+
+        {/* Focused backdrop — clicking it un-focuses */}
+        <AnimatePresence>
+          {focused !== null && (
+            <motion.div
+              className="absolute inset-0 z-50 bg-black/60 backdrop-blur-sm cursor-zoom-out"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.2 }}
+              onClick={() => setFocused(null)}
             />
+          )}
+        </AnimatePresence>
 
-            {/* Header */}
-            <div className="relative z-10 flex items-center justify-between px-6 py-4 border-b border-white/10">
-              <div>
-                <p className="font-label text-xs text-on-surface-variant uppercase tracking-widest mb-0.5">Photo Gallery</p>
-                <h2 className="font-headline font-bold text-on-surface text-lg">{diaryTitle}</h2>
-              </div>
-              <button
-                type="button"
-                onClick={close}
-                className="w-10 h-10 rounded-full flex items-center justify-center
-                           bg-surface-container border border-white/10
-                           text-on-surface-variant hover:text-on-surface transition-colors"
+        <DraggableCardContainer className="w-full h-full">
+          {images.map((src, i) => {
+            const pos = POSITIONS[i % POSITIONS.length]
+            const isFocused = focused === i
+
+            return (
+              <DraggableCardBody
+                key={i}
+                className="absolute"
+                style={pos as React.CSSProperties}
+                focused={isFocused}
+                onTap={() => setFocused(isFocused ? null : i)}
               >
-                <span className="material-symbols-outlined" style={{ fontSize: 20 }}>close</span>
-              </button>
-            </div>
-
-            {/* Hint */}
-            <p className="relative z-10 text-center font-label text-xs text-on-surface-variant mt-4 opacity-60">
-              Drag cards to move them · click to focus
-            </p>
-
-            {/* Cards container */}
-            <DraggableCardContainer className="relative z-10 flex-1 w-full overflow-hidden">
-              {images.map((src, i) => {
-                const pos = POSITIONS[i % POSITIONS.length]
-                const isFocused = focused === i
-
-                return (
-                  <DraggableCardBody
-                    key={i}
-                    className={pos}
-                    onFocus={() => setFocused(isFocused ? null : i)}
-                    focused={isFocused}
-                  >
-                    <div className="bg-surface-container rounded-xl overflow-hidden shadow-2xl border border-white/10"
-                      style={{ width: 200, willChange: 'transform' }}>
-                      <div className="relative w-full" style={{ height: 200 }}>
-                        <Image
-                          src={src}
-                          alt={`Gallery image ${i + 1}`}
-                          fill
-                          className="object-cover pointer-events-none"
-                          sizes="200px"
-                        />
-                      </div>
-                      <div className="px-3 py-2.5">
-                        <p className="font-label text-xs text-on-surface-variant text-center">
-                          Photo {i + 1}
-                        </p>
-                      </div>
-                    </div>
-                  </DraggableCardBody>
-                )
-              })}
-            </DraggableCardContainer>
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </>
+                <div
+                  className="bg-surface-container rounded-xl overflow-hidden border border-white/10"
+                  style={{
+                    width: 180,
+                    boxShadow: isFocused
+                      ? '0 32px 64px rgba(0,0,0,0.8)'
+                      : '0 8px 24px rgba(0,0,0,0.5)',
+                  }}
+                >
+                  <div className="relative" style={{ width: 180, height: 180 }}>
+                    <Image
+                      src={src}
+                      alt={`${diaryTitle} — photo ${i + 1}`}
+                      fill
+                      className="object-cover pointer-events-none"
+                      sizes="180px"
+                    />
+                  </div>
+                  <div className="px-3 py-2 bg-surface-container">
+                    <p className="font-label text-[11px] text-on-surface-variant text-center tracking-wide">
+                      Photo {i + 1}
+                    </p>
+                  </div>
+                </div>
+              </DraggableCardBody>
+            )
+          })}
+        </DraggableCardContainer>
+      </div>
+    </section>
   )
 }
