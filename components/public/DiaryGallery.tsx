@@ -44,7 +44,7 @@ export default function DiaryGallery({ images, diaryTitle }: DiaryGalleryProps) 
         {/* No background or border — cards float directly on the narrative card */}
         <div
           className="relative w-full overflow-hidden"
-          style={{ height: 420 }}
+          style={{ height: 'clamp(380px, 50vw, 560px)' }}
         >
           <DraggableCardContainer className="w-full h-full">
             {images.map((src, i) => (
@@ -56,15 +56,15 @@ export default function DiaryGallery({ images, diaryTitle }: DiaryGalleryProps) 
               >
                 <div
                   className="rounded-xl overflow-hidden border border-white/10"
-                  style={{ width: 160, boxShadow: '0 8px 24px rgba(0,0,0,0.55)' }}
+                  style={{ width: 220, boxShadow: '0 8px 24px rgba(0,0,0,0.55)' }}
                 >
-                  <div className="relative bg-surface-container" style={{ width: 160, height: 160 }}>
+                  <div className="relative bg-surface-container" style={{ width: 220, height: 220 }}>
                     <Image
                       src={src}
                       alt={`${diaryTitle} — photo ${i + 1}`}
                       fill
                       className="object-cover pointer-events-none"
-                      sizes="160px"
+                      sizes="220px"
                     />
                   </div>
                   <div className="px-2 py-1.5 bg-surface-container">
