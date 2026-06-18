@@ -29,11 +29,12 @@ const TAP_THRESHOLD = 6
 interface CardProps {
   children: React.ReactNode
   className?: string
+  style?: React.CSSProperties
   focused?: boolean
   onTap?: () => void
 }
 
-export function DraggableCardBody({ children, className = '', focused, onTap }: CardProps) {
+export function DraggableCardBody({ children, className = '', style, focused, onTap }: CardProps) {
   const ref = useRef<HTMLDivElement>(null)
 
   // Drag position — raw values, spring-smoothed for rendering
@@ -158,6 +159,7 @@ export function DraggableCardBody({ children, className = '', focused, onTap }: 
       ref={ref}
       className={`select-none ${focused ? 'cursor-zoom-out' : 'cursor-grab active:cursor-grabbing'} ${className}`}
       style={{
+        ...style,
         x,
         y,
         rotateX: focused ? 0 : rotateX,
