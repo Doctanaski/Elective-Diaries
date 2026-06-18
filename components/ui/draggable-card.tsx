@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useRef, useState, useCallback } from 'react'
+import React, { useRef, useState, useCallback, useEffect } from 'react'
 import { motion, useMotionValue, useSpring, type SpringOptions } from 'motion/react'
 
 // ── DraggableCardContainer ────────────────────────────────────────────────────
@@ -21,15 +21,13 @@ export function DraggableCardContainer({ children, className = '' }: ContainerPr
 // ── DraggableCardBody ─────────────────────────────────────────────────────────
 
 const SPRING: SpringOptions = { stiffness: 260, damping: 24, mass: 0.6 }
-
-// How many px of movement distinguishes a tap from a drag
 const TAP_THRESHOLD = 6
 
 interface CardProps {
   children: React.ReactNode
   className?: string
   style?: React.CSSProperties
-  onOpen?: () => void   // called after the tap-pop animation finishes
+  onOpen?: () => void
 }
 
 export function DraggableCardBody({ children, className = '', style, onOpen }: CardProps) {
@@ -47,41 +45,41 @@ export function DraggableCardBody({ children, className = '', style, onOpen }: C
   const [popping, setPopping] = useState(false)
   const pointerDownPos = useRef<{ x: number; y: number } | null>(null)
   const dragOrigin = useRef({ x: 0, y: 0 })
+  const draggingRef = useRef(false) // mirror of dragging state, safe to read in passive-false listener
 
   // ── Mouse handlers ──
   const handleMouseDown = useCallback((e: React.MouseEvent) => {
     e.preventDefault()
     pointerDownPos.current = { x: e.clientX, y: e.clientY }
     dragOrigin.current = { x: e.clientX - rawX.get(), y: e.clientY - rawY.get() }
+    draggingRef.current = true
     setDragging(true)
   }, [rawX, rawY])
 
   const handleMouseMove = useCallback((e: MouseEvent) => {
-    if (!dragging) return
+    if (!draggingRef.current) return
     rawX.set(e.clientX - dragOrigin.current.x)
     rawY.set(e.clientY - dragOrigin.current.y)
     const dx = e.clientX - (pointerDownPos.current?.x ?? e.clientX)
     const dy = e.clientY - (pointerDownPos.current?.y ?? e.clientY)
     rotateY.set(dx * 0.04)
     rotateX.set(-dy * 0.04)
-  }, [dragging, rawX, rawY, rotateX, rotateY])
+  }, [rawX, rawY, rotateX, rotateY])
 
   const handleMouseUp = useCallback((e: MouseEvent) => {
+    draggingRef.current = false
     setDragging(false)
     rotateX.set(0)
     rotateY.set(0)
     if (pointerDownPos.current) {
       const dx = Math.abs(e.clientX - pointerDownPos.current.x)
       const dy = Math.abs(e.clientY - pointerDownPos.current.y)
-      if (dx < TAP_THRESHOLD && dy < TAP_THRESHOLD) {
-        // Pop animation, then open viewer
-        setPopping(true)
-      }
+      if (dx < TAP_THRESHOLD && dy < TAP_THRESHOLD) setPopping(true)
     }
     pointerDownPos.current = null
   }, [rotateX, rotateY])
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (dragging) {
       window.addEventListener('mousemove', handleMouseMove)
       window.addEventListener('mouseup', handleMouseUp)
@@ -92,23 +90,27 @@ export function DraggableCardBody({ children, className = '', style, onOpen }: C
     }
   }, [dragging, handleMouseMove, handleMouseUp])
 
-  // ── Touch handlers ──
-  const handleTouchStart = useCallback((e: React.TouchEvent) => {
+  // ── Touch handlers — registered via useEffect with passive:false so
+  //    preventDefault() actually stops the page from scrolling during a drag ──
+
+  const handleTouchStart = useCallback((e: TouchEvent) => {
     const t = e.touches[0]
     pointerDownPos.current = { x: t.clientX, y: t.clientY }
     dragOrigin.current = { x: t.clientX - rawX.get(), y: t.clientY - rawY.get() }
+    draggingRef.current = true
     setDragging(true)
   }, [rawX, rawY])
 
-  const handleTouchMove = useCallback((e: React.TouchEvent) => {
-    if (!dragging) return
-    e.preventDefault()
+  const handleTouchMove = useCallback((e: TouchEvent) => {
+    if (!draggingRef.current) return
+    e.preventDefault() // works because listener is { passive: false }
     const t = e.touches[0]
     rawX.set(t.clientX - dragOrigin.current.x)
     rawY.set(t.clientY - dragOrigin.current.y)
-  }, [dragging, rawX, rawY])
+  }, [rawX, rawY])
 
-  const handleTouchEnd = useCallback((e: React.TouchEvent) => {
+  const handleTouchEnd = useCallback((e: TouchEvent) => {
+    draggingRef.current = false
     setDragging(false)
     rotateX.set(0)
     rotateY.set(0)
@@ -116,12 +118,24 @@ export function DraggableCardBody({ children, className = '', style, onOpen }: C
       const t = e.changedTouches[0]
       const dx = Math.abs(t.clientX - pointerDownPos.current.x)
       const dy = Math.abs(t.clientY - pointerDownPos.current.y)
-      if (dx < TAP_THRESHOLD && dy < TAP_THRESHOLD) {
-        setPopping(true)
-      }
+      if (dx < TAP_THRESHOLD && dy < TAP_THRESHOLD) setPopping(true)
     }
     pointerDownPos.current = null
   }, [rotateX, rotateY])
+
+  // Attach touch listeners directly with { passive: false } so preventDefault works
+  useEffect(() => {
+    const el = ref.current
+    if (!el) return
+    el.addEventListener('touchstart', handleTouchStart, { passive: false })
+    el.addEventListener('touchmove',  handleTouchMove,  { passive: false })
+    el.addEventListener('touchend',   handleTouchEnd,   { passive: false })
+    return () => {
+      el.removeEventListener('touchstart', handleTouchStart)
+      el.removeEventListener('touchmove',  handleTouchMove)
+      el.removeEventListener('touchend',   handleTouchEnd)
+    }
+  }, [handleTouchStart, handleTouchMove, handleTouchEnd])
 
   return (
     <motion.div
@@ -139,7 +153,7 @@ export function DraggableCardBody({ children, className = '', style, onOpen }: C
       }}
       animate={popping
         ? { scale: 1.18, filter: 'brightness(1.15)' }
-        : { scale: 1,    filter: 'brightness(1)' }
+        : { scale: 1,    filter: 'brightness(1)'    }
       }
       transition={{ duration: 0.18, ease: [0.22, 1, 0.36, 1] }}
       onAnimationComplete={() => {
@@ -149,9 +163,6 @@ export function DraggableCardBody({ children, className = '', style, onOpen }: C
         }
       }}
       onMouseDown={handleMouseDown}
-      onTouchStart={handleTouchStart}
-      onTouchMove={handleTouchMove}
-      onTouchEnd={handleTouchEnd}
     >
       {children}
     </motion.div>
