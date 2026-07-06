@@ -1,0 +1,293 @@
+'use client'
+
+import { useRef, useState, useEffect, useCallback } from 'react'
+import { motion, useScroll, useTransform, AnimatePresence } from 'motion/react'
+import Image from 'next/image'
+import Link from 'next/link'
+import type { Hospital, Diary } from '@/types/database'
+
+/* ─── helpers ──────────────────────────────────────────────── */
+
+// Split raw HTML into N+1 roughly equal chunks by paragraph tags.
+// We never cut mid-tag — we split on </p> boundaries.
+function splitHtmlIntoParagraphs(html: string): string[] {
+  // Match each <p>...</p> block (including nested tags)
+  const paras = html.match(/<p[\s\S]*?<\/p>/gi) ?? [html]
+  return paras
+}
+
+function chunkParagraphs(paras: string[], n: number): string[] {
+  if (n === 0) return [paras.join('')]
+  const size = Math.ceil(paras.length / (n + 1))
+  const chunks: string[] = []
+  for (let i = 0; i < n + 1; i++) {
+    chunks.push(paras.slice(i * size, (i + 1) * size).join(''))
+  }
+  return chunks.filter(c => c.trim().length > 0)
+}
+
+/* ─── FadeSection ───────────────────────────────────────────── */
+function FadeSection({ children, delay = 0 }: { children: React.ReactNode; delay?: number }) {
+  const ref = useRef<HTMLDivElement>(null)
+  const [visible, setVisible] = useState(false)
+
+  useEffect(() => {
+    const el = ref.current
+    if (!el) return
+    const obs = new IntersectionObserver(
+      ([entry]) => { if (entry.isIntersecting) { setVisible(true); obs.unobserve(el) } },
+      { threshold: 0.08 }
+    )
+    obs.observe(el)
+    return () => obs.disconnect()
+  }, [])
+
+  return (
+    <motion.div
+      ref={ref}
+      initial={{ opacity: 0, y: 32 }}
+      animate={visible ? { opacity: 1, y: 0 } : { opacity: 0, y: 32 }}
+      transition={{ duration: 0.65, delay, ease: [0.22, 1, 0.36, 1] }}
+    >
+      {children}
+    </motion.div>
+  )
+}
+
+/* ─── MetaCard ──────────────────────────────────────────────── */
+function MetaCard({ icon, label, value, sub }: {
+  icon: string; label: string; value: string; sub?: string
+}) {
+  return (
+    <div className="rounded-xl px-4 py-3.5 border flex items-start gap-3 bg-surface-container-lowest/60 border-white/8 backdrop-blur-sm">
+      <span className="material-symbols-outlined mt-0.5 shrink-0 text-on-surface-variant" style={{ fontSize: 18 }}>{icon}</span>
+      <div className="min-w-0">
+        <p className="font-label text-[10px] uppercase tracking-widest text-on-surface-variant mb-0.5">{label}</p>
+        <p className="font-headline font-semibold text-sm leading-snug truncate text-on-surface">{value}</p>
+        {sub && <p className="font-label text-xs text-on-surface-variant mt-0.5">{sub}</p>}
+      </div>
+    </div>
+  )
+}
+
+/* ─── DiaryReader ───────────────────────────────────────────── */
+interface Props {
+  diary: Diary
+  hospital: Pick<Hospital, 'id' | 'name' | 'slug' | 'image_url'>
+  publishedMonthYear: string
+  specialtyTags: string[]
+  skillTags: string[]
+  pros: string[]
+  cons: string[]
+  hasAnalysis: boolean
+}
+
+export default function DiaryReader({
+  diary, hospital, publishedMonthYear, specialtyTags, skillTags,
+  pros, cons, hasAnalysis,
+}: Props) {
+  const heroRef = useRef<HTMLDivElement>(null)
+  const { scrollYProgress } = useScroll({ target: heroRef, offset: ['start start', 'end start'] })
+  const heroOpacity = useTransform(scrollYProgress, [0, 0.6], [1, 0])
+  const heroScale  = useTransform(scrollYProgress, [0, 0.6], [1, 1.06])
+  const metaY      = useTransform(scrollYProgress, [0, 0.5], [0, 60])
+  const metaOpacity= useTransform(scrollYProgress, [0, 0.45], [1, 0])
+
+  const images  = diary.gallery_images ?? []
+  const paras   = splitHtmlIntoParagraphs(diary.content ?? '')
+  const chunks  = chunkParagraphs(paras, images.length)
+
+  return (
+    <div className="min-h-screen bg-surface">
+
+      {/* ── Fixed navbar ── */}
+      <div className="fixed top-0 left-0 right-0 z-50 bg-surface/80 backdrop-blur-md border-b border-white/5">
+        <div className="max-w-screen-xl mx-auto px-4 md:px-12 py-3 flex items-center">
+          <Link
+            href={`/hospitals/${hospital.slug}`}
+            className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl
+                       bg-surface-container border border-white/10
+                       text-on-surface-variant hover:text-primary font-label text-sm font-semibold
+                       transition-all hover:border-primary/40"
+          >
+            <span className="material-symbols-outlined" style={{ fontSize: 16 }}>arrow_back</span>
+            <span className="hidden sm:inline">Back to {hospital.name}</span>
+            <span className="sm:hidden">Back</span>
+          </Link>
+        </div>
+      </div>
+
+      {/* ── Hero — full viewport, parallax out on scroll ── */}
+      <div ref={heroRef} className="relative h-screen w-full overflow-hidden">
+        {/* Background image parallax */}
+        <motion.div className="absolute inset-0 z-0" style={{ scale: heroScale, opacity: heroOpacity }}>
+          {(diary.cover_image_url || hospital.image_url) && (
+            <Image
+              src={diary.cover_image_url ?? hospital.image_url!}
+              alt={diary.title}
+              fill
+              className="object-cover"
+              sizes="100vw"
+              priority
+            />
+          )}
+          <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-black/40 to-[#0d0d0d]" />
+        </motion.div>
+
+        {/* Title — centred, fades with hero */}
+        <motion.div
+          className="absolute inset-0 z-10 flex flex-col items-center justify-center px-6 text-center"
+          style={{ opacity: heroOpacity }}
+        >
+          <p className="font-label text-xs uppercase tracking-[0.2em] text-primary mb-4">
+            {hospital.name} · {publishedMonthYear}
+          </p>
+          <h1 className="font-headline font-extrabold text-4xl sm:text-5xl md:text-6xl lg:text-7xl
+                         text-white leading-tight tracking-tight max-w-4xl">
+            {diary.title}
+          </h1>
+          <p className="mt-4 font-body text-on-surface-variant text-base">
+            {diary.author_name}{diary.author_year ? ` · ${diary.author_year}` : ''}
+          </p>
+          {/* Scroll hint */}
+          <motion.div
+            className="absolute bottom-10 flex flex-col items-center gap-2"
+            animate={{ y: [0, 8, 0] }}
+            transition={{ repeat: Infinity, duration: 1.6, ease: 'easeInOut' }}
+          >
+            <span className="material-symbols-outlined text-on-surface-variant opacity-60" style={{ fontSize: 28 }}>
+              keyboard_arrow_down
+            </span>
+          </motion.div>
+        </motion.div>
+
+        {/* Metadata tiles — animate in on load, scroll away */}
+        <motion.div
+          className="absolute bottom-0 left-0 right-0 z-20 pb-8 px-4 md:px-12"
+          style={{ y: metaY, opacity: metaOpacity }}
+        >
+          <div className="max-w-screen-xl mx-auto grid grid-cols-2 md:grid-cols-3 gap-3 md:gap-4">
+            {[
+              { icon: 'person',            label: 'Curator',       value: diary.author_name, sub: diary.author_year ?? undefined },
+              { icon: 'stethoscope',       label: 'Specialty',     value: specialtyTags[0] ?? 'General Medicine', sub: specialtyTags.length > 1 ? `+${specialtyTags.length - 1} more` : undefined },
+              { icon: 'calendar_month',    label: 'Published',     value: publishedMonthYear },
+              { icon: 'schedule',          label: 'Duration',      value: diary.elective_duration ?? '—' },
+              { icon: 'supervisor_account',label: 'Supervisor',    value: diary.supervisor ?? '—' },
+            ].map((card, i) => (
+              <motion.div
+                key={card.label}
+                initial={{ opacity: 0, y: 24, scale: 0.95 }}
+                animate={{ opacity: 1, y: 0,  scale: 1 }}
+                transition={{ duration: 0.5, delay: 0.15 + i * 0.08, ease: [0.22, 1, 0.36, 1] }}
+              >
+                <MetaCard {...card} />
+              </motion.div>
+            ))}
+
+            {/* Skills */}
+            {skillTags.length > 0 && (
+              <motion.div
+                initial={{ opacity: 0, y: 24, scale: 0.95 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                transition={{ duration: 0.5, delay: 0.55, ease: [0.22, 1, 0.36, 1] }}
+                className="rounded-xl px-4 py-3.5 border flex items-start gap-3 bg-surface-container-lowest/60 border-white/8 backdrop-blur-sm"
+              >
+                <span className="material-symbols-outlined mt-0.5 shrink-0 text-on-surface-variant" style={{ fontSize: 18 }}>psychology</span>
+                <div className="min-w-0">
+                  <p className="font-label text-[10px] uppercase tracking-widest text-on-surface-variant mb-1">Skills</p>
+                  <div className="flex flex-wrap gap-1.5">
+                    {skillTags.map((tag, i) => (
+                      <span key={tag} className={`px-2 py-0.5 rounded-full font-label text-[11px] border cursor-default ${
+                        i === 0 ? 'bg-secondary/20 text-secondary border-secondary/30'
+                        : i % 3 === 1 ? 'bg-primary/20 text-primary border-primary/30'
+                        : 'bg-surface-container-highest text-on-surface border-white/5'
+                      }`}>{tag}</span>
+                    ))}
+                  </div>
+                </div>
+              </motion.div>
+            )}
+          </div>
+        </motion.div>
+      </div>
+
+      {/* ── Body — full-width prose interleaved with images ── */}
+      <div className="px-4 md:px-12 lg:px-24 max-w-screen-xl mx-auto mt-16 pb-32 space-y-16">
+
+        {chunks.map((chunk, i) => (
+          <div key={i}>
+            {/* Text chunk */}
+            <FadeSection>
+              <div
+                className="prose-diary"
+                dangerouslySetInnerHTML={{ __html: chunk }}
+              />
+            </FadeSection>
+
+            {/* Image between chunks (after chunk i, before chunk i+1) */}
+            {images[i] && (
+              <FadeSection delay={0.1}>
+                <div className="mt-12 -mx-4 md:-mx-12 lg:-mx-24">
+                  <div className="relative w-full overflow-hidden" style={{ height: 'clamp(280px, 45vw, 640px)' }}>
+                    <Image
+                      src={images[i]}
+                      alt={`${diary.title} — photo ${i + 1}`}
+                      fill
+                      className="object-cover"
+                      sizes="100vw"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-[#0d0d0d]/60 via-transparent to-[#0d0d0d]/30" />
+                  </div>
+                </div>
+              </FadeSection>
+            )}
+          </div>
+        ))}
+
+        {/* ── Rotation Analysis ── */}
+        {hasAnalysis && (
+          <FadeSection>
+            <div className="pt-8 border-t border-white/5">
+              <h2 className="font-headline text-xl md:text-2xl font-bold text-on-surface mb-6 flex items-center gap-3">
+                <span className="material-symbols-outlined text-on-surface p-2 bg-surface-container-high rounded-lg" style={{ fontSize: 20 }}>compare_arrows</span>
+                Rotation Analysis
+              </h2>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-6">
+                {pros.length > 0 && (
+                  <div className="bg-surface-container-low rounded-2xl p-5 md:p-6 border-t-2 border-secondary/60 border border-white/5">
+                    <h3 className="font-headline text-lg font-bold text-secondary mb-4 flex items-center gap-2">
+                      <span className="material-symbols-outlined" style={{ fontSize: 20 }}>thumb_up</span>Pros
+                    </h3>
+                    <ul className="space-y-3">
+                      {pros.map((pro, i) => (
+                        <li key={i} className="flex gap-3 font-body text-sm text-on-surface-variant">
+                          <span className="material-symbols-outlined text-secondary shrink-0 mt-0.5" style={{ fontSize: 16 }}>check_circle</span>
+                          <span>{pro}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+                {cons.length > 0 && (
+                  <div className="bg-surface-container-lowest rounded-2xl p-5 md:p-6 border-t-2 border-primary/60 border border-white/5">
+                    <h3 className="font-headline text-lg font-bold text-primary mb-4 flex items-center gap-2">
+                      <span className="material-symbols-outlined" style={{ fontSize: 20 }}>warning</span>Cons
+                    </h3>
+                    <ul className="space-y-3">
+                      {cons.map((con, i) => (
+                        <li key={i} className="flex gap-3 font-body text-sm text-on-surface-variant">
+                          <span className="material-symbols-outlined text-primary shrink-0 mt-0.5" style={{ fontSize: 16 }}>remove_circle</span>
+                          <span>{con}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+              </div>
+            </div>
+          </FadeSection>
+        )}
+      </div>
+    </div>
+  )
+}
