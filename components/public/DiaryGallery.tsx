@@ -32,9 +32,9 @@ export default function DiaryGallery({ images, diaryTitle }: DiaryGalleryProps) 
 
   return (
     <>
-      {/* ── Draggable card canvas — sits flush inside the Clinical Narrative card ── */}
-      <div className="mt-8 -mx-5 md:-mx-7">
-        <div className="flex items-center gap-2 mb-3 px-5 md:px-7">
+      {/* ── Draggable card canvas — sits below the narrative prose ── */}
+      <div className="mt-8">
+        <div className="flex items-center gap-2 mb-3">
           <span className="material-symbols-outlined text-secondary" style={{ fontSize: 16 }}>photo_library</span>
           <p className="font-label text-xs text-on-surface-variant uppercase tracking-widest">
             Photo Gallery · drag to explore · tap to view

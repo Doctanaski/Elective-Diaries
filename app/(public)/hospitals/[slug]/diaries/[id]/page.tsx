@@ -153,24 +153,15 @@ export default async function DiaryPage({ params }: Props) {
         </div>
       </div>
 
-      {/* ── Bento grid ── */}
-      <div className="px-4 md:px-12 mt-5 max-w-screen-xl mx-auto space-y-6">
-
-          {/* Clinical Narrative */}
-          <section className="relative bg-surface-container-low rounded-2xl p-5 md:p-7 overflow-hidden border border-white/5">
-            <div className="absolute top-0 left-0 w-1 h-full bg-gradient-to-b from-primary via-primary/60 to-transparent rounded-l-2xl" />
-            <h2 className="font-headline text-xl font-bold text-on-surface flex items-center gap-3 mb-5">
-              <span className="material-symbols-outlined text-secondary p-2 bg-secondary/10 rounded-lg" style={{ fontSize: 20 }}>history_edu</span>
-              Clinical Narrative
-            </h2>
-            <div className="prose-diary pl-1" dangerouslySetInnerHTML={{ __html: diary.content }} />
-
-            {/* Photo Gallery — embedded below the narrative text */}
-            <DiaryGallery
-              images={diary.gallery_images ?? []}
-              diaryTitle={diary.title}
-            />
-          </section>
+      {/* ── Narrative — blogpost style, no card wrapper ── */}
+      <div className="px-4 md:px-12 mt-10 max-w-screen-xl mx-auto">
+        <div className="max-w-3xl mx-auto">
+          <div className="prose-diary" dangerouslySetInnerHTML={{ __html: diary.content }} />
+          <DiaryGallery
+            images={diary.gallery_images ?? []}
+            diaryTitle={diary.title}
+          />
+        </div>
       </div>
 
       {/* ── Rotation Analysis — full width, shown only if pros/cons exist ── */}
