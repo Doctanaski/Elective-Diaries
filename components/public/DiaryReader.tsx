@@ -1,7 +1,7 @@
 'use client'
 
-import { useRef, useState, useEffect, useCallback } from 'react'
-import { motion, useScroll, useTransform, AnimatePresence } from 'motion/react'
+import { useRef, useState, useEffect } from 'react'
+import { motion, useScroll, useTransform } from 'motion/react'
 import Image from 'next/image'
 import Link from 'next/link'
 import type { Hospital, Diary } from '@/types/database'
@@ -89,9 +89,8 @@ export default function DiaryReader({
   const heroRef = useRef<HTMLDivElement>(null)
   const { scrollYProgress } = useScroll({ target: heroRef, offset: ['start start', 'end start'] })
   const heroOpacity = useTransform(scrollYProgress, [0, 0.6], [1, 0])
-  const heroScale  = useTransform(scrollYProgress, [0, 0.6], [1, 1.06])
-  const metaY      = useTransform(scrollYProgress, [0, 0.5], [0, 60])
-  const metaOpacity= useTransform(scrollYProgress, [0, 0.45], [1, 0])
+  const metaY       = useTransform(scrollYProgress, [0, 0.5], [0, 60])
+  const metaOpacity = useTransform(scrollYProgress, [0, 0.45], [1, 0])
 
   const images  = diary.gallery_images ?? []
   const paras   = splitHtmlIntoParagraphs(diary.content ?? '')
@@ -117,21 +116,14 @@ export default function DiaryReader({
         </div>
       </div>
 
-      {/* ── Hero — full viewport, parallax out on scroll ── */}
+      {/* ── Hero — full viewport, no background image ── */}
       <div ref={heroRef} className="relative h-screen w-full overflow-hidden">
-        {/* Background image parallax */}
-        <motion.div className="absolute inset-0 z-0" style={{ scale: heroScale, opacity: heroOpacity }}>
-          {(diary.cover_image_url || hospital.image_url) && (
-            <Image
-              src={diary.cover_image_url ?? hospital.image_url!}
-              alt={diary.title}
-              fill
-              className="object-cover"
-              sizes="100vw"
-              priority
-            />
-          )}
-          <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-black/40 to-[#0d0d0d]" />
+        {/* Dark gradient background only — no image */}
+        <motion.div
+          className="absolute inset-0 z-0"
+          style={{ opacity: heroOpacity }}
+        >
+          <div className="absolute inset-0 bg-gradient-to-b from-surface-container-low via-surface to-surface" />
         </motion.div>
 
         {/* Title — centred, fades with hero */}
@@ -227,16 +219,15 @@ export default function DiaryReader({
             {/* Image between chunks (after chunk i, before chunk i+1) */}
             {images[i] && (
               <FadeSection delay={0.1}>
-                <div className="mt-12 -mx-4 md:-mx-12 lg:-mx-24">
-                  <div className="relative w-full overflow-hidden" style={{ height: 'clamp(280px, 45vw, 640px)' }}>
+                <div className="mt-12">
+                  <div className="relative w-full overflow-hidden rounded-xl bg-surface-container-low" style={{ height: 'clamp(280px, 45vw, 640px)' }}>
                     <Image
                       src={images[i]}
                       alt={`${diary.title} — photo ${i + 1}`}
                       fill
-                      className="object-cover"
+                      className="object-contain"
                       sizes="100vw"
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-[#0d0d0d]/60 via-transparent to-[#0d0d0d]/30" />
                   </div>
                 </div>
               </FadeSection>
