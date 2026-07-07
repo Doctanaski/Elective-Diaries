@@ -8,10 +8,7 @@ import type { Hospital, Diary } from '@/types/database'
 
 /* ─── helpers ──────────────────────────────────────────────── */
 
-// Split raw HTML into N+1 roughly equal chunks by paragraph tags.
-// We never cut mid-tag — we split on </p> boundaries.
 function splitHtmlIntoParagraphs(html: string): string[] {
-  // Match each <p>...</p> block (including nested tags)
   const paras = html.match(/<p[\s\S]*?<\/p>/gi) ?? [html]
   return paras
 }
@@ -89,12 +86,13 @@ export default function DiaryReader({
   const heroRef = useRef<HTMLDivElement>(null)
   const { scrollYProgress } = useScroll({ target: heroRef, offset: ['start start', 'end start'] })
   const heroOpacity = useTransform(scrollYProgress, [0, 0.6], [1, 0])
-  const metaY       = useTransform(scrollYProgress, [0, 0.5], [0, 60])
-  const metaOpacity = useTransform(scrollYProgress, [0, 0.45], [1, 0])
+  // Meta tiles: translate down AND fade to 0 — fully gone, no pointer events
+  const metaY       = useTransform(scrollYProgress, [0, 0.5], [0, 80])
+  const metaOpacity = useTransform(scrollYProgress, [0, 0.4], [1, 0])
 
-  const images  = diary.gallery_images ?? []
-  const paras   = splitHtmlIntoParagraphs(diary.content ?? '')
-  const chunks  = chunkParagraphs(paras, images.length)
+  const images = diary.gallery_images ?? []
+  const paras  = splitHtmlIntoParagraphs(diary.content ?? '')
+  const chunks = chunkParagraphs(paras, images.length)
 
   return (
     <div className="min-h-screen bg-surface">
@@ -116,60 +114,54 @@ export default function DiaryReader({
         </div>
       </div>
 
-      {/* ── Hero — full viewport, no background image ── */}
+      {/* ── Hero — full viewport, overflow-hidden so meta tiles can't bleed out ── */}
       <div ref={heroRef} className="relative h-screen w-full overflow-hidden">
-        {/* Dark gradient background only — no image */}
-        <motion.div
-          className="absolute inset-0 z-0"
-          style={{ opacity: heroOpacity }}
-        >
+
+        {/* Dark gradient background */}
+        <motion.div className="absolute inset-0 z-0" style={{ opacity: heroOpacity }}>
           <div className="absolute inset-0 bg-gradient-to-b from-surface-container-low via-surface to-surface" />
         </motion.div>
 
-        {/* Title — centred, fades with hero */}
+        {/* Title — truly centred, nothing above or below */}
         <motion.div
-          className="absolute inset-0 z-10 flex flex-col items-center justify-center px-6 text-center"
+          className="absolute inset-0 z-10 flex items-center justify-center px-6 text-center"
           style={{ opacity: heroOpacity }}
         >
-          <p className="font-label text-xs uppercase tracking-[0.2em] text-primary mb-4">
-            {hospital.name} · {publishedMonthYear}
-          </p>
           <h1 className="font-headline font-extrabold text-4xl sm:text-5xl md:text-6xl lg:text-7xl
                          text-white leading-tight tracking-tight max-w-4xl">
             {diary.title}
           </h1>
-          <p className="mt-4 font-body text-on-surface-variant text-base">
-            {diary.author_name}{diary.author_year ? ` · ${diary.author_year}` : ''}
-          </p>
-          {/* Scroll hint */}
-          <motion.div
-            className="absolute bottom-10 flex flex-col items-center gap-2"
-            animate={{ y: [0, 8, 0] }}
-            transition={{ repeat: Infinity, duration: 1.6, ease: 'easeInOut' }}
-          >
-            <span className="material-symbols-outlined text-on-surface-variant opacity-60" style={{ fontSize: 28 }}>
-              keyboard_arrow_down
-            </span>
-          </motion.div>
         </motion.div>
 
-        {/* Metadata tiles — animate in on load, scroll away */}
+        {/* Scroll hint — lives just above the meta tiles, fades with them */}
+        <motion.div
+          className="absolute z-30 left-1/2 -translate-x-1/2"
+          style={{ bottom: 'calc(38% + 8px)', opacity: metaOpacity }}
+          animate={{ y: [0, 8, 0] }}
+          transition={{ repeat: Infinity, duration: 1.6, ease: 'easeInOut' }}
+        >
+          <span className="material-symbols-outlined text-on-surface-variant opacity-50" style={{ fontSize: 28 }}>
+            keyboard_arrow_down
+          </span>
+        </motion.div>
+
+        {/* Metadata tiles — pop in on load, fully vanish on scroll (opacity + translate + no pointer events) */}
         <motion.div
           className="absolute bottom-0 left-0 right-0 z-20 pb-8 px-4 md:px-12"
-          style={{ y: metaY, opacity: metaOpacity }}
+          style={{ y: metaY, opacity: metaOpacity, pointerEvents: 'none' }}
         >
           <div className="max-w-screen-xl mx-auto grid grid-cols-2 md:grid-cols-3 gap-3 md:gap-4">
             {[
-              { icon: 'person',            label: 'Curator',       value: diary.author_name, sub: diary.author_year ?? undefined },
-              { icon: 'stethoscope',       label: 'Specialty',     value: specialtyTags[0] ?? 'General Medicine', sub: specialtyTags.length > 1 ? `+${specialtyTags.length - 1} more` : undefined },
-              { icon: 'calendar_month',    label: 'Published',     value: publishedMonthYear },
-              { icon: 'schedule',          label: 'Duration',      value: diary.elective_duration ?? '—' },
-              { icon: 'supervisor_account',label: 'Supervisor',    value: diary.supervisor ?? '—' },
+              { icon: 'person',             label: 'Curator',   value: diary.author_name,             sub: diary.author_year ?? undefined },
+              { icon: 'stethoscope',        label: 'Specialty', value: specialtyTags[0] ?? 'General Medicine', sub: specialtyTags.length > 1 ? `+${specialtyTags.length - 1} more` : undefined },
+              { icon: 'calendar_month',     label: 'Published', value: publishedMonthYear },
+              { icon: 'schedule',           label: 'Duration',  value: diary.elective_duration ?? '—' },
+              { icon: 'supervisor_account', label: 'Supervisor',value: diary.supervisor ?? '—' },
             ].map((card, i) => (
               <motion.div
                 key={card.label}
                 initial={{ opacity: 0, y: 24, scale: 0.95 }}
-                animate={{ opacity: 1, y: 0,  scale: 1 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
                 transition={{ duration: 0.5, delay: 0.15 + i * 0.08, ease: [0.22, 1, 0.36, 1] }}
               >
                 <MetaCard {...card} />
@@ -210,17 +202,14 @@ export default function DiaryReader({
           <div key={i}>
             {/* Text chunk */}
             <FadeSection>
-              <div
-                className="prose-diary"
-                dangerouslySetInnerHTML={{ __html: chunk }}
-              />
+              <div className="prose-diary" dangerouslySetInnerHTML={{ __html: chunk }} />
             </FadeSection>
 
-            {/* Image between chunks (after chunk i, before chunk i+1) */}
+            {/* Gallery image — no background, no border, just the image */}
             {images[i] && (
               <FadeSection delay={0.1}>
                 <div className="mt-12">
-                  <div className="relative w-full overflow-hidden rounded-xl bg-surface-container-low" style={{ height: 'clamp(280px, 45vw, 640px)' }}>
+                  <div className="relative w-full overflow-hidden rounded-xl" style={{ height: 'clamp(280px, 45vw, 640px)' }}>
                     <Image
                       src={images[i]}
                       alt={`${diary.title} — photo ${i + 1}`}
