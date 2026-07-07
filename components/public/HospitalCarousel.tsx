@@ -143,8 +143,8 @@ export default function HospitalCarousel({ hospitals }: { hospitals: Hospital[] 
                 onClick={() => goTo(i)}
                 className={`text-right font-label text-sm transition-all duration-300 px-3 py-1.5 rounded-lg
                             ${i === active
-                              ? 'text-white font-bold bg-white/10'
-                              : 'text-white/35 hover:text-white/70 font-medium'
+                              ? 'text-primary font-bold bg-primary/10'
+                              : 'text-primary/40 hover:text-primary/70 font-medium'
                             }`}
               >
                 {hospital.name}
