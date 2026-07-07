@@ -44,11 +44,10 @@ const BlurText = ({
   const ref = useRef<HTMLParagraphElement>(null)
 
   useEffect(() => {
-    // Fire immediately on mount — no scroll/click needed.
-    // A small delay lets the page finish its first paint so the
-    // animation is always visible from the start.
-    const timer = setTimeout(() => setInView(true), 80)
-    return () => clearTimeout(timer)
+    // requestAnimationFrame fires after the first paint, guaranteeing
+    // the animation starts without needing any user interaction.
+    const id = requestAnimationFrame(() => setInView(true))
+    return () => cancelAnimationFrame(id)
   }, [])
 
   const defaultFrom: Snapshot = useMemo(
