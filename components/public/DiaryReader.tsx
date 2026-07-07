@@ -126,7 +126,7 @@ export default function DiaryReader({
           overflow-hidden on the sentinel hard-clips anything that tries to bleed
           past the viewport boundary — meta tiles included.
       ────────────────────────────────────────────────────────────────────────── */}
-      <div ref={sentinelRef} className="relative" style={{ height: '200vh', overflow: 'hidden' }}>
+      <div ref={sentinelRef} className="relative" style={{ height: '130vh', overflow: 'hidden' }}>
 
         {/* Sticky hero — stays pinned while sentinel scrolls under it */}
         <div className="sticky top-0 h-screen w-full overflow-hidden">
@@ -210,7 +210,7 @@ export default function DiaryReader({
       </div>
 
       {/* ── Body — prose interleaved with images ── */}
-      <div className="px-4 md:px-12 lg:px-24 max-w-screen-xl mx-auto mt-16 pb-32 space-y-16">
+      <div className="px-4 md:px-12 lg:px-24 max-w-screen-xl mx-auto mt-6 pb-32 space-y-16">
 
         {chunks.map((chunk, i) => (
           <div key={i}>
