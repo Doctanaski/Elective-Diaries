@@ -1,31 +1,41 @@
 'use client'
 
-import { useState, useRef, useCallback } from 'react'
+import { useState, useRef, useCallback, useEffect } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
+import { motion, AnimatePresence } from 'motion/react'
 import type { Hospital } from '@/types/database'
 
-const statusConfig = {
-  active: { color: '#34A853', label: 'Active' },
+const statusConfig: Record<string, { color: string; label: string }> = {
+  active:   { color: '#34A853', label: 'Active' },
   new_data: { color: '#4285F4', label: 'New Data' },
   inactive: { color: '#857372', label: 'Inactive' },
 }
 
-const CAROUSEL_HEIGHT = 460
-const MOBILE_IMAGE_HEIGHT = 260
-
 export default function HospitalCarousel({ hospitals }: { hospitals: Hospital[] }) {
   const [active, setActive] = useState(0)
+  const [dir, setDir] = useState(1) // 1 = forward, -1 = backward
   const touchStartX = useRef<number | null>(null)
-
   const count = hospitals.length
 
   const goTo = useCallback((index: number) => {
-    setActive(((index % count) + count) % count)
-  }, [count])
+    const next = ((index % count) + count) % count
+    setDir(next > active ? 1 : -1)
+    setActive(next)
+  }, [count, active])
 
   const goPrev = useCallback(() => goTo(active - 1), [active, goTo])
   const goNext = useCallback(() => goTo(active + 1), [active, goTo])
+
+  // Keyboard navigation
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => {
+      if (e.key === 'ArrowLeft') goPrev()
+      if (e.key === 'ArrowRight') goNext()
+    }
+    window.addEventListener('keydown', handler)
+    return () => window.removeEventListener('keydown', handler)
+  }, [goPrev, goNext])
 
   function handleTouchStart(e: React.TouchEvent) {
     touchStartX.current = e.touches[0].clientX
@@ -33,332 +43,186 @@ export default function HospitalCarousel({ hospitals }: { hospitals: Hospital[] 
   function handleTouchEnd(e: React.TouchEvent) {
     if (touchStartX.current === null) return
     const delta = e.changedTouches[0].clientX - touchStartX.current
-    if (delta > 50) goPrev()
-    else if (delta < -50) goNext()
+    if (delta > 48) goPrev()
+    else if (delta < -48) goNext()
     touchStartX.current = null
   }
 
-  // Compute each card's position relative to the active one,
-  // wrapping around so the carousel feels continuous.
-  function relativeOffset(index: number) {
-    let diff = index - active
-    if (diff > count / 2) diff -= count
-    if (diff < -count / 2) diff += count
-    return diff
-  }
-
-  const activeHospital = hospitals[active]
-  const status = statusConfig[activeHospital.status] ?? statusConfig.inactive
+  const h = hospitals[active]
+  const status = statusConfig[h.status] ?? statusConfig.inactive
 
   return (
-    <div className="relative">
-
-      {/* ════════════════════════════════════════════════════════
-          MOBILE LAYOUT (< md) — single full-width card per slide,
-          info stacked below the image, no horizontal overflow.
-          ════════════════════════════════════════════════════════ */}
-      <div
-        className="md:hidden relative w-full overflow-hidden"
-        onTouchStart={handleTouchStart}
-        onTouchEnd={handleTouchEnd}
-      >
-        <div className="relative w-full" style={{ height: MOBILE_IMAGE_HEIGHT }}>
-          {hospitals.map((hospital, index) => {
-            const offset = relativeOffset(index)
-            const isActive = offset === 0
-            const isVisible = Math.abs(offset) <= 1
-            if (!isVisible) return null
-
-            return (
-              <Link
-                key={hospital.id}
-                href={`/hospitals/${hospital.slug}`}
-                prefetch={true}
-                className="absolute top-0 left-0 w-full h-full
-                           transition-all duration-500 ease-[cubic-bezier(0.22,1,0.36,1)]"
-                style={{
-                  transform: `translateX(${offset * 100}%)`,
-                  opacity: isActive ? 1 : 0,
-                  zIndex: isActive ? 10 : 0,
-                  pointerEvents: isActive ? 'auto' : 'none',
-                }}
-                tabIndex={isActive ? 0 : -1}
-                aria-hidden={!isActive}
-              >
-                <div className="group relative w-full h-full rounded-2xl overflow-hidden border border-outline-variant/20 bg-surface-container">
-                  {hospital.image_url && (
-                    <Image
-                      src={hospital.image_url}
-                      alt={hospital.name}
-                      fill
-                      className="object-cover"
-                      sizes="100vw"
-                      priority={isActive}
-                    />
-                  )}
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent" />
-
-                  {isActive && hospital.status !== 'inactive' && (
-                    <div className="absolute top-4 right-4 bg-surface/90 backdrop-blur-md px-3 py-1.5 rounded-full flex items-center space-x-2 border border-outline-variant/20 shadow-sm">
-                      <div className="w-2 h-2 rounded-full animate-pulse" style={{ backgroundColor: status.color }} />
-                      <span className="font-label text-[11px] uppercase font-bold text-on-surface tracking-wider">
-                        {status.label}
-                      </span>
-                    </div>
-                  )}
-
-                  <div className="absolute bottom-0 left-0 right-0 p-5">
-                    <h3 className="font-headline text-xl font-bold text-white tracking-tight leading-snug">
-                      {hospital.name}
-                    </h3>
-                  </div>
-                </div>
-              </Link>
-            )
-          })}
-        </div>
-
-        {/* Info block — stacked below the image */}
-        <div className="mt-4 px-1">
-          {activeHospital.description ? (
-            <p className="text-on-surface-variant text-sm leading-relaxed mb-4">
-              {activeHospital.description}
-            </p>
-          ) : (
-            <p className="text-on-surface-variant text-sm leading-relaxed mb-4 italic opacity-70">
-              No description added yet.
-            </p>
+    <div
+      className="relative w-full overflow-hidden rounded-2xl"
+      style={{ height: 'clamp(480px, 60vh, 680px)' }}
+      onTouchStart={handleTouchStart}
+      onTouchEnd={handleTouchEnd}
+    >
+      {/* ── Full-bleed background — crossfades on hospital change ── */}
+      <AnimatePresence initial={false}>
+        <motion.div
+          key={active}
+          className="absolute inset-0 z-0"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.7, ease: 'easeInOut' }}
+        >
+          {h.image_url && (
+            <Image
+              src={h.image_url}
+              alt={h.name}
+              fill
+              className="object-cover scale-105"
+              sizes="100vw"
+              priority
+            />
           )}
+          {/* Dark vignette — heavier on left for text legibility */}
+          <div className="absolute inset-0 bg-gradient-to-r from-black/90 via-black/60 to-black/20" />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-black/30" />
+        </motion.div>
+      </AnimatePresence>
 
-          <Link
-            href={`/hospitals/${activeHospital.slug}`}
-            prefetch={true}
-            className="inline-flex items-center gap-2 px-5 py-3 rounded-xl bg-primary text-on-primary
-                       font-label text-sm font-semibold hover:bg-primary-container transition-colors"
-          >
-            View Diaries
-            <span className="material-symbols-outlined" style={{ fontSize: 18 }}>arrow_forward</span>
-          </Link>
+      {/* ── Layout: left info + right tab strip ── */}
+      <div className="relative z-10 h-full flex items-end md:items-center justify-between px-8 md:px-12 py-10 gap-8">
+
+        {/* LEFT — animated hospital info */}
+        <div className="flex-1 max-w-lg">
+          <AnimatePresence mode="wait" initial={false}>
+            <motion.div
+              key={active}
+              initial={{ opacity: 0, y: dir * 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{   opacity: 0, y: dir * -20 }}
+              transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+            >
+              {/* Status */}
+              {h.status !== 'inactive' && (
+                <div className="flex items-center gap-2 mb-4">
+                  <div className="w-1.5 h-1.5 rounded-full animate-pulse" style={{ backgroundColor: status.color }} />
+                  <span className="font-label text-[11px] uppercase tracking-[0.18em] text-white/60">
+                    {status.label}
+                  </span>
+                </div>
+              )}
+
+              {/* Hospital name */}
+              <h2 className="font-headline font-extrabold text-3xl md:text-4xl lg:text-5xl text-white
+                             leading-tight tracking-tight mb-4">
+                {h.name}
+              </h2>
+
+              {/* Description */}
+              <p className="text-white/60 text-sm md:text-base leading-relaxed mb-8 line-clamp-3">
+                {h.description ?? 'No description added yet.'}
+              </p>
+
+              {/* CTA */}
+              <Link
+                href={`/hospitals/${h.slug}`}
+                prefetch
+                className="inline-flex items-center gap-2 px-6 py-3 rounded-xl
+                           bg-white text-black font-label text-sm font-bold
+                           hover:bg-white/90 active:scale-95 transition-all"
+              >
+                View Diaries
+                <span className="material-symbols-outlined" style={{ fontSize: 18 }}>arrow_forward</span>
+              </Link>
+            </motion.div>
+          </AnimatePresence>
         </div>
 
-        {/* Prev / Next controls */}
+        {/* RIGHT — vertical hospital name list (desktop only) */}
         {count > 1 && (
-          <>
-            <button
-              type="button"
-              onClick={goPrev}
-              aria-label="Previous hospital"
-              className="absolute left-2 top-[130px] -translate-y-1/2 z-20
-                         w-10 h-10 rounded-full flex items-center justify-center
-                         bg-surface-container/90 backdrop-blur-md border border-outline-variant/30
-                         text-on-surface hover:text-primary hover:border-primary/40
-                         shadow-sm transition-all"
-            >
-              <span className="material-symbols-outlined" style={{ fontSize: 22 }}>chevron_left</span>
-            </button>
-
-            <button
-              type="button"
-              onClick={goNext}
-              aria-label="Next hospital"
-              className="absolute right-2 top-[130px] -translate-y-1/2 z-20
-                         w-10 h-10 rounded-full flex items-center justify-center
-                         bg-surface-container/90 backdrop-blur-md border border-outline-variant/30
-                         text-on-surface hover:text-primary hover:border-primary/40
-                         shadow-sm transition-all"
-            >
-              <span className="material-symbols-outlined" style={{ fontSize: 22 }}>chevron_right</span>
-            </button>
-          </>
-        )}
-
-        {/* Dots */}
-        {count > 1 && (
-          <div className="flex items-center justify-center gap-2 mt-5">
-            {hospitals.map((hospital, index) => (
+          <div className="hidden md:flex flex-col gap-1 items-end shrink-0 max-w-[200px]">
+            {hospitals.map((hospital, i) => (
               <button
                 key={hospital.id}
                 type="button"
-                onClick={() => goTo(index)}
-                aria-label={`Go to ${hospital.name}`}
-                className={`h-2 rounded-full transition-all duration-300 ${
-                  index === active ? 'w-6 bg-primary' : 'w-2 bg-outline-variant/40 hover:bg-outline-variant/70'
-                }`}
-              />
+                onClick={() => goTo(i)}
+                className={`text-right font-label text-sm transition-all duration-300 px-3 py-1.5 rounded-lg
+                            ${i === active
+                              ? 'text-white font-bold bg-white/10'
+                              : 'text-white/35 hover:text-white/70 font-medium'
+                            }`}
+              >
+                {hospital.name}
+              </button>
             ))}
           </div>
         )}
       </div>
 
-      {/* ════════════════════════════════════════════════════════
-          DESKTOP LAYOUT (md+) — peeking side cards + focused card
-          with adjacent info panel.
-          ════════════════════════════════════════════════════════ */}
-      <div
-        className="hidden md:flex relative items-center justify-center overflow-hidden py-6"
-        style={{ minHeight: CAROUSEL_HEIGHT + 48 }}
-      >
-        {hospitals.map((hospital, index) => {
-          const offset = relativeOffset(index)
-          const isActive = offset === 0
-          const isVisible = Math.abs(offset) <= 1
-          if (!isVisible) return null
+      {/* ── Bottom bar: counter + progress dots + arrows ── */}
+      {count > 1 && (
+        <div className="absolute bottom-0 left-0 right-0 z-20 flex items-center justify-between
+                        px-8 md:px-12 py-5">
 
-          // Every card shares the same DOM structure — a single image card —
-          // so transforms animate smoothly between left / center / right slots.
-          let translateX = '-50%'
-          let opacity = 1
-          let zIndex = 20
-          let width = '36rem'
+          {/* Counter */}
+          <span className="font-label text-xs text-white/40 tabular-nums">
+            {String(active + 1).padStart(2, '0')} / {String(count).padStart(2, '0')}
+          </span>
 
-          if (offset < 0) {
-            translateX = '-145%'
-            opacity = 0.35
-            zIndex = 0
-            width = '20rem'
-          } else if (offset > 0) {
-            translateX = '45%'
-            opacity = 0.35
-            zIndex = 0
-            width = '20rem'
-          }
-
-          return (
-            <Link
-              key={hospital.id}
-              href={`/hospitals/${hospital.slug}`}
-              prefetch={true}
-              className="absolute left-1/2 top-1/2
-                         transition-all duration-700 ease-[cubic-bezier(0.22,1,0.36,1)]
-                         hover:opacity-60"
-              style={{
-                height: CAROUSEL_HEIGHT,
-                width,
-                transform: `translateX(${translateX}) translateY(-50%)`,
-                opacity: isActive ? 1 : opacity,
-                zIndex,
-                pointerEvents: isActive ? 'none' : 'auto',
-              }}
-              tabIndex={isActive ? -1 : 0}
-            >
-              <div className="group relative w-full h-full rounded-2xl overflow-hidden border border-outline-variant/20 bg-surface-container shadow-xl">
-                {hospital.image_url && (
-                  <Image
-                    src={hospital.image_url}
-                    alt={hospital.name}
-                    fill
-                    className="object-cover group-hover:scale-105 transition-transform duration-700"
-                    sizes="(max-width: 768px) 100vw, 50vw"
-                    priority={isActive}
+          {/* Progress bar */}
+          <div className="flex items-center gap-1.5 flex-1 mx-6">
+            {hospitals.map((_, i) => (
+              <button
+                key={i}
+                type="button"
+                onClick={() => goTo(i)}
+                className="relative h-[2px] flex-1 rounded-full overflow-hidden bg-white/20"
+              >
+                {i === active && (
+                  <motion.div
+                    className="absolute inset-0 bg-white rounded-full"
+                    layoutId="progress"
+                    transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
                   />
                 )}
-                <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent" />
-
-                {/* Status badge — active card only */}
-                {isActive && hospital.status !== 'inactive' && (
-                  <div className="absolute top-6 right-6 bg-surface/90 backdrop-blur-md px-3 py-1.5 rounded-full flex items-center space-x-2 border border-outline-variant/20 shadow-sm">
-                    <div className="w-2 h-2 rounded-full animate-pulse" style={{ backgroundColor: status.color }} />
-                    <span className="font-label text-[11px] uppercase font-bold text-on-surface tracking-wider">
-                      {status.label}
-                    </span>
-                  </div>
+                {i < active && (
+                  <div className="absolute inset-0 bg-white/60 rounded-full" />
                 )}
-
-                {/* Name */}
-                <div className="absolute bottom-0 left-0 right-0 p-6 md:p-8">
-                  <h3 className="font-headline text-lg md:text-2xl font-bold text-white tracking-tight leading-snug">
-                    {hospital.name}
-                  </h3>
-                </div>
-              </div>
-            </Link>
-          )
-        })}
-
-        {/* ── Info panel for the focused hospital — sits flush against the active card ── */}
-        <div
-          key={activeHospital.id + '-info'}
-          className="flex absolute left-1/2 top-1/2 flex-col
-                     transition-all duration-700 ease-[cubic-bezier(0.22,1,0.36,1)]
-                     bg-surface-container-low rounded-2xl border border-outline-variant/20 shadow-xl
-                     p-8 overflow-y-auto"
-          style={{
-            height: CAROUSEL_HEIGHT,
-            width: '22rem',
-            transform: 'translateX(11%) translateY(-50%)',
-            zIndex: 25,
-          }}
-        >
-          <h3 className="font-headline text-2xl md:text-3xl font-bold text-on-surface tracking-tight leading-snug mb-3">
-            {activeHospital.name}
-          </h3>
-
-          {activeHospital.description ? (
-            <p className="text-on-surface-variant text-sm md:text-base leading-relaxed mb-6">
-              {activeHospital.description}
-            </p>
-          ) : (
-            <p className="text-on-surface-variant text-sm md:text-base leading-relaxed mb-6 italic opacity-70">
-              No description added yet.
-            </p>
-          )}
-
-          <div className="mt-auto">
-            <Link
-              href={`/hospitals/${activeHospital.slug}`}
-              prefetch={true}
-              className="inline-flex items-center gap-2 px-5 py-3 rounded-xl bg-primary text-on-primary
-                         font-label text-sm font-semibold hover:bg-primary-container transition-colors"
-            >
-              View Diaries
-              <span className="material-symbols-outlined" style={{ fontSize: 18 }}>arrow_forward</span>
-            </Link>
+              </button>
+            ))}
           </div>
-        </div>
 
-        {/* Prev / Next controls */}
-        {count > 1 && (
-          <>
+          {/* Prev / Next */}
+          <div className="flex items-center gap-2">
             <button
               type="button"
               onClick={goPrev}
-              aria-label="Previous hospital"
-              className="absolute left-0 md:left-4 top-1/2 -translate-y-1/2 z-30
-                         w-11 h-11 rounded-full flex items-center justify-center
-                         bg-surface-container/90 backdrop-blur-md border border-outline-variant/30
-                         text-on-surface hover:text-primary hover:border-primary/40
-                         shadow-sm transition-all"
+              aria-label="Previous"
+              className="w-9 h-9 rounded-full flex items-center justify-center
+                         border border-white/20 text-white/60 hover:text-white
+                         hover:border-white/50 transition-all"
             >
-              <span className="material-symbols-outlined" style={{ fontSize: 24 }}>chevron_left</span>
+              <span className="material-symbols-outlined" style={{ fontSize: 20 }}>arrow_back</span>
             </button>
-
             <button
               type="button"
               onClick={goNext}
-              aria-label="Next hospital"
-              className="absolute right-0 md:right-4 top-1/2 -translate-y-1/2 z-30
-                         w-11 h-11 rounded-full flex items-center justify-center
-                         bg-surface-container/90 backdrop-blur-md border border-outline-variant/30
-                         text-on-surface hover:text-primary hover:border-primary/40
-                         shadow-sm transition-all"
+              aria-label="Next"
+              className="w-9 h-9 rounded-full flex items-center justify-center
+                         border border-white/20 text-white/60 hover:text-white
+                         hover:border-white/50 transition-all"
             >
-              <span className="material-symbols-outlined" style={{ fontSize: 24 }}>chevron_right</span>
+              <span className="material-symbols-outlined" style={{ fontSize: 20 }}>arrow_forward</span>
             </button>
-          </>
-        )}
-      </div>
+          </div>
+        </div>
+      )}
 
-      {/* Dots — desktop */}
+      {/* ── Mobile dots ── */}
       {count > 1 && (
-        <div className="hidden md:flex items-center justify-center gap-2 mt-6">
-          {hospitals.map((hospital, index) => (
+        <div className="md:hidden absolute top-4 right-4 z-20 flex gap-1.5">
+          {hospitals.map((_, i) => (
             <button
-              key={hospital.id}
+              key={i}
               type="button"
-              onClick={() => goTo(index)}
-              aria-label={`Go to ${hospital.name}`}
-              className={`h-2 rounded-full transition-all duration-300 ${
-                index === active ? 'w-6 bg-primary' : 'w-2 bg-outline-variant/40 hover:bg-outline-variant/70'
+              onClick={() => goTo(i)}
+              className={`h-1.5 rounded-full transition-all duration-300 ${
+                i === active ? 'w-5 bg-white' : 'w-1.5 bg-white/30'
               }`}
             />
           ))}
