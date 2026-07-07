@@ -83,19 +83,25 @@ export default function DiaryReader({
   diary, hospital, publishedMonthYear, specialtyTags, skillTags,
   pros, cons, hasAnalysis,
 }: Props) {
-  const heroRef = useRef<HTMLDivElement>(null)
-  const { scrollYProgress } = useScroll({ target: heroRef, offset: ['start start', 'end start'] })
-  const heroOpacity = useTransform(scrollYProgress, [0, 0.6], [1, 0])
-  // Meta tiles: translate down AND fade to 0 — fully gone, no pointer events
-  const metaY       = useTransform(scrollYProgress, [0, 0.5], [0, 80])
-  const metaOpacity = useTransform(scrollYProgress, [0, 0.4], [1, 0])
+  // The scroll sentinel is a tall spacer BEHIND the sticky hero.
+  // We track scroll progress through that spacer so the hero knows
+  // how far the user has scrolled without the hero itself moving.
+  const sentinelRef = useRef<HTMLDivElement>(null)
+  const { scrollYProgress } = useScroll({
+    target: sentinelRef,
+    offset: ['start start', 'end start'],
+  })
+
+  const heroOpacity = useTransform(scrollYProgress, [0, 0.7], [1, 0])
+  const metaOpacity = useTransform(scrollYProgress, [0, 0.45], [1, 0])
+  const metaY       = useTransform(scrollYProgress, [0, 0.45], [0, 60])
 
   const images = diary.gallery_images ?? []
   const paras  = splitHtmlIntoParagraphs(diary.content ?? '')
   const chunks = chunkParagraphs(paras, images.length)
 
   return (
-    <div className="min-h-screen bg-surface">
+    <div className="bg-surface">
 
       {/* ── Fixed navbar ── */}
       <div className="fixed top-0 left-0 right-0 z-50 bg-surface/80 backdrop-blur-md border-b border-white/5">
@@ -114,98 +120,104 @@ export default function DiaryReader({
         </div>
       </div>
 
-      {/* ── Hero — full viewport, overflow-hidden so meta tiles can't bleed out ── */}
-      <div ref={heroRef} className="relative h-screen w-full overflow-hidden">
+      {/* ── Sentinel + sticky hero wrapper ──────────────────────────────────────
+          The sentinel is 200vh tall. The sticky hero pins inside it for exactly
+          one viewport height, then scrolls away naturally as the sentinel ends.
+          overflow-hidden on the sentinel hard-clips anything that tries to bleed
+          past the viewport boundary — meta tiles included.
+      ────────────────────────────────────────────────────────────────────────── */}
+      <div ref={sentinelRef} className="relative" style={{ height: '200vh', overflow: 'hidden' }}>
 
-        {/* Dark gradient background */}
-        <motion.div className="absolute inset-0 z-0" style={{ opacity: heroOpacity }}>
-          <div className="absolute inset-0 bg-gradient-to-b from-surface-container-low via-surface to-surface" />
-        </motion.div>
+        {/* Sticky hero — stays pinned while sentinel scrolls under it */}
+        <div className="sticky top-0 h-screen w-full overflow-hidden">
 
-        {/* Title — truly centred, nothing above or below */}
-        <motion.div
-          className="absolute inset-0 z-10 flex items-center justify-center px-6 text-center"
-          style={{ opacity: heroOpacity }}
-        >
-          <h1 className="font-headline font-extrabold text-4xl sm:text-5xl md:text-6xl lg:text-7xl
-                         text-white leading-tight tracking-tight max-w-4xl">
-            {diary.title}
-          </h1>
-        </motion.div>
+          {/* Background */}
+          <motion.div className="absolute inset-0 z-0" style={{ opacity: heroOpacity }}>
+            <div className="absolute inset-0 bg-gradient-to-b from-surface-container-low via-surface to-surface" />
+          </motion.div>
 
-        {/* Scroll hint — lives just above the meta tiles, fades with them */}
-        <motion.div
-          className="absolute z-30 left-1/2 -translate-x-1/2"
-          style={{ bottom: 'calc(38% + 8px)', opacity: metaOpacity }}
-          animate={{ y: [0, 8, 0] }}
-          transition={{ repeat: Infinity, duration: 1.6, ease: 'easeInOut' }}
-        >
-          <span className="material-symbols-outlined text-on-surface-variant opacity-50" style={{ fontSize: 28 }}>
-            keyboard_arrow_down
-          </span>
-        </motion.div>
+          {/* Title — dead centre */}
+          <motion.div
+            className="absolute inset-0 z-10 flex items-center justify-center px-6 text-center"
+            style={{ opacity: heroOpacity }}
+          >
+            <h1 className="font-headline font-extrabold text-4xl sm:text-5xl md:text-6xl lg:text-7xl
+                           text-white leading-tight tracking-tight max-w-4xl">
+              {diary.title}
+            </h1>
+          </motion.div>
 
-        {/* Metadata tiles — pop in on load, fully vanish on scroll (opacity + translate + no pointer events) */}
-        <motion.div
-          className="absolute bottom-0 left-0 right-0 z-20 pb-8 px-4 md:px-12"
-          style={{ y: metaY, opacity: metaOpacity, pointerEvents: 'none' }}
-        >
-          <div className="max-w-screen-xl mx-auto grid grid-cols-2 md:grid-cols-3 gap-3 md:gap-4">
-            {[
-              { icon: 'person',             label: 'Curator',   value: diary.author_name,             sub: diary.author_year ?? undefined },
-              { icon: 'stethoscope',        label: 'Specialty', value: specialtyTags[0] ?? 'General Medicine', sub: specialtyTags.length > 1 ? `+${specialtyTags.length - 1} more` : undefined },
-              { icon: 'calendar_month',     label: 'Published', value: publishedMonthYear },
-              { icon: 'schedule',           label: 'Duration',  value: diary.elective_duration ?? '—' },
-              { icon: 'supervisor_account', label: 'Supervisor',value: diary.supervisor ?? '—' },
-            ].map((card, i) => (
-              <motion.div
-                key={card.label}
-                initial={{ opacity: 0, y: 24, scale: 0.95 }}
-                animate={{ opacity: 1, y: 0, scale: 1 }}
-                transition={{ duration: 0.5, delay: 0.15 + i * 0.08, ease: [0.22, 1, 0.36, 1] }}
-              >
-                <MetaCard {...card} />
-              </motion.div>
-            ))}
+          {/* Scroll hint */}
+          <motion.div
+            className="absolute z-30 left-1/2 -translate-x-1/2"
+            style={{ bottom: 'calc(36% + 12px)', opacity: metaOpacity }}
+            animate={{ y: [0, 8, 0] }}
+            transition={{ repeat: Infinity, duration: 1.6, ease: 'easeInOut' }}
+          >
+            <span className="material-symbols-outlined text-on-surface-variant opacity-50" style={{ fontSize: 28 }}>
+              keyboard_arrow_down
+            </span>
+          </motion.div>
 
-            {/* Skills */}
-            {skillTags.length > 0 && (
-              <motion.div
-                initial={{ opacity: 0, y: 24, scale: 0.95 }}
-                animate={{ opacity: 1, y: 0, scale: 1 }}
-                transition={{ duration: 0.5, delay: 0.55, ease: [0.22, 1, 0.36, 1] }}
-                className="rounded-xl px-4 py-3.5 border flex items-start gap-3 bg-surface-container-lowest/60 border-white/8 backdrop-blur-sm"
-              >
-                <span className="material-symbols-outlined mt-0.5 shrink-0 text-on-surface-variant" style={{ fontSize: 18 }}>psychology</span>
-                <div className="min-w-0">
-                  <p className="font-label text-[10px] uppercase tracking-widest text-on-surface-variant mb-1">Skills</p>
-                  <div className="flex flex-wrap gap-1.5">
-                    {skillTags.map((tag, i) => (
-                      <span key={tag} className={`px-2 py-0.5 rounded-full font-label text-[11px] border cursor-default ${
-                        i === 0 ? 'bg-secondary/20 text-secondary border-secondary/30'
-                        : i % 3 === 1 ? 'bg-primary/20 text-primary border-primary/30'
-                        : 'bg-surface-container-highest text-on-surface border-white/5'
-                      }`}>{tag}</span>
-                    ))}
+          {/* Metadata tiles — animate in, then fully vanish as metaOpacity → 0 */}
+          <motion.div
+            className="absolute bottom-0 left-0 right-0 z-20 pb-8 px-4 md:px-12"
+            style={{ y: metaY, opacity: metaOpacity, pointerEvents: 'none' }}
+          >
+            <div className="max-w-screen-xl mx-auto grid grid-cols-2 md:grid-cols-3 gap-3 md:gap-4">
+              {[
+                { icon: 'person',             label: 'Curator',    value: diary.author_name,                    sub: diary.author_year ?? undefined },
+                { icon: 'stethoscope',        label: 'Specialty',  value: specialtyTags[0] ?? 'General Medicine', sub: specialtyTags.length > 1 ? `+${specialtyTags.length - 1} more` : undefined },
+                { icon: 'calendar_month',     label: 'Published',  value: publishedMonthYear },
+                { icon: 'schedule',           label: 'Duration',   value: diary.elective_duration ?? '—' },
+                { icon: 'supervisor_account', label: 'Supervisor', value: diary.supervisor ?? '—' },
+              ].map((card, i) => (
+                <motion.div
+                  key={card.label}
+                  initial={{ opacity: 0, y: 24, scale: 0.95 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  transition={{ duration: 0.5, delay: 0.15 + i * 0.08, ease: [0.22, 1, 0.36, 1] }}
+                >
+                  <MetaCard {...card} />
+                </motion.div>
+              ))}
+
+              {skillTags.length > 0 && (
+                <motion.div
+                  initial={{ opacity: 0, y: 24, scale: 0.95 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  transition={{ duration: 0.5, delay: 0.55, ease: [0.22, 1, 0.36, 1] }}
+                  className="rounded-xl px-4 py-3.5 border flex items-start gap-3 bg-surface-container-lowest/60 border-white/8 backdrop-blur-sm"
+                >
+                  <span className="material-symbols-outlined mt-0.5 shrink-0 text-on-surface-variant" style={{ fontSize: 18 }}>psychology</span>
+                  <div className="min-w-0">
+                    <p className="font-label text-[10px] uppercase tracking-widest text-on-surface-variant mb-1">Skills</p>
+                    <div className="flex flex-wrap gap-1.5">
+                      {skillTags.map((tag, i) => (
+                        <span key={tag} className={`px-2 py-0.5 rounded-full font-label text-[11px] border cursor-default ${
+                          i === 0 ? 'bg-secondary/20 text-secondary border-secondary/30'
+                          : i % 3 === 1 ? 'bg-primary/20 text-primary border-primary/30'
+                          : 'bg-surface-container-highest text-on-surface border-white/5'
+                        }`}>{tag}</span>
+                      ))}
+                    </div>
                   </div>
-                </div>
-              </motion.div>
-            )}
-          </div>
-        </motion.div>
+                </motion.div>
+              )}
+            </div>
+          </motion.div>
+        </div>
       </div>
 
-      {/* ── Body — full-width prose interleaved with images ── */}
+      {/* ── Body — prose interleaved with images ── */}
       <div className="px-4 md:px-12 lg:px-24 max-w-screen-xl mx-auto mt-16 pb-32 space-y-16">
 
         {chunks.map((chunk, i) => (
           <div key={i}>
-            {/* Text chunk */}
             <FadeSection>
               <div className="prose-diary" dangerouslySetInnerHTML={{ __html: chunk }} />
             </FadeSection>
 
-            {/* Gallery image — no background, no border, just the image */}
             {images[i] && (
               <FadeSection delay={0.1}>
                 <div className="mt-12">
@@ -224,7 +236,6 @@ export default function DiaryReader({
           </div>
         ))}
 
-        {/* ── Rotation Analysis ── */}
         {hasAnalysis && (
           <FadeSection>
             <div className="pt-8 border-t border-white/5">
