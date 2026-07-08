@@ -3,6 +3,7 @@ import { createStaticClient } from '@/lib/supabase/static'
 import { notFound } from 'next/navigation'
 import Image from 'next/image'
 import Link from 'next/link'
+import SketchfabPreloader from '@/components/public/SketchfabPreloader'
 import type { Metadata } from 'next'
 import type { Hospital, Diary } from '@/types/database'
 
@@ -51,8 +52,18 @@ export default async function HospitalPage({ params }: Props) {
 
   const diaries = (diariesRaw ?? []) as Diary[]
 
+  // Collect unique Sketchfab model IDs from all published diaries
+  // so they start loading in the background as soon as this page opens.
+  const modelIds = [...new Set(
+    diaries
+      .map(d => d.sketchfab_model_id)
+      .filter((id): id is string => !!id)
+  )]
+
   return (
     <>
+      {/* Preload any 3D models in the background */}
+      <SketchfabPreloader modelIds={modelIds} />
       {/* Back button — fixed overlay */}
       <Link
         href="/"
