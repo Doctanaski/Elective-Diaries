@@ -32,6 +32,7 @@ export default function DiaryForm({ hospitals, diary }: DiaryFormProps) {
   const [cons, setCons] = useState<string[]>(diary?.cons ?? [])
   const [skills, setSkills] = useState<string[]>(diary?.skills ?? [])
   const [galleryImages, setGalleryImages] = useState<string[]>(diary?.gallery_images ?? [])
+  const [sketchfabModelId, setSketchfabModelId] = useState(diary?.sketchfab_model_id ?? '')
   const [electiveDuration, setElectiveDuration] = useState(diary?.elective_duration ?? '')
   const [supervisor, setSupervisor] = useState(diary?.supervisor ?? '')
   const [published, setPublished] = useState(diary?.published ?? false)
@@ -140,6 +141,7 @@ export default function DiaryForm({ hospitals, diary }: DiaryFormProps) {
       cons: cons.filter(c => c.trim()),
       skills: skills.map(s => s.trim()).filter(Boolean),
       gallery_images: galleryImages.length > 0 ? galleryImages : null,
+      sketchfab_model_id: sketchfabModelId || null,
       elective_duration: electiveDuration || null,
       supervisor: supervisor || null,
       published,
@@ -376,6 +378,32 @@ export default function DiaryForm({ hospitals, diary }: DiaryFormProps) {
         ) : (
           <p className="text-xs text-on-surface-variant italic">No gallery images yet.</p>
         )}
+      </div>
+
+      {/* 3D Model */}
+      <div className="bg-surface-container-lowest border border-outline-variant/20 rounded-2xl p-6 space-y-3">
+        <div>
+          <label className="block text-sm font-semibold text-on-surface mb-1">3D Model (Sketchfab)</label>
+          <p className="text-xs text-on-surface-variant mb-3">Paste the model ID from a Sketchfab URL. It appears as a rotating prop on the diary hero. Leave blank to show none.</p>
+          <input
+            type="text"
+            value={sketchfabModelId}
+            onChange={(e) => setSketchfabModelId(e.target.value.trim())}
+            placeholder="e.g. c427ea0aee214141a78eba37bf9b76bb"
+            className={inputClass}
+          />
+          {sketchfabModelId && (
+            <a
+              href={`https://sketchfab.com/3d-models/${sketchfabModelId}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1 text-xs text-primary mt-2 hover:underline"
+            >
+              <span className="material-symbols-outlined" style={{ fontSize: 14 }}>open_in_new</span>
+              Preview on Sketchfab
+            </a>
+          )}
+        </div>
       </div>
 
       {/* Pros / Cons */}

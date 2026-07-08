@@ -4,7 +4,10 @@ import { useRef, useState, useEffect } from 'react'
 import { motion, useScroll, useTransform } from 'motion/react'
 import Image from 'next/image'
 import Link from 'next/link'
+import dynamic from 'next/dynamic'
 import type { Hospital, Diary } from '@/types/database'
+
+const DiaryModel3D = dynamic(() => import('./DiaryModel3D'), { ssr: false })
 
 /* ─── helpers ──────────────────────────────────────────────── */
 
@@ -146,6 +149,16 @@ export default function DiaryReader({
               {diary.title}
             </h1>
           </motion.div>
+
+          {/* 3D model — floats right side of hero, fades with hero */}
+          {diary.sketchfab_model_id && (
+            <motion.div
+              className="absolute right-8 top-0 bottom-0 z-10 flex items-center"
+              style={{ opacity: heroOpacity }}
+            >
+              <DiaryModel3D modelId={diary.sketchfab_model_id} />
+            </motion.div>
+          )}
 
           {/* Scroll hint */}
           <motion.div

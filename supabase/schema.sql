@@ -117,3 +117,9 @@ alter table public.diaries add column if not exists skills text[];
 -- Run this once in: Supabase Dashboard → SQL Editor → New Query
 -- ============================================================
 alter table public.diaries add column if not exists gallery_images text[];
+
+-- ============================================================
+-- v42 MIGRATION — Add sketchfab_model_id column
+-- Run this once in: Supabase Dashboard → SQL Editor → New Query
+-- ============================================================
+alter table public.diaries add column if not exists sketchfab_model_id text;
