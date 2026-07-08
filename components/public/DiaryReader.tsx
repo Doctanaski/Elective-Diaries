@@ -151,13 +151,13 @@ export default function DiaryReader({
           </motion.div>
 
           {/* 3D model — centred behind the title, fades with hero */}
-          {diary.sketchfab_model_id && (
+          {diary.model_url && (
             <motion.div
               className="absolute inset-0 z-0 hidden lg:flex items-center justify-center"
               style={{ opacity: heroOpacity }}
             >
               <div style={{ width: 540, height: 540 }}>
-                <DiaryModel3D modelId={diary.sketchfab_model_id} />
+                <DiaryModel3D url={diary.model_url} />
               </div>
             </motion.div>
           )}

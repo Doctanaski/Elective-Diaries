@@ -123,3 +123,10 @@ alter table public.diaries add column if not exists gallery_images text[];
 -- Run this once in: Supabase Dashboard → SQL Editor → New Query
 -- ============================================================
 alter table public.diaries add column if not exists sketchfab_model_id text;
+
+-- ============================================================
+-- v45 MIGRATION — Replace sketchfab_model_id with model_url
+-- Run this once in: Supabase Dashboard → SQL Editor → New Query
+-- ============================================================
+alter table public.diaries add column if not exists model_url text;
+alter table public.diaries drop column if exists sketchfab_model_id;

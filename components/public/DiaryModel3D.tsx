@@ -1,56 +1,73 @@
 'use client'
 
-import { useState } from 'react'
+import { Suspense, useRef } from 'react'
+import { Canvas, useFrame } from '@react-three/fiber'
+import { useGLTF, OrbitControls, Environment } from '@react-three/drei'
+import * as THREE from 'three'
 
-interface Props {
-  modelId: string
-}
+/* ── The actual rotating model ── */
+function Model({ url }: { url: string }) {
+  const { scene } = useGLTF(url)
+  const ref = useRef<THREE.Group>(null)
 
-export default function DiaryModel3D({ modelId }: Props) {
-  const [loaded, setLoaded] = useState(false)
+  // Auto-rotate smoothly
+  useFrame((_, delta) => {
+    if (ref.current) {
+      ref.current.rotation.y += delta * 0.35
+    }
+  })
 
-  const src = [
-    `https://sketchfab.com/models/${modelId}/embed`,
-    '?autostart=1',
-    '&autospin=0.3',
-    '&ui_controls=0',
-    '&ui_infos=0',
-    '&ui_inspector=0',
-    '&ui_stop=0',
-    '&ui_watermark=0',
-    '&ui_watermark_link=0',
-    '&ui_ar=0',
-    '&ui_help=0',
-    '&ui_settings=0',
-    '&ui_vr=0',
-    '&ui_fullscreen=0',
-    '&ui_annotations=0',
-    '&ui_loading=0',
-    '&transparent=1',
-    '&preload=1',
-    '&dnt=1',
-  ].join('')
+  // Centre and normalise the model's bounding box so any .glb fits nicely
+  const box = new THREE.Box3().setFromObject(scene)
+  const centre = new THREE.Vector3()
+  box.getCenter(centre)
+  scene.position.sub(centre)
+
+  const size = box.getSize(new THREE.Vector3())
+  const maxDim = Math.max(size.x, size.y, size.z)
+  const scale = 2.2 / maxDim   // fit inside a ~2.2 unit sphere
 
   return (
-    // Fills the full hero area — centering is handled by the parent
-    <div className="w-full h-full relative pointer-events-none select-none">
-      {/* Invisible cover hides ALL Sketchfab loading UI until the model is ready */}
-      {!loaded && (
-        <div className="absolute inset-0 z-10 bg-transparent" />
-      )}
+    <group ref={ref} scale={scale}>
+      <primitive object={scene} />
+    </group>
+  )
+}
 
-      <iframe
-        title="3D Model"
-        src={src}
-        allow="autoplay; fullscreen; xr-spatial-tracking"
-        className="w-full h-full border-0"
-        style={{
-          background: 'transparent',
-          opacity: loaded ? 1 : 0,
-          transition: 'opacity 0.8s ease',
-        }}
-        onLoad={() => setLoaded(true)}
+/* ── Exported component ── */
+interface Props {
+  url: string
+}
+
+export default function DiaryModel3D({ url }: Props) {
+  return (
+    <Canvas
+      camera={{ position: [0, 0, 4], fov: 45 }}
+      gl={{ alpha: true, antialias: true }}
+      style={{ background: 'transparent' }}
+    >
+      {/* Lighting */}
+      <ambientLight intensity={0.6} />
+      <directionalLight position={[5, 8, 5]}  intensity={1.2} />
+      <directionalLight position={[-5, -3, -5]} intensity={0.3} color="#ff4444" />
+      <pointLight position={[0, 4, 0]} intensity={0.8} color="#ffffff" />
+
+      {/* Environment for realistic reflections */}
+      <Environment preset="night" />
+
+      {/* Suspense hides everything until the model is loaded */}
+      <Suspense fallback={null}>
+        <Model url={url} />
+      </Suspense>
+
+      {/* Optional subtle orbit on drag — disabled auto-rotate (we handle it in Model) */}
+      <OrbitControls
+        enableZoom={false}
+        enablePan={false}
+        autoRotate={false}
+        enableRotate={true}
+        rotateSpeed={0.6}
       />
-    </div>
+    </Canvas>
   )
 }
