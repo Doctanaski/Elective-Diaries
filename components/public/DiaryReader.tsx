@@ -150,13 +150,15 @@ export default function DiaryReader({
             </h1>
           </motion.div>
 
-          {/* 3D model — floats right side of hero, fades with hero */}
+          {/* 3D model — centred behind the title, fades with hero */}
           {diary.sketchfab_model_id && (
             <motion.div
-              className="absolute right-8 top-0 bottom-0 z-10 flex items-center"
+              className="absolute inset-0 z-0 hidden lg:flex items-center justify-center"
               style={{ opacity: heroOpacity }}
             >
-              <DiaryModel3D modelId={diary.sketchfab_model_id} />
+              <div style={{ width: 540, height: 540 }}>
+                <DiaryModel3D modelId={diary.sketchfab_model_id} />
+              </div>
             </motion.div>
           )}
 
