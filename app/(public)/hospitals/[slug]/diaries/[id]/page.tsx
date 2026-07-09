@@ -55,21 +55,15 @@ export default async function DiaryPage({ params }: Props) {
   const cons = diary.cons ?? []
 
   return (
-    <>
-      {/* Preload the 3D model so it\'s cached before the component mounts */}
-      {diary.model_url && (
-        <link rel="preload" as="fetch" href={diary.model_url} crossOrigin="anonymous" />
-      )}
-      <DiaryReader
-        diary={diary}
-        hospital={hospital}
-        publishedMonthYear={publishedMonthYear}
-        specialtyTags={specialtyTags}
-        skillTags={skillTags}
-        pros={pros}
-        cons={cons}
-        hasAnalysis={pros.length > 0 || cons.length > 0}
-      />
-    </>
+    <DiaryReader
+      diary={diary}
+      hospital={hospital}
+      publishedMonthYear={publishedMonthYear}
+      specialtyTags={specialtyTags}
+      skillTags={skillTags}
+      pros={pros}
+      cons={cons}
+      hasAnalysis={pros.length > 0 || cons.length > 0}
+    />
   )
 }

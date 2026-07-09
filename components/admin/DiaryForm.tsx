@@ -32,7 +32,6 @@ export default function DiaryForm({ hospitals, diary }: DiaryFormProps) {
   const [cons, setCons] = useState<string[]>(diary?.cons ?? [])
   const [skills, setSkills] = useState<string[]>(diary?.skills ?? [])
   const [galleryImages, setGalleryImages] = useState<string[]>(diary?.gallery_images ?? [])
-  const [modelUrl, setModelUrl] = useState(diary?.model_url ?? '')
   const [electiveDuration, setElectiveDuration] = useState(diary?.elective_duration ?? '')
   const [supervisor, setSupervisor] = useState(diary?.supervisor ?? '')
   const [published, setPublished] = useState(diary?.published ?? false)
@@ -141,7 +140,6 @@ export default function DiaryForm({ hospitals, diary }: DiaryFormProps) {
       cons: cons.filter(c => c.trim()),
       skills: skills.map(s => s.trim()).filter(Boolean),
       gallery_images: galleryImages.length > 0 ? galleryImages : null,
-      model_url: modelUrl || null,
       elective_duration: electiveDuration || null,
       supervisor: supervisor || null,
       published,
@@ -378,21 +376,6 @@ export default function DiaryForm({ hospitals, diary }: DiaryFormProps) {
         ) : (
           <p className="text-xs text-on-surface-variant italic">No gallery images yet.</p>
         )}
-      </div>
-
-      {/* 3D Model */}
-      <div className="bg-surface-container-lowest border border-outline-variant/20 rounded-2xl p-6 space-y-3">
-        <div>
-          <label className="block text-sm font-semibold text-on-surface mb-1">3D Model URL (.glb)</label>
-          <p className="text-xs text-on-surface-variant mb-3">Paste the public URL of a .glb file hosted in Supabase Storage. Appears as a rotating prop behind the diary title.</p>
-          <input
-            type="url"
-            value={modelUrl}
-            onChange={(e) => setModelUrl(e.target.value.trim())}
-            placeholder="https://xxxx.supabase.co/storage/v1/object/public/models/brain.glb"
-            className={inputClass}
-          />
-        </div>
       </div>
 
       {/* Pros / Cons */}

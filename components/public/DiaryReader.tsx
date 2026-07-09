@@ -4,12 +4,7 @@ import { useRef, useState, useEffect } from 'react'
 import { motion, useScroll, useTransform } from 'motion/react'
 import Image from 'next/image'
 import Link from 'next/link'
-import dynamic from 'next/dynamic'
 import type { Hospital, Diary } from '@/types/database'
-
-const DiaryModel3D = dynamic(() => import('./DiaryModel3D'), { ssr: false })
-
-/* ─── helpers ──────────────────────────────────────────────── */
 
 function splitHtmlIntoParagraphs(html: string): string[] {
   const paras = html.match(/<p[\s\S]*?<\/p>/gi) ?? [html]
@@ -26,11 +21,9 @@ function chunkParagraphs(paras: string[], n: number): string[] {
   return chunks.filter(c => c.trim().length > 0)
 }
 
-/* ─── FadeSection ───────────────────────────────────────────── */
 function FadeSection({ children, delay = 0 }: { children: React.ReactNode; delay?: number }) {
   const ref = useRef<HTMLDivElement>(null)
   const [visible, setVisible] = useState(false)
-
   useEffect(() => {
     const el = ref.current
     if (!el) return
@@ -41,7 +34,6 @@ function FadeSection({ children, delay = 0 }: { children: React.ReactNode; delay
     obs.observe(el)
     return () => obs.disconnect()
   }, [])
-
   return (
     <motion.div
       ref={ref}
@@ -54,7 +46,6 @@ function FadeSection({ children, delay = 0 }: { children: React.ReactNode; delay
   )
 }
 
-/* ─── MetaCard ──────────────────────────────────────────────── */
 function MetaCard({ icon, label, value, sub }: {
   icon: string; label: string; value: string; sub?: string
 }) {
@@ -70,7 +61,6 @@ function MetaCard({ icon, label, value, sub }: {
   )
 }
 
-/* ─── DiaryReader ───────────────────────────────────────────── */
 interface Props {
   diary: Diary
   hospital: Pick<Hospital, 'id' | 'name' | 'slug' | 'image_url'>
@@ -86,15 +76,8 @@ export default function DiaryReader({
   diary, hospital, publishedMonthYear, specialtyTags, skillTags,
   pros, cons, hasAnalysis,
 }: Props) {
-  // The scroll sentinel is a tall spacer BEHIND the sticky hero.
-  // We track scroll progress through that spacer so the hero knows
-  // how far the user has scrolled without the hero itself moving.
   const sentinelRef = useRef<HTMLDivElement>(null)
-  const { scrollYProgress } = useScroll({
-    target: sentinelRef,
-    offset: ['start start', 'end start'],
-  })
-
+  const { scrollYProgress } = useScroll({ target: sentinelRef, offset: ['start start', 'end start'] })
   const heroOpacity = useTransform(scrollYProgress, [0, 0.7], [1, 0])
   const metaOpacity = useTransform(scrollYProgress, [0, 0.45], [1, 0])
   const metaY       = useTransform(scrollYProgress, [0, 0.45], [0, 60])
@@ -106,7 +89,7 @@ export default function DiaryReader({
   return (
     <div className="bg-surface">
 
-      {/* ── Fixed navbar ── */}
+      {/* Fixed navbar */}
       <div className="fixed top-0 left-0 right-0 z-50 bg-surface/80 backdrop-blur-md border-b border-white/5">
         <div className="max-w-screen-xl mx-auto px-4 md:px-12 py-3 flex items-center">
           <Link
@@ -123,23 +106,16 @@ export default function DiaryReader({
         </div>
       </div>
 
-      {/* ── Sentinel + sticky hero wrapper ──────────────────────────────────────
-          The sentinel is 200vh tall. The sticky hero pins inside it for exactly
-          one viewport height, then scrolls away naturally as the sentinel ends.
-          overflow-hidden on the sentinel hard-clips anything that tries to bleed
-          past the viewport boundary — meta tiles included.
-      ────────────────────────────────────────────────────────────────────────── */}
+      {/* Sentinel + sticky hero */}
       <div ref={sentinelRef} className="relative" style={{ height: '130vh', overflow: 'hidden' }}>
-
-        {/* Sticky hero — stays pinned while sentinel scrolls under it */}
         <div className="sticky top-0 h-screen w-full overflow-hidden">
 
-          {/* Background */}
+          {/* Background gradient */}
           <motion.div className="absolute inset-0 z-0" style={{ opacity: heroOpacity }}>
             <div className="absolute inset-0 bg-gradient-to-b from-surface-container-low via-surface to-surface" />
           </motion.div>
 
-          {/* Title — dead centre */}
+          {/* Title */}
           <motion.div
             className="absolute inset-0 z-10 flex items-center justify-center px-6 text-center"
             style={{ opacity: heroOpacity }}
@@ -149,18 +125,6 @@ export default function DiaryReader({
               {diary.title}
             </h1>
           </motion.div>
-
-          {/* 3D model — centred behind the title, fades with hero */}
-          {diary.model_url && (
-            <motion.div
-              className="absolute inset-0 z-0 hidden lg:flex items-center justify-center"
-              style={{ opacity: heroOpacity }}
-            >
-              <div style={{ width: 540, height: 540 }}>
-                <DiaryModel3D url={diary.model_url} />
-              </div>
-            </motion.div>
-          )}
 
           {/* Scroll hint */}
           <motion.div
@@ -174,15 +138,15 @@ export default function DiaryReader({
             </span>
           </motion.div>
 
-          {/* Metadata tiles — animate in, then fully vanish as metaOpacity → 0 */}
+          {/* Metadata tiles */}
           <motion.div
             className="absolute bottom-0 left-0 right-0 z-20 pb-8 px-4 md:px-12"
             style={{ y: metaY, opacity: metaOpacity, pointerEvents: 'none' }}
           >
             <div className="max-w-screen-xl mx-auto grid grid-cols-2 md:grid-cols-3 gap-3 md:gap-4">
               {[
-                { icon: 'person',             label: 'Curator',    value: diary.author_name,                    sub: diary.author_year ?? undefined },
-                { icon: 'stethoscope',        label: 'Specialty',  value: specialtyTags[0] ?? 'General Medicine', sub: specialtyTags.length > 1 ? `+${specialtyTags.length - 1} more` : undefined },
+                { icon: 'person',             label: 'Curator',    value: diary.author_name,                      sub: diary.author_year ?? undefined },
+                { icon: 'stethoscope',        label: 'Specialty',  value: specialtyTags[0] ?? 'General Medicine',  sub: specialtyTags.length > 1 ? `+${specialtyTags.length - 1} more` : undefined },
                 { icon: 'calendar_month',     label: 'Published',  value: publishedMonthYear },
                 { icon: 'schedule',           label: 'Duration',   value: diary.elective_duration ?? '—' },
                 { icon: 'supervisor_account', label: 'Supervisor', value: diary.supervisor ?? '—' },
@@ -224,26 +188,19 @@ export default function DiaryReader({
         </div>
       </div>
 
-      {/* ── Body — prose interleaved with images ── */}
+      {/* Body */}
       <div className="px-4 md:px-12 lg:px-24 max-w-screen-xl mx-auto mt-6 pb-32 space-y-16">
-
         {chunks.map((chunk, i) => (
           <div key={i}>
             <FadeSection>
               <div className="prose-diary" dangerouslySetInnerHTML={{ __html: chunk }} />
             </FadeSection>
-
             {images[i] && (
               <FadeSection delay={0.1}>
                 <div className="mt-12">
                   <div className="relative w-full overflow-hidden rounded-xl" style={{ height: 'clamp(280px, 45vw, 640px)' }}>
-                    <Image
-                      src={images[i]}
-                      alt={`${diary.title} — photo ${i + 1}`}
-                      fill
-                      className="object-contain"
-                      sizes="100vw"
-                    />
+                    <Image src={images[i]} alt={`${diary.title} — photo ${i + 1}`}
+                      fill className="object-contain" sizes="100vw" />
                   </div>
                 </div>
               </FadeSection>
