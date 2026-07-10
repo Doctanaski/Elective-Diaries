@@ -112,7 +112,7 @@
 
   /* Inline formatting */
   .prose-diary strong,
-  .prose-diary b { color: #FFFFFF; @apply font-bold; }
+  .prose-diary b { color: var(--primary); @apply font-bold; }
   .prose-diary em,
   .prose-diary i { color: #F5F0E8; @apply italic; }
   .prose-diary u { @apply underline; color: #F5F0E8; }

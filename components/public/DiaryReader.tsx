@@ -7,7 +7,8 @@ import Link from 'next/link'
 import type { Hospital, Diary } from '@/types/database'
 
 function splitHtmlIntoParagraphs(html: string): string[] {
-  const paras = html.match(/<p[\s\S]*?<\/p>/gi) ?? [html]
+  // Match ALL block-level elements so blockquotes, headings, lists etc. are preserved
+  const paras = html.match(/<(p|h[1-6]|blockquote|ul|ol|pre|hr|figure)[\s\S]*?<\/\1>|<hr\s*\/?>/gi) ?? [html]
   return paras
 }
 
