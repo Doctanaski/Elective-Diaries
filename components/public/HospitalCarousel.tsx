@@ -39,7 +39,7 @@ export default function HospitalCarousel({ hospitals }: Props) {
       {/* Cover flow */}
       <div
         className="w-full flex justify-center items-center relative"
-        style={{ height: 380, perspective: '1200px' }}
+        style={{ height: 480, perspective: '1200px' }}
       >
         {hospitals.map((hospital, i) => {
           const isActive = activeIndex === i
@@ -52,17 +52,17 @@ export default function HospitalCarousel({ hospitals }: Props) {
               key={hospital.id}
               className="absolute cursor-pointer"
               style={{
-                width: 200,
+                width: 260,
                 aspectRatio: '3/4',
                 zIndex: 100 - absOffset,
                 transformStyle: 'preserve-3d',
               }}
               initial={false}
               animate={{
-                x: offset * 110,
+                x: offset * 140,
                 rotateY: isActive ? 0 : isPast ? 38 : -38,
                 z: isActive ? 80 : -absOffset * 60,
-                scale: isActive ? 1.12 : 1 - absOffset * 0.07,
+                scale: isActive ? 1.08 : 1 - absOffset * 0.07,
                 opacity: absOffset > 3 ? 0 : 1 - absOffset * 0.2,
               }}
               transition={{ type: 'spring', stiffness: 220, damping: 26 }}
@@ -86,15 +86,6 @@ export default function HospitalCarousel({ hospitals }: Props) {
                 )}
               </div>
 
-              {/* Name label — anchored to top:100% so it always sits just below the card */}
-              <motion.div
-                className="absolute left-1/2 -translate-x-1/2 text-center text-sm font-semibold text-white/80 whitespace-nowrap"
-                style={{ top: 'calc(100% + 14px)' }}
-                animate={{ opacity: isActive ? 1 : 0, y: isActive ? 0 : -4 }}
-                transition={{ duration: 0.2 }}
-              >
-                {hospital.name}
-              </motion.div>
             </motion.div>
           )
         })}
