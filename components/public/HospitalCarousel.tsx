@@ -34,13 +34,38 @@ export default function HospitalCarousel({ hospitals }: Props) {
   const active = hospitals[activeIndex]
 
   return (
-    <div className="flex flex-col items-center gap-12">
+    <div className="flex flex-col items-center gap-4">
 
-      {/* Cover flow */}
+      {/* ── Cover flow + side arrows ── */}
       <div
         className="w-full flex justify-center items-center relative"
         style={{ height: 480, perspective: '1200px' }}
       >
+        {/* Left arrow */}
+        <button
+          onClick={toPrev}
+          disabled={activeIndex === 0}
+          className="absolute left-0 z-[200] w-11 h-11 rounded-full flex items-center justify-center
+                     bg-surface-container/80 backdrop-blur-md border border-white/10
+                     text-white/60 hover:text-white hover:border-white/30
+                     transition-all disabled:opacity-20 disabled:cursor-not-allowed"
+        >
+          <ChevronLeft className="w-5 h-5" />
+        </button>
+
+        {/* Right arrow */}
+        <button
+          onClick={toNext}
+          disabled={activeIndex === hospitals.length - 1}
+          className="absolute right-0 z-[200] w-11 h-11 rounded-full flex items-center justify-center
+                     bg-surface-container/80 backdrop-blur-md border border-white/10
+                     text-white/60 hover:text-white hover:border-white/30
+                     transition-all disabled:opacity-20 disabled:cursor-not-allowed"
+        >
+          <ChevronRight className="w-5 h-5" />
+        </button>
+
+        {/* Cards */}
         {hospitals.map((hospital, i) => {
           const isActive = activeIndex === i
           const offset = i - activeIndex
@@ -68,7 +93,6 @@ export default function HospitalCarousel({ hospitals }: Props) {
               transition={{ type: 'spring', stiffness: 220, damping: 26 }}
               onClick={(e) => toSlide(e, i)}
             >
-              {/* Card image */}
               <div className="w-full h-full rounded-2xl overflow-hidden shadow-2xl border border-white/10">
                 {hospital.image_url ? (
                   <img
@@ -85,47 +109,15 @@ export default function HospitalCarousel({ hospitals }: Props) {
                   </div>
                 )}
               </div>
-
             </motion.div>
           )
         })}
       </div>
 
-      {/* Controls */}
-      <div className="mt-2 w-fit px-2 py-1 flex items-center gap-2 justify-center text-zinc-300 rounded-full bg-white/5 backdrop-blur-md border border-white/10 shadow-sm">
-        <button
-          onClick={toPrev}
-          disabled={activeIndex === 0}
-          className="p-1 cursor-pointer hover:bg-white/10 rounded-full transition-colors disabled:opacity-30"
-        >
-          <ChevronLeft className="w-3.5 h-3.5" />
-        </button>
-
-        <div className="flex items-center gap-1">
-          {hospitals.map((_, i) => (
-            <div
-              key={i}
-              onClick={(e) => toSlide(e, i)}
-              className={`rounded-full cursor-pointer h-1 transition-all duration-300 ${
-                activeIndex === i ? 'w-4 bg-white' : 'w-1 bg-white/30 hover:bg-white/50'
-              }`}
-            />
-          ))}
-        </div>
-
-        <button
-          onClick={toNext}
-          disabled={activeIndex === hospitals.length - 1}
-          className="p-1 cursor-pointer hover:bg-white/10 rounded-full transition-colors disabled:opacity-30"
-        >
-          <ChevronRight className="w-3.5 h-3.5" />
-        </button>
-      </div>
-
-      {/* Active hospital info + CTA */}
+      {/* ── Active hospital info ── */}
       <motion.div
         key={activeIndex}
-        initial={{ opacity: 0, y: 12 }}
+        initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
         className="text-center max-w-md"
@@ -149,6 +141,20 @@ export default function HospitalCarousel({ hospitals }: Props) {
           <span className="material-symbols-outlined" style={{ fontSize: 16 }}>arrow_forward</span>
         </Link>
       </motion.div>
+
+      {/* ── Dot strip ── */}
+      <div className="flex items-center gap-1.5 mt-1">
+        {hospitals.map((_, i) => (
+          <div
+            key={i}
+            onClick={(e) => toSlide(e, i)}
+            className={`rounded-full cursor-pointer h-1 transition-all duration-300 ${
+              activeIndex === i ? 'w-4 bg-white' : 'w-1 bg-white/30 hover:bg-white/50'
+            }`}
+          />
+        ))}
+      </div>
+
     </div>
   )
 }
