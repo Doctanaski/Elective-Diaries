@@ -39,30 +39,30 @@ export default function HospitalCarousel({ hospitals }: Props) {
       {/* ── Cover flow + side arrows ── */}
       <div
         className="w-full flex justify-center items-center relative"
-        style={{ height: 480, perspective: '1200px' }}
+        style={{ height: 560, perspective: '1400px' }}
       >
         {/* Left arrow */}
         <button
           onClick={toPrev}
           disabled={activeIndex === 0}
-          className="absolute left-0 z-[200] w-11 h-11 rounded-full flex items-center justify-center
-                     bg-surface-container/80 backdrop-blur-md border border-white/10
-                     text-white/60 hover:text-white hover:border-white/30
-                     transition-all disabled:opacity-20 disabled:cursor-not-allowed"
+          className="absolute left-0 z-[200] w-14 h-14 rounded-full flex items-center justify-center
+                     bg-white/10 backdrop-blur-md border border-white/20
+                     text-white hover:bg-white/20 hover:border-white/50 hover:scale-110
+                     transition-all shadow-lg disabled:opacity-20 disabled:cursor-not-allowed disabled:hover:scale-100"
         >
-          <ChevronLeft className="w-5 h-5" />
+          <ChevronLeft className="w-7 h-7" />
         </button>
 
         {/* Right arrow */}
         <button
           onClick={toNext}
           disabled={activeIndex === hospitals.length - 1}
-          className="absolute right-0 z-[200] w-11 h-11 rounded-full flex items-center justify-center
-                     bg-surface-container/80 backdrop-blur-md border border-white/10
-                     text-white/60 hover:text-white hover:border-white/30
-                     transition-all disabled:opacity-20 disabled:cursor-not-allowed"
+          className="absolute right-0 z-[200] w-14 h-14 rounded-full flex items-center justify-center
+                     bg-white/10 backdrop-blur-md border border-white/20
+                     text-white hover:bg-white/20 hover:border-white/50 hover:scale-110
+                     transition-all shadow-lg disabled:opacity-20 disabled:cursor-not-allowed disabled:hover:scale-100"
         >
-          <ChevronRight className="w-5 h-5" />
+          <ChevronRight className="w-7 h-7" />
         </button>
 
         {/* Cards */}
@@ -77,14 +77,14 @@ export default function HospitalCarousel({ hospitals }: Props) {
               key={hospital.id}
               className="absolute cursor-pointer"
               style={{
-                width: 260,
+                width: 320,
                 aspectRatio: '3/4',
                 zIndex: 100 - absOffset,
                 transformStyle: 'preserve-3d',
               }}
               initial={false}
               animate={{
-                x: offset * 140,
+                x: offset * 170,
                 rotateY: isActive ? 0 : isPast ? 38 : -38,
                 z: isActive ? 80 : -absOffset * 60,
                 scale: isActive ? 1.08 : 1 - absOffset * 0.07,
