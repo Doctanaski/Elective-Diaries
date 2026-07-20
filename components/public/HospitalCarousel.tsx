@@ -34,12 +34,12 @@ export default function HospitalCarousel({ hospitals }: Props) {
   const active = hospitals[activeIndex]
 
   return (
-    <div className="flex flex-col items-center gap-10">
+    <div className="flex flex-col items-center gap-12">
 
       {/* Cover flow */}
       <div
         className="w-full flex justify-center items-center relative"
-        style={{ height: 260, perspective: '1000px' }}
+        style={{ height: 380, perspective: '1200px' }}
       >
         {hospitals.map((hospital, i) => {
           const isActive = activeIndex === i
@@ -52,17 +52,17 @@ export default function HospitalCarousel({ hospitals }: Props) {
               key={hospital.id}
               className="absolute cursor-pointer"
               style={{
-                width: 130,
+                width: 200,
                 aspectRatio: '3/4',
                 zIndex: 100 - absOffset,
                 transformStyle: 'preserve-3d',
               }}
               initial={false}
               animate={{
-                x: offset * 68,
+                x: offset * 110,
                 rotateY: isActive ? 0 : isPast ? 38 : -38,
-                z: isActive ? 80 : -absOffset * 50,
-                scale: isActive ? 1.15 : 1 - absOffset * 0.08,
+                z: isActive ? 80 : -absOffset * 60,
+                scale: isActive ? 1.12 : 1 - absOffset * 0.07,
                 opacity: absOffset > 3 ? 0 : 1 - absOffset * 0.2,
               }}
               transition={{ type: 'spring', stiffness: 220, damping: 26 }}
@@ -79,16 +79,17 @@ export default function HospitalCarousel({ hospitals }: Props) {
                   />
                 ) : (
                   <div className="w-full h-full bg-surface-container flex items-center justify-center">
-                    <span className="material-symbols-outlined text-on-surface-variant opacity-30" style={{ fontSize: 36 }}>
+                    <span className="material-symbols-outlined text-on-surface-variant opacity-30" style={{ fontSize: 48 }}>
                       local_hospital
                     </span>
                   </div>
                 )}
               </div>
 
-              {/* Name label under active card */}
+              {/* Name label — anchored to top:100% so it always sits just below the card */}
               <motion.div
-                className="absolute -bottom-7 left-1/2 -translate-x-1/2 text-center text-xs font-semibold text-white/80 whitespace-nowrap"
+                className="absolute left-1/2 -translate-x-1/2 text-center text-sm font-semibold text-white/80 whitespace-nowrap"
+                style={{ top: 'calc(100% + 14px)' }}
                 animate={{ opacity: isActive ? 1 : 0, y: isActive ? 0 : -4 }}
                 transition={{ duration: 0.2 }}
               >
