@@ -6,6 +6,75 @@ import Image from 'next/image'
 import Link from 'next/link'
 import type { Hospital, Diary } from '@/types/database'
 
+// ── Specialty hero image map ─────────────────────────────────────────────────
+// Dark, cinematic Unsplash images matched to medical specialties.
+// Falls back to a generic clinical image if no match found.
+const SPECIALTY_IMAGES: Record<string, string> = {
+  // Cardiology / Heart
+  cardiology:        'https://images.unsplash.com/photo-1628348068343-c6a848d2b6dd?w=1600&q=80&auto=format&fit=crop',
+  heart:             'https://images.unsplash.com/photo-1628348068343-c6a848d2b6dd?w=1600&q=80&auto=format&fit=crop',
+  // Neurology / Brain
+  neurology:         'https://images.unsplash.com/photo-1559757175-0eb30cd8c063?w=1600&q=80&auto=format&fit=crop',
+  neuroscience:      'https://images.unsplash.com/photo-1559757175-0eb30cd8c063?w=1600&q=80&auto=format&fit=crop',
+  brain:             'https://images.unsplash.com/photo-1559757175-0eb30cd8c063?w=1600&q=80&auto=format&fit=crop',
+  // Surgery
+  surgery:           'https://images.unsplash.com/photo-1551601651-2a8555f1a136?w=1600&q=80&auto=format&fit=crop',
+  surgical:          'https://images.unsplash.com/photo-1551601651-2a8555f1a136?w=1600&q=80&auto=format&fit=crop',
+  // Psychiatry / Mental health
+  psychiatry:        'https://images.unsplash.com/photo-1576091160550-2173dba999ef?w=1600&q=80&auto=format&fit=crop',
+  psychology:        'https://images.unsplash.com/photo-1576091160550-2173dba999ef?w=1600&q=80&auto=format&fit=crop',
+  mental:            'https://images.unsplash.com/photo-1576091160550-2173dba999ef?w=1600&q=80&auto=format&fit=crop',
+  // Paediatrics / Pediatrics
+  paediatrics:       'https://images.unsplash.com/photo-1581579438747-104c53d7c985?w=1600&q=80&auto=format&fit=crop',
+  pediatrics:        'https://images.unsplash.com/photo-1581579438747-104c53d7c985?w=1600&q=80&auto=format&fit=crop',
+  // Oncology / Cancer
+  oncology:          'https://images.unsplash.com/photo-1579165466741-7f35e4755660?w=1600&q=80&auto=format&fit=crop',
+  cancer:            'https://images.unsplash.com/photo-1579165466741-7f35e4755660?w=1600&q=80&auto=format&fit=crop',
+  // Radiology / Imaging
+  radiology:         'https://images.unsplash.com/photo-1516549655169-df83a0774514?w=1600&q=80&auto=format&fit=crop',
+  imaging:           'https://images.unsplash.com/photo-1516549655169-df83a0774514?w=1600&q=80&auto=format&fit=crop',
+  // Orthopaedics / Bone
+  orthopaedics:      'https://images.unsplash.com/photo-1530026405186-ed1f139313f8?w=1600&q=80&auto=format&fit=crop',
+  orthopedics:       'https://images.unsplash.com/photo-1530026405186-ed1f139313f8?w=1600&q=80&auto=format&fit=crop',
+  // Dermatology
+  dermatology:       'https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?w=1600&q=80&auto=format&fit=crop',
+  skin:              'https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?w=1600&q=80&auto=format&fit=crop',
+  // Emergency / A&E
+  emergency:         'https://images.unsplash.com/photo-1532938911079-1b06ac7ceec7?w=1600&q=80&auto=format&fit=crop',
+  // Gynaecology / Obstetrics
+  gynaecology:       'https://images.unsplash.com/photo-1576671081837-49000212a370?w=1600&q=80&auto=format&fit=crop',
+  obstetrics:        'https://images.unsplash.com/photo-1576671081837-49000212a370?w=1600&q=80&auto=format&fit=crop',
+  // Pathology / Lab / Research
+  pathology:         'https://images.unsplash.com/photo-1532187863486-abf9dbad1b69?w=1600&q=80&auto=format&fit=crop',
+  laboratory:        'https://images.unsplash.com/photo-1532187863486-abf9dbad1b69?w=1600&q=80&auto=format&fit=crop',
+  research:          'https://images.unsplash.com/photo-1532187863486-abf9dbad1b69?w=1600&q=80&auto=format&fit=crop',
+  genetics:          'https://images.unsplash.com/photo-1532187863486-abf9dbad1b69?w=1600&q=80&auto=format&fit=crop',
+  // General medicine / Internal medicine
+  medicine:          'https://images.unsplash.com/photo-1576671081837-49000212a370?w=1600&q=80&auto=format&fit=crop',
+  internal:          'https://images.unsplash.com/photo-1631217868264-e5b90bb7e133?w=1600&q=80&auto=format&fit=crop',
+  general:           'https://images.unsplash.com/photo-1631217868264-e5b90bb7e133?w=1600&q=80&auto=format&fit=crop',
+  // Anaesthesia
+  anaesthesia:       'https://images.unsplash.com/photo-1551601651-2a8555f1a136?w=1600&q=80&auto=format&fit=crop',
+  anesthesia:        'https://images.unsplash.com/photo-1551601651-2a8555f1a136?w=1600&q=80&auto=format&fit=crop',
+  // Ophthalmology
+  ophthalmology:     'https://images.unsplash.com/photo-1509822929464-92b567f8c4bd?w=1600&q=80&auto=format&fit=crop',
+  eye:               'https://images.unsplash.com/photo-1509822929464-92b567f8c4bd?w=1600&q=80&auto=format&fit=crop',
+}
+
+const FALLBACK_IMAGE = 'https://images.unsplash.com/photo-1631217868264-e5b90bb7e133?w=1600&q=80&auto=format&fit=crop'
+
+function getSpecialtyImage(specialtyTags: string[]): string {
+  for (const tag of specialtyTags) {
+    const key = tag.toLowerCase()
+    // Try exact match first
+    if (SPECIALTY_IMAGES[key]) return SPECIALTY_IMAGES[key]
+    // Try partial match
+    const match = Object.keys(SPECIALTY_IMAGES).find(k => key.includes(k) || k.includes(key))
+    if (match) return SPECIALTY_IMAGES[match]
+  }
+  return FALLBACK_IMAGE
+}
+
 function splitHtmlIntoParagraphs(html: string): string[] {
   // Match ALL block-level elements so blockquotes, headings, lists etc. are preserved
   const paras = html.match(/<(p|h[1-6]|blockquote|ul|ol|pre|hr|figure)[\s\S]*?<\/\1>|<hr\s*\/?>/gi) ?? [html]
@@ -86,6 +155,7 @@ export default function DiaryReader({
   const images = diary.gallery_images ?? []
   const paras  = splitHtmlIntoParagraphs(diary.content ?? '')
   const chunks = chunkParagraphs(paras, images.length)
+  const heroImageUrl = getSpecialtyImage(specialtyTags)
 
   return (
     <div className="bg-surface">
@@ -111,9 +181,20 @@ export default function DiaryReader({
       <div ref={sentinelRef} className="relative" style={{ height: '130vh', overflow: 'hidden' }}>
         <div className="sticky top-0 h-screen w-full overflow-hidden">
 
-          {/* Background gradient */}
+          {/* Specialty background image with dark overlay */}
           <motion.div className="absolute inset-0 z-0" style={{ opacity: heroOpacity }}>
-            <div className="absolute inset-0 bg-gradient-to-b from-surface-container-low via-surface to-surface" />
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={heroImageUrl}
+              alt=""
+              aria-hidden
+              className="absolute inset-0 w-full h-full object-cover"
+              style={{ filter: 'brightness(0.18) saturate(0.6)' }}
+            />
+            {/* Gradient overlay — dark vignette matching site palette */}
+            <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-[#0d0d0d]/70 to-[#0d0d0d]" />
+            {/* Subtle red tint at top to tie into primary colour */}
+            <div className="absolute inset-0 bg-gradient-to-br from-primary/8 via-transparent to-transparent" />
           </motion.div>
 
           {/* Title */}
