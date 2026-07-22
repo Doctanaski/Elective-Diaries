@@ -119,8 +119,8 @@ export default function HomeScroll({ hospitals }: Props) {
         {/* ── Section 2 — Hospital carousel ── */}
         <section
           ref={carouselRef}
-          className="snap-section min-h-screen flex flex-col items-center justify-center
-                     px-6 md:px-12 lg:px-24 pb-16 max-w-7xl mx-auto w-full"
+          className="snap-section flex flex-col items-center justify-center
+                     px-4 md:px-12 lg:px-24 py-12 md:py-20 max-w-7xl mx-auto w-full"
         >
           {hospitals.length > 0 ? (
             <div className={`w-full ${carouselVisible ? 'cs-animate' : 'opacity-0'}`}>

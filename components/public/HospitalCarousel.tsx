@@ -41,11 +41,13 @@ export default function HospitalCarousel({ hospitals }: Props) {
 
   const active = hospitals[activeIndex]
 
-  // Responsive values — smaller on mobile so cards fit within the viewport
-  const cardWidth    = isMobile ? 140 : 320
-  const trackHeight  = isMobile ? 260 : 560
-  const perspective  = isMobile ? 700  : 1400
-  const xSpacing     = isMobile ? 74   : 170
+  // Responsive values — scale cards to viewport width on mobile
+  // cardWidth = ~38vw on mobile (fits 3 cards across ~380px screen), fixed on desktop
+  const vw           = isMobile ? (typeof window !== 'undefined' ? window.innerWidth : 390) : 0
+  const cardWidth    = isMobile ? Math.round(vw * 0.38) : 320
+  const trackHeight  = isMobile ? Math.round(cardWidth * 1.45) : 560
+  const perspective  = isMobile ? 800  : 1400
+  const xSpacing     = isMobile ? Math.round(cardWidth * 0.62) : 170
   const arrowSize    = isMobile ? 'w-9 h-9' : 'w-14 h-14'
   const arrowIcon    = isMobile ? 'w-4 h-4' : 'w-7 h-7'
 
