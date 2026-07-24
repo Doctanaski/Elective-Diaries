@@ -1,12 +1,14 @@
 'use client'
 
-import { useRef } from 'react'
+import { useRef, useEffect, useState } from 'react'
 import { motion, useScroll, useTransform } from 'motion/react'
 import HospitalCarousel from './HospitalCarousel'
 import type { Hospital } from '@/types/database'
 
 interface Props {
   hospitals: Hospital[]
+  hospitalCount: number
+  diaryCount: number
 }
 
 const MEDICAL_ICONS = [
@@ -35,7 +37,51 @@ const MEDICAL_ICONS = [
   { icon: 'healing',             top: 38, left: 75, size: 28, delay: 1.3, dur: 5.6, up: true  },
 ]
 
-export default function HomeScroll({ hospitals }: Props) {
+// Rolling counter — counts up from 0 to target when visible
+function RollingNumber({ target, duration = 1800, suffix = '' }: { target: number; duration?: number; suffix?: string }) {
+  const [display, setDisplay] = useState(0)
+  const [started, setStarted] = useState(false)
+  const ref = useRef<HTMLSpanElement>(null)
+
+  useEffect(() => {
+    const el = ref.current
+    if (!el) return
+    const obs = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting && !started) {
+          setStarted(true)
+          obs.unobserve(el)
+        }
+      },
+      { threshold: 0.5 }
+    )
+    obs.observe(el)
+    return () => obs.disconnect()
+  }, [started])
+
+  useEffect(() => {
+    if (!started) return
+    let startTime: number | null = null
+    const step = (timestamp: number) => {
+      if (!startTime) startTime = timestamp
+      const progress = Math.min((timestamp - startTime) / duration, 1)
+      // Ease out cubic
+      const eased = 1 - Math.pow(1 - progress, 3)
+      setDisplay(Math.floor(eased * target))
+      if (progress < 1) requestAnimationFrame(step)
+      else setDisplay(target)
+    }
+    requestAnimationFrame(step)
+  }, [started, target, duration])
+
+  return (
+    <span ref={ref} className="tabular-nums">
+      {display}{suffix}
+    </span>
+  )
+}
+
+export default function HomeScroll({ hospitals, hospitalCount, diaryCount }: Props) {
   const heroRef = useRef<HTMLDivElement>(null)
 
   const { scrollYProgress: heroProgress } = useScroll({
@@ -69,30 +115,24 @@ export default function HomeScroll({ hospitals }: Props) {
 
       <div className="bg-surface overflow-x-hidden">
 
-        {/* Section 1 - Hero */}
+        {/* ── Section 1 — Hero ── */}
         <section ref={heroRef} className="snap-section relative min-h-screen flex items-center justify-center px-6 overflow-hidden">
-
           <div className="absolute inset-0 -z-10 bg-primary/5 rounded-full blur-3xl opacity-60 scale-150 pointer-events-none" />
 
-          {/* Medical icons */}
           {MEDICAL_ICONS.map((item, i) => (
             <span
               key={i}
               className="material-symbols-outlined absolute pointer-events-none select-none"
               style={{
-                top: `${item.top}%`,
-                left: `${item.left}%`,
+                top: `${item.top}%`, left: `${item.left}%`,
                 fontSize: item.size,
                 color: 'rgba(230,60,73,0.14)',
                 animation: `icon-pop 0.7s cubic-bezier(0.34,1.56,0.64,1) ${item.delay}s both, ${item.up ? 'float-up' : 'float-down'} ${item.dur}s ease-in-out ${item.delay + 0.7}s infinite`,
                 zIndex: 1,
               }}
-            >
-              {item.icon}
-            </span>
+            >{item.icon}</span>
           ))}
 
-          {/* Hero content */}
           <motion.div
             className="text-center max-w-4xl mx-auto w-full relative z-10"
             style={{ opacity: heroOpacity, y: heroY }}
@@ -100,14 +140,12 @@ export default function HomeScroll({ hospitals }: Props) {
             <h1 className="hs-title font-headline font-extrabold text-5xl md:text-6xl lg:text-7xl leading-tight text-primary tracking-tight mb-6">
               The Elective Diaries
             </h1>
-
             <div className="hs-badge flex items-center justify-center space-x-2 bg-surface-container-high/50 w-fit mx-auto px-4 py-2 rounded-full border border-outline-variant/20 mb-8">
               <span className="material-symbols-outlined text-secondary" style={{ fontSize: 20 }}>account_balance</span>
               <p className="font-label text-sm font-semibold tracking-widest text-primary uppercase">
                 KMC Local Council · IFMSA Pakistan
               </p>
             </div>
-
             <p className="hs-desc text-primary/70 font-body max-w-2xl mx-auto text-lg md:text-xl leading-relaxed">
               A precision archive documenting clinical experiences, resource availability,
               and operational protocols across affiliated medical facilities.
@@ -123,7 +161,7 @@ export default function HomeScroll({ hospitals }: Props) {
           </motion.div>
         </section>
 
-        {/* Section 2 - Carousel */}
+        {/* ── Section 2 — Hospital carousel ── */}
         <section className="snap-section flex flex-col items-center justify-center px-4 md:px-12 lg:px-24 py-12 md:py-20 max-w-7xl mx-auto w-full">
           {hospitals.length > 0 ? (
             <div className="w-full">
@@ -133,9 +171,61 @@ export default function HomeScroll({ hospitals }: Props) {
             <div className="text-center py-24 text-on-surface-variant">
               <span className="material-symbols-outlined text-6xl mb-4 block opacity-30">local_hospital</span>
               <p className="text-lg font-medium">No hospitals listed yet.</p>
-              <p className="text-sm mt-1">Check back soon or contact your admin.</p>
             </div>
           )}
+        </section>
+
+        {/* ── Section 3 — Stats ── */}
+        <section className="snap-section min-h-screen flex flex-col items-center justify-center px-6 relative overflow-hidden">
+          {/* Subtle background glow */}
+          <div className="absolute inset-0 -z-10 bg-primary/3 rounded-full blur-3xl opacity-40 scale-150 pointer-events-none" />
+
+          <div className="max-w-4xl mx-auto w-full">
+            {/* Section label */}
+            <p className="font-label text-xs uppercase tracking-[0.25em] text-on-surface-variant/40 text-center mb-16">
+              By the numbers
+            </p>
+
+            {/* Stat cards */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-10">
+
+              {/* Hospitals */}
+              <div className="relative bg-surface-container-low rounded-3xl p-10 border border-white/5 overflow-hidden flex flex-col items-center text-center group">
+                <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
+                <span className="material-symbols-outlined text-primary mb-6" style={{ fontSize: 40 }}>local_hospital</span>
+                <div className="font-headline font-extrabold text-7xl md:text-8xl text-primary leading-none mb-4">
+                  <RollingNumber target={hospitalCount} duration={1600} />
+                </div>
+                <p className="font-label text-sm uppercase tracking-widest text-on-surface-variant">
+                  Affiliated Hospitals
+                </p>
+                <p className="font-body text-xs text-on-surface-variant/50 mt-2">
+                  Partner facilities across Pakistan
+                </p>
+              </div>
+
+              {/* Diaries */}
+              <div className="relative bg-surface-container-low rounded-3xl p-10 border border-white/5 overflow-hidden flex flex-col items-center text-center group">
+                <div className="absolute inset-0 bg-gradient-to-br from-secondary/5 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
+                <span className="material-symbols-outlined text-secondary mb-6" style={{ fontSize: 40 }}>auto_stories</span>
+                <div className="font-headline font-extrabold text-7xl md:text-8xl text-secondary leading-none mb-4">
+                  <RollingNumber target={diaryCount} duration={2000} />
+                </div>
+                <p className="font-label text-sm uppercase tracking-widest text-on-surface-variant">
+                  Published Diaries
+                </p>
+                <p className="font-body text-xs text-on-surface-variant/50 mt-2">
+                  Clinical elective experiences documented
+                </p>
+              </div>
+
+            </div>
+
+            {/* Divider quote */}
+            <p className="text-center font-body text-sm text-on-surface-variant/30 italic mt-16 max-w-md mx-auto">
+              "Every rotation is a chapter. Every chapter shapes a doctor."
+            </p>
+          </div>
         </section>
 
       </div>
