@@ -11,8 +11,6 @@ interface Props {
   diaryCount: number
 }
 
-// Reduced to 12 icons — only transform:translateY (GPU composited, no repaints)
-// No stethoscope (renders as broken "ROSCOPE" on some mobile fonts)
 const MEDICAL_ICONS = [
   { icon: 'surgical',           top:  7, left:  5, size: 32, delay: 0.2, up: true  },
   { icon: 'ecg_heart',          top: 13, left: 86, size: 28, delay: 0.5, up: false },
@@ -27,6 +25,10 @@ const MEDICAL_ICONS = [
   { icon: 'healing',            top: 39, left: 74, size: 24, delay: 1.3, up: true  },
   { icon: 'health_and_safety',  top: 60, left: 50, size: 22, delay: 1.0, up: true  },
 ]
+
+// ECG path — flatline → spike → flatline pattern, tiled horizontally
+// viewBox is 600×80, the path travels left to right
+const ECG_PATH = `M0,40 L60,40 L70,40 L80,10 L90,70 L100,20 L110,50 L120,40 L180,40 L190,40 L200,10 L210,70 L220,20 L230,50 L240,40 L300,40 L310,40 L320,10 L330,70 L340,20 L350,50 L360,40 L420,40 L430,40 L440,10 L450,70 L460,20 L470,50 L480,40 L540,40 L550,40 L560,10 L570,70 L580,20 L590,50 L600,40 L660,40 L670,40 L680,10 L690,70 L700,20 L710,50 L720,40 L800,40`
 
 function RollingNumber({ target, duration = 1800 }: { target: number; duration?: number }) {
   const [display, setDisplay] = useState(0)
@@ -70,6 +72,7 @@ export default function HomeScroll({ hospitals, hospitalCount, diaryCount }: Pro
   return (
     <>
       <style>{`
+        /* ── Hero text animations ── */
         @keyframes hs-fade-down { from{opacity:0;filter:blur(12px);transform:translateY(-24px)} to{opacity:1;filter:blur(0);transform:translateY(0)} }
         @keyframes hs-fade-up   { from{opacity:0;filter:blur(12px);transform:translateY(24px)}  to{opacity:1;filter:blur(0);transform:translateY(0)} }
         @keyframes hs-fade-in   { from{opacity:0;filter:blur(8px);transform:translateY(12px)}   to{opacity:1;filter:blur(0);transform:translateY(0)} }
@@ -77,49 +80,123 @@ export default function HomeScroll({ hospitals, hospitalCount, diaryCount }: Pro
         .hs-badge { animation: hs-fade-in  0.7s cubic-bezier(0.22,1,0.36,1) 0.55s both }
         .hs-desc  { animation: hs-fade-up  0.9s cubic-bezier(0.22,1,0.36,1) 0.35s both }
 
-        /* Single shared float keyframes — GPU only (transform), no filter/opacity changes */
+        /* ── Icon float — GPU only ── */
         @keyframes float-up   { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-12px)} }
         @keyframes float-down { 0%,100%{transform:translateY(0)} 50%{transform:translateY(12px)}  }
+        .med-icon { position:absolute; pointer-events:none; user-select:none; color:rgba(230,60,73,0.13); opacity:0; will-change:transform }
+        .med-icon.up   { animation: hs-fade-in 0.6s cubic-bezier(0.34,1.56,0.64,1) var(--d) forwards, float-up   7s ease-in-out calc(var(--d) + 0.6s) infinite }
+        .med-icon.down { animation: hs-fade-in 0.6s cubic-bezier(0.34,1.56,0.64,1) var(--d) forwards, float-down 7s ease-in-out calc(var(--d) + 0.6s) infinite }
 
-        /* Pop in once, then float — will-change limits to compositor layer */
-        .med-icon {
-          position: absolute;
-          pointer-events: none;
-          user-select: none;
-          color: rgba(230,60,73,0.13);
-          opacity: 0;
-          will-change: transform;
-          animation: hs-fade-in 0.6s cubic-bezier(0.34,1.56,0.64,1) var(--d) forwards;
+        /* ── Gradient mesh shift ── */
+        @keyframes mesh-shift {
+          0%   { background-position: 0% 50% }
+          50%  { background-position: 100% 50% }
+          100% { background-position: 0% 50% }
         }
-        .med-icon.up   { animation: hs-fade-in 0.6s cubic-bezier(0.34,1.56,0.64,1) var(--d) forwards, float-up   6s ease-in-out calc(var(--d) + 0.6s) infinite }
-        .med-icon.down { animation: hs-fade-in 0.6s cubic-bezier(0.34,1.56,0.64,1) var(--d) forwards, float-down 6s ease-in-out calc(var(--d) + 0.6s) infinite }
+        .bg-mesh {
+          background: radial-gradient(ellipse at 20% 30%, rgba(180,20,30,0.18) 0%, transparent 55%),
+                      radial-gradient(ellipse at 80% 70%, rgba(120,10,20,0.14) 0%, transparent 50%),
+                      radial-gradient(ellipse at 50% 10%, rgba(200,30,40,0.10) 0%, transparent 45%),
+                      #0d0d0d;
+          background-size: 200% 200%;
+          animation: mesh-shift 14s ease-in-out infinite;
+          will-change: background-position;
+        }
 
+        /* ── ECG pulse — scrolls path left endlessly ── */
+        @keyframes ecg-scroll { from { stroke-dashoffset: 0 } to { stroke-dashoffset: -800 } }
+        @keyframes ecg-fade-in { from{opacity:0} to{opacity:1} }
+        .ecg-line {
+          stroke-dasharray: 800;
+          stroke-dashoffset: 0;
+          animation:
+            ecg-scroll 3s linear infinite,
+            ecg-fade-in 1.5s ease 0.5s both;
+        }
+        /* Pulse glow dot at the leading edge */
+        @keyframes ecg-dot {
+          0%   { transform: translateX(0) }
+          100% { transform: translateX(-800px) }
+        }
+        .ecg-dot {
+          animation: ecg-dot 3s linear infinite, ecg-fade-in 1.5s ease 0.5s both;
+        }
+
+        /* ── Scroll snap ── */
         html { scroll-snap-type: y mandatory; scroll-behavior: smooth }
         .snap-section { scroll-snap-align: start; scroll-snap-stop: always }
       `}</style>
 
       <div className="bg-surface overflow-x-hidden">
 
-        {/* Section 1 — Hero */}
+        {/* ══ Section 1 — Hero ══ */}
         <section ref={heroRef} className="snap-section relative min-h-screen flex items-center justify-center px-6 overflow-hidden">
-          <div className="absolute inset-0 -z-10 bg-primary/5 rounded-full blur-3xl opacity-60 scale-150 pointer-events-none" />
 
+          {/* Layer 1 — animated gradient mesh */}
+          <div className="bg-mesh absolute inset-0 z-0" />
+
+          {/* Layer 2 — SVG noise texture (static, zero CPU) */}
+          <svg className="absolute inset-0 w-full h-full z-0 opacity-[0.035] pointer-events-none" xmlns="http://www.w3.org/2000/svg">
+            <filter id="noise">
+              <feTurbulence type="fractalNoise" baseFrequency="0.65" numOctaves="3" stitchTiles="stitch" />
+              <feColorMatrix type="saturate" values="0" />
+            </filter>
+            <rect width="100%" height="100%" filter="url(#noise)" />
+          </svg>
+
+          {/* Layer 3 — ECG pulse line, centred vertically */}
+          <div className="absolute inset-0 z-0 flex items-center pointer-events-none overflow-hidden">
+            <svg
+              viewBox="0 0 800 80"
+              preserveAspectRatio="none"
+              className="w-full"
+              style={{ height: 80, opacity: 0.22 }}
+            >
+              <defs>
+                <linearGradient id="ecg-grad" x1="0%" y1="0%" x2="100%" y2="0%">
+                  <stop offset="0%"   stopColor="rgba(230,60,73,0)" />
+                  <stop offset="30%"  stopColor="rgba(230,60,73,0.9)" />
+                  <stop offset="70%"  stopColor="rgba(230,60,73,0.9)" />
+                  <stop offset="100%" stopColor="rgba(230,60,73,0)" />
+                </linearGradient>
+              </defs>
+              <path
+                className="ecg-line"
+                d={ECG_PATH}
+                fill="none"
+                stroke="url(#ecg-grad)"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+              {/* Bright pulse dot at the tip */}
+              <circle
+                className="ecg-dot"
+                cx="600"
+                cy="40"
+                r="3"
+                fill="rgba(230,60,73,0.9)"
+                style={{ filter: 'drop-shadow(0 0 6px rgba(230,60,73,0.9))' }}
+              />
+            </svg>
+          </div>
+
+          {/* Layer 4 — radial vignette overlay */}
+          <div
+            className="absolute inset-0 z-0 pointer-events-none"
+            style={{ background: 'radial-gradient(ellipse at 50% 50%, transparent 30%, rgba(13,13,13,0.75) 100%)' }}
+          />
+
+          {/* Medical icons */}
           {MEDICAL_ICONS.map((item, i) => (
             <span
               key={i}
               className={`med-icon material-symbols-outlined ${item.up ? 'up' : 'down'}`}
-              style={{
-                top: `${item.top}%`,
-                left: `${item.left}%`,
-                fontSize: item.size,
-                ['--d' as string]: `${item.delay}s`,
-                zIndex: 1,
-              }}
-            >
-              {item.icon}
-            </span>
+              style={{ top:`${item.top}%`, left:`${item.left}%`, fontSize:item.size, ['--d' as string]:`${item.delay}s`, zIndex:1 }}
+            >{item.icon}</span>
           ))}
 
+          {/* Hero text */}
           <motion.div
             className="text-center max-w-4xl mx-auto w-full relative z-10"
             style={{ opacity: heroOpacity, y: heroY }}
@@ -148,7 +225,7 @@ export default function HomeScroll({ hospitals, hospitalCount, diaryCount }: Pro
           </motion.div>
         </section>
 
-        {/* Section 2 — Carousel */}
+        {/* ══ Section 2 — Carousel ══ */}
         <section className="snap-section flex flex-col items-center justify-center px-4 md:px-12 lg:px-24 py-12 md:py-20 max-w-7xl mx-auto w-full">
           {hospitals.length > 0 ? (
             <div className="w-full"><HospitalCarousel hospitals={hospitals} /></div>
@@ -160,7 +237,7 @@ export default function HomeScroll({ hospitals, hospitalCount, diaryCount }: Pro
           )}
         </section>
 
-        {/* Section 3 — Stats */}
+        {/* ══ Section 3 — Stats ══ */}
         <section className="snap-section min-h-screen flex flex-col items-center justify-center px-6 relative overflow-hidden">
           <div className="absolute inset-0 -z-10 bg-primary/3 rounded-full blur-3xl opacity-40 scale-150 pointer-events-none" />
           <div className="max-w-4xl mx-auto w-full">
