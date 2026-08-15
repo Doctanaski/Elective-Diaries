@@ -49,20 +49,22 @@ export default function HospitalCarousel({ hospitals }: Props) {
   // fits inside the slide without the user needing to scroll, and scale the
   // arrows / name / CTA with the card size so proportions stay balanced
   const vw           = isMobile ? (typeof window !== 'undefined' ? window.innerWidth : 390) : 0
-  const cardWidth    = isMobile ? Math.round(vw * 0.38) : Math.min(320, Math.round(vh * 0.36))
-  const trackHeight  = isMobile ? Math.round(cardWidth * 1.45) : Math.min(560, Math.round(vh * 0.5))
+  const cardWidth    = isMobile ? Math.round(vw * 0.40) : Math.min(340, Math.round(vh * 0.38))
+  const trackHeight  = isMobile ? Math.round(cardWidth * 1.45) : Math.min(580, Math.round(vh * 0.52))
   const perspective  = isMobile ? 800  : 1400
   const xSpacing     = isMobile ? Math.round(cardWidth * 0.62) : Math.round(cardWidth * 0.53)
 
-  const cardScale    = isMobile ? Math.max(0.72, cardWidth / 150) : Math.min(1, Math.max(0.8, cardWidth / 320))
-  const arrowPx      = isMobile ? Math.max(26, Math.round(30 * cardScale)) : Math.round(44 * cardScale)
-  const arrowIconPx  = isMobile ? Math.max(13, Math.round(15 * cardScale)) : Math.round(20 * cardScale)
-  const namePx       = isMobile ? Math.max(15, Math.round(17 * cardScale)) : Math.round(25 * cardScale)
-  const descPx       = isMobile ? 13 : Math.round(14 * cardScale)
-  const ctaFontPx    = isMobile ? 13 : Math.round(14 * cardScale)
-  const ctaPadX      = isMobile ? Math.max(16, Math.round(20 * cardScale)) : Math.round(24 * cardScale)
-  const ctaPadY      = isMobile ? Math.max(9, Math.round(11 * cardScale)) : Math.round(13 * cardScale)
-  const ctaIconPx    = isMobile ? 15 : Math.round(16 * cardScale)
+  const baseW        = isMobile ? 160 : 340
+  const cardScale    = isMobile ? Math.max(0.72, cardWidth / baseW) : Math.min(1, Math.max(0.8, cardWidth / baseW))
+  const arrowPx      = isMobile ? Math.max(26, Math.round(32 * cardScale)) : Math.round(48 * cardScale)
+  const arrowIconPx  = isMobile ? Math.max(13, Math.round(16 * cardScale)) : Math.round(22 * cardScale)
+  const arrowGap     = isMobile ? 6 : 8
+  const namePx       = isMobile ? Math.max(15, Math.round(18 * cardScale)) : Math.round(27 * cardScale)
+  const descPx       = isMobile ? 14 : Math.round(15 * cardScale)
+  const ctaFontPx    = isMobile ? 14 : Math.round(15 * cardScale)
+  const ctaPadX      = isMobile ? Math.max(16, Math.round(22 * cardScale)) : Math.round(26 * cardScale)
+  const ctaPadY      = isMobile ? Math.max(9, Math.round(12 * cardScale)) : Math.round(14 * cardScale)
+  const ctaIconPx    = isMobile ? 16 : Math.round(17 * cardScale)
 
   return (
     <div className="flex flex-col items-center gap-4">
@@ -72,28 +74,38 @@ export default function HospitalCarousel({ hospitals }: Props) {
         className="w-full flex justify-center items-center relative"
         style={{ height: trackHeight, perspective }}
       >
-        {/* Left arrow */}
+        {/* Left arrow — hugs the active tab */}
         <button
           onClick={toPrev}
           disabled={activeIndex === 0}
-          className="absolute left-0 z-[200] rounded-full flex items-center justify-center
+          className="absolute z-[200] rounded-full flex items-center justify-center
                      bg-primary text-on-primary border border-primary
                      hover:bg-primary-container hover:scale-110
                      transition-all shadow-lg disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:scale-100"
-          style={{ width: arrowPx, height: arrowPx }}
+          style={{
+            width: arrowPx,
+            height: arrowPx,
+            left: `calc(50% - ${Math.round(cardWidth / 2 + arrowPx / 2 + arrowGap)}px)`,
+            transform: 'translateX(-50%)',
+          }}
         >
           <ChevronLeft size={arrowIconPx} />
         </button>
 
-        {/* Right arrow */}
+        {/* Right arrow — hugs the active tab */}
         <button
           onClick={toNext}
           disabled={activeIndex === hospitals.length - 1}
-          className="absolute right-0 z-[200] rounded-full flex items-center justify-center
+          className="absolute z-[200] rounded-full flex items-center justify-center
                      bg-primary text-on-primary border border-primary
                      hover:bg-primary-container hover:scale-110
                      transition-all shadow-lg disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:scale-100"
-          style={{ width: arrowPx, height: arrowPx }}
+          style={{
+            width: arrowPx,
+            height: arrowPx,
+            left: `calc(50% + ${Math.round(cardWidth / 2 + arrowPx / 2 + arrowGap)}px)`,
+            transform: 'translateX(-50%)',
+          }}
         >
           <ChevronRight size={arrowIconPx} />
         </button>
@@ -137,7 +149,7 @@ export default function HospitalCarousel({ hospitals }: Props) {
                 ) : (
                   <div className="w-full h-full bg-surface-container flex items-center justify-center">
                     <span className="material-symbols-outlined text-on-surface-variant opacity-30"
-                      style={{ fontSize: isMobile ? 28 : 48 }}>
+                      style={{ fontSize: isMobile ? 32 : 56 }}>
                       local_hospital
                     </span>
                   </div>

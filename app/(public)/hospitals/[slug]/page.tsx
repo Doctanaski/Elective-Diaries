@@ -190,27 +190,22 @@ function DiarySlide({
 
           {/* Specialty strip */}
           {diary.specialty && (
-            <div className="flex items-center gap-3 py-3 pl-4 pr-3 border-l-4 border-primary bg-surface-container-lowest rounded-r-xl">
-              <span className="material-symbols-outlined text-primary" style={{ fontSize: 22 }}>{getSpecialtyIcon(diary.specialty)}</span>
+            <div className="flex items-center gap-3 px-4 py-3 bg-primary rounded-lg text-on-primary w-fit">
+              <span className="material-symbols-outlined" style={{ fontSize: 22 }}>{getSpecialtyIcon(diary.specialty)}</span>
               <div>
-                <p className="font-label text-xs text-on-surface-variant uppercase tracking-wider">Department</p>
-                <p className="font-headline text-base text-on-surface font-semibold">{diary.specialty}</p>
+                <p className="font-label text-xs text-on-primary/70 uppercase tracking-wider">Department</p>
+                <p className="font-headline text-base text-on-primary font-semibold">{diary.specialty}</p>
               </div>
             </div>
           )}
 
           {/* Year + date */}
-          <p className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-primary/10 border border-primary/20 text-primary font-label text-sm font-semibold w-fit">
+          <p className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-primary text-on-primary font-label text-sm font-semibold w-fit">
             {diary.author_year}
             {diary.created_at && (
               <span>· {new Date(diary.created_at).toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}</span>
             )}
           </p>
-
-          {/* Excerpt */}
-          {diary.excerpt && (
-            <p className="font-body text-on-surface-variant text-sm leading-relaxed line-clamp-4">{diary.excerpt}</p>
-          )}
 
           {/* CTA */}
           <Link
@@ -220,6 +215,11 @@ function DiarySlide({
             <span>Read Diary</span>
             <span className="material-symbols-outlined group-hover:translate-x-1 transition-transform" style={{ fontSize: 18 }}>arrow_forward</span>
           </Link>
+
+          {/* Excerpt */}
+          {diary.excerpt && (
+            <p className="font-body text-on-surface-variant text-sm leading-relaxed line-clamp-4">{diary.excerpt}</p>
+          )}
         </div>
       </div>
 
@@ -239,33 +239,33 @@ function DiarySlide({
           </h2>
 
           {diary.specialty && (
-            <div className="flex items-center gap-4 py-4 pl-6 pr-4 border-l-4 border-primary bg-surface-container-lowest/60 backdrop-blur-md rounded-r-xl">
-              <span className="material-symbols-outlined text-primary text-2xl">{getSpecialtyIcon(diary.specialty)}</span>
+            <div className="flex items-center gap-4 px-5 py-3.5 bg-primary rounded-lg text-on-primary w-fit">
+              <span className="material-symbols-outlined text-2xl">{getSpecialtyIcon(diary.specialty)}</span>
               <div>
-                <p className="font-label text-xs text-on-surface-variant uppercase tracking-wider">Department</p>
-                <p className="font-headline text-lg text-on-surface font-semibold">{diary.specialty}</p>
+                <p className="font-label text-xs text-on-primary/70 uppercase tracking-wider">Department</p>
+                <p className="font-headline text-lg text-on-primary font-semibold">{diary.specialty}</p>
               </div>
             </div>
           )}
 
-          <p className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-primary/10 border border-primary/20 text-primary font-label text-sm font-semibold w-fit">
+          <p className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-primary text-on-primary font-label text-sm font-semibold w-fit">
             {diary.author_year}
             {diary.created_at && (
               <span>· {new Date(diary.created_at).toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}</span>
             )}
           </p>
 
-          {diary.excerpt && (
-            <p className="font-body text-on-surface-variant text-base max-w-md leading-relaxed line-clamp-3">{diary.excerpt}</p>
-          )}
-
           <Link
             href={`/hospitals/${hospitalSlug}/diaries/${diary.id}`}
-            className="mt-4 inline-flex items-center gap-3 px-7 py-4 rounded-xl bg-primary text-on-primary font-headline font-semibold text-sm hover:opacity-90 hover:shadow-[0_0_24px_rgba(46,74,156,0.35)] transition-all group"
+            className="mt-1 inline-flex items-center gap-3 px-7 py-4 rounded-xl bg-primary text-on-primary font-headline font-semibold text-sm hover:opacity-90 hover:shadow-[0_0_24px_rgba(46,74,156,0.35)] transition-all group w-fit"
           >
             <span>Read Diary</span>
             <span className="material-symbols-outlined group-hover:translate-x-1 transition-transform" style={{ fontSize: 18 }}>arrow_forward</span>
           </Link>
+
+          {diary.excerpt && (
+            <p className="font-body text-on-surface-variant text-base max-w-md leading-relaxed line-clamp-3">{diary.excerpt}</p>
+          )}
         </div>
 
         {/* Cover image column */}
