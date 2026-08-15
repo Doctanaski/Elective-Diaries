@@ -111,8 +111,8 @@ Add INSERT policy for authenticated users on both buckets.
 ## Design System — Dark Mode Only
 - **Always dark** — `<html class="dark">` hardcoded in `app/layout.tsx`. No ThemeProvider, no ThemeToggle.
 - Light mode tokens still exist in globals.css `:root` but are never used.
-- Dark mode background: `#0d0d0d`, cards: `#141414` / `#1a1919`
-- Primary red: `#e63c49` (dark mode), `#b52434` (light mode — inactive)
+- Dark mode background: `#121318`, cards: `#1a1b21` / `#1e1f25`
+- Primary SCORE blue: `#b5c4ff` (dark mode), `#2e4a9c` (light mode — inactive)
 - **`text-on-surface-variant` is NOT used** — replaced with `text-primary` throughout the entire site
 - **Card borders use `border-white/5`** — barely-visible dark borders, consistent across all pages
 - Font: Plus Jakarta Sans (headline), Inter (body), Work Sans (label)

@@ -192,8 +192,8 @@ export default function DiaryReader({
               style={{ filter: 'brightness(0.18) saturate(0.6)' }}
             />
             {/* Gradient overlay — dark vignette matching site palette */}
-            <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-[#0d0d0d]/70 to-[#0d0d0d]" />
-            {/* Subtle red tint at top to tie into primary colour */}
+            <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-[#121318]/70 to-[#121318]" />
+            {/* Subtle blue tint at top to tie into primary colour */}
             <div className="absolute inset-0 bg-gradient-to-br from-primary/8 via-transparent to-transparent" />
           </motion.div>
 

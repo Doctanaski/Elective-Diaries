@@ -130,3 +130,23 @@ alter table public.diaries add column if not exists sketchfab_model_id text;
 -- ============================================================
 alter table public.diaries add column if not exists model_url text;
 alter table public.diaries drop column if exists sketchfab_model_id;
+
+-- ============================================================
+-- v68 MIGRATION — site_content table for editable text blocks
+-- Run this once in: Supabase Dashboard → SQL Editor → New Query
+-- ============================================================
+create table if not exists public.site_content (
+  id          uuid primary key default gen_random_uuid(),
+  key         text not null unique,
+  value       text not null default '',
+  updated_at  timestamptz default now()
+);
+
+-- Seed the SCO section placeholders
+insert into public.site_content (key, value) values
+  ('sco_name',         'Standing Committee Officer'),
+  ('sco_title',        'SCOPE · IFMSA-KMC'),
+  ('sco_message',      'Add your message here. This text can be edited from the admin panel.'),
+  ('sco_officer_image', ''),
+  ('sco_group_image',   '')
+on conflict (key) do nothing;

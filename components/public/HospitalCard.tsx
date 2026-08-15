@@ -5,7 +5,7 @@ import type { Hospital } from '@/types/database'
 const statusConfig = {
   active: { color: '#34A853', label: 'Active' },
   new_data: { color: '#4285F4', label: 'New Data' },
-  inactive: { color: '#857372', label: 'Inactive' },
+  inactive: { color: '#8F909A', label: 'Inactive' },
 }
 
 export default function HospitalCard({ hospital, priority = false }: { hospital: Hospital; priority?: boolean }) {

@@ -83,7 +83,7 @@ export default function HomeScroll({ hospitals, hospitalCount, diaryCount }: Pro
         @keyframes float-down { 0%,100%{transform:translateY(0)} 50%{transform:translateY(10px)}  }
         .med-icon {
           position:absolute; pointer-events:none; user-select:none;
-          color:rgba(230,60,73,0.13); opacity:0; will-change:transform;
+          color:rgba(181,196,255,0.13); opacity:0; will-change:transform;
         }
         .med-icon.up   { animation: icon-in 0.5s cubic-bezier(0.22,1,0.36,1) var(--d) forwards, float-up   7s ease-in-out calc(var(--d) + 0.5s) infinite }
         .med-icon.down { animation: icon-in 0.5s cubic-bezier(0.22,1,0.36,1) var(--d) forwards, float-down 7s ease-in-out calc(var(--d) + 0.5s) infinite }
@@ -91,10 +91,10 @@ export default function HomeScroll({ hospitals, hospitalCount, diaryCount }: Pro
         /* ── Background: static radial gradients, no animation ── */
         .hero-bg {
           background:
-            radial-gradient(ellipse 60% 50% at 15% 25%, rgba(160,15,25,0.22) 0%, transparent 100%),
-            radial-gradient(ellipse 50% 60% at 85% 75%, rgba(100,8,16,0.18) 0%, transparent 100%),
-            radial-gradient(ellipse 40% 40% at 50% 5%,  rgba(180,20,30,0.12) 0%, transparent 100%),
-            #0d0d0d;
+            radial-gradient(ellipse 60% 50% at 15% 25%, rgba(46,74,156,0.28) 0%, transparent 100%),
+            radial-gradient(ellipse 50% 60% at 85% 75%, rgba(27,44,106,0.24) 0%, transparent 100%),
+            radial-gradient(ellipse 40% 40% at 50% 5%,  rgba(76,92,146,0.18) 0%, transparent 100%),
+            #121318;
         }
 
         /* ── ECG: only stroke-dashoffset animates (GPU composited in modern browsers) ── */
@@ -113,7 +113,7 @@ export default function HomeScroll({ hospitals, hospitalCount, diaryCount }: Pro
 
         /* ── Vignette ── */
         .hero-vignette {
-          background: radial-gradient(ellipse at 50% 50%, transparent 25%, rgba(13,13,13,0.8) 100%);
+          background: radial-gradient(ellipse at 50% 50%, transparent 25%, rgba(18,19,24,0.8) 100%);
         }
 
         html { scroll-snap-type: y mandatory; scroll-behavior: smooth }
@@ -136,10 +136,10 @@ export default function HomeScroll({ hospitals, hospitalCount, diaryCount }: Pro
             <svg viewBox="0 0 800 80" preserveAspectRatio="none" className="w-full" style={{ height: 80 }}>
               <defs>
                 <linearGradient id="ecg-grad" x1="0%" y1="0%" x2="100%" y2="0%">
-                  <stop offset="0%"   stopColor="rgba(230,60,73,0)" />
-                  <stop offset="25%"  stopColor="rgba(230,60,73,0.85)" />
-                  <stop offset="75%"  stopColor="rgba(230,60,73,0.85)" />
-                  <stop offset="100%" stopColor="rgba(230,60,73,0)" />
+                  <stop offset="0%"   stopColor="rgba(181,196,255,0)" />
+                  <stop offset="25%"  stopColor="rgba(181,196,255,0.85)" />
+                  <stop offset="75%"  stopColor="rgba(181,196,255,0.85)" />
+                  <stop offset="100%" stopColor="rgba(181,196,255,0)" />
                 </linearGradient>
               </defs>
               <path
@@ -152,7 +152,7 @@ export default function HomeScroll({ hospitals, hospitalCount, diaryCount }: Pro
                 strokeLinejoin="round"
               />
               {/* Dot — no drop-shadow filter */}
-              <circle className="ecg-dot" cx="590" cy="40" r="3" fill="rgba(230,60,73,1)" />
+              <circle className="ecg-dot" cx="590" cy="40" r="3" fill="rgba(181,196,255,1)" />
             </svg>
           </div>
 

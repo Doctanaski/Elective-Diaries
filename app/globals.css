@@ -9,68 +9,68 @@
     scroll-behavior: smooth;
   }
 
-  /* ── Light mode tokens ── */
+  /* ── Light mode tokens — SCORE IFMSA palette (seed #2e4a9c) ── */
   :root {
-    --surface:                  #fff8f8;
-    --surface-container-low:    #fbf8f8;
-    --surface-container:        #f5f0f0;
-    --surface-container-high:   #efeaea;
-    --surface-container-highest:#eadddc;
+    --surface:                  #faf8ff;
+    --surface-container-low:    #f4f3fa;
+    --surface-container:        #eeedf4;
+    --surface-container-high:   #e9e7ef;
+    --surface-container-highest:#e3e1e9;
     --surface-container-lowest: #ffffff;
-    --surface-dim:              #e0d8d8;
-    --surface-bright:           #fff8f8;
-    --surface-variant:          #f4dddc;
-    --on-surface:               #201a1a;
-    --on-surface-variant:       #524343;
-    --on-background:            #201a1a;
-    --background:               #fff8f8;
-    --primary:                  #b52434;
-    --primary-container:        #900223;
+    --surface-dim:              #dad9e0;
+    --surface-bright:           #faf8ff;
+    --surface-variant:          #e2e1ec;
+    --on-surface:               #1a1b21;
+    --on-surface-variant:       #45464f;
+    --on-background:            #1a1b21;
+    --background:               #faf8ff;
+    --primary:                  #2e4a9c;
+    --primary-container:        #1b2c6a;
     --on-primary:               #ffffff;
-    --on-primary-container:     #ffdadb;
-    --outline:                  #857372;
-    --outline-variant:          #d7c1c1;
+    --on-primary-container:     #dce1ff;
+    --outline:                  #767680;
+    --outline-variant:          #c6c6d0;
     --error:                    #ba1a1a;
     --error-container:          #ffdad6;
-    --secondary:                #775655;
-    --secondary-container:      #ffdad8;
+    --secondary:                #595e72;
+    --secondary-container:      #dee1f9;
     --on-secondary:             #ffffff;
-    --on-secondary-container:   #2f1515;
-    --inverse-surface:          #362f2f;
-    --inverse-on-surface:       #fbeeec;
-    --inverse-primary:          #ffb3b6;
+    --on-secondary-container:   #161b2c;
+    --inverse-surface:          #2f3036;
+    --inverse-on-surface:       #f1f0f7;
+    --inverse-primary:          #b5c4ff;
   }
 
-  /* ── Dark mode tokens (matches screenshot palette) ── */
+  /* ── Dark mode tokens — SCORE IFMSA palette (seed #2e4a9c) ── */
   .dark {
-    --surface:                  #0d0d0d;
-    --surface-container-low:    #141414;
-    --surface-container:        #1a1919;
-    --surface-container-high:   #222121;
-    --surface-container-highest:#2d2b2b;
-    --surface-container-lowest: #080808;
-    --surface-dim:              #0d0d0d;
-    --surface-bright:           #302e2e;
-    --surface-variant:          #2d2b2b;
-    --on-surface:               #ede0df;
-    --on-surface-variant:       #c9a8a6;
-    --on-background:            #ede0df;
-    --background:               #0d0d0d;
-    --primary:                  #e63c49;
-    --primary-container:        #b52434;
-    --on-primary:               #fff;
-    --on-primary-container:     #ffdadb;
-    --outline:                  #8a6866;
-    --outline-variant:          #4a2f2e;
+    --surface:                  #121318;
+    --surface-container-low:    #1a1b21;
+    --surface-container:        #1e1f25;
+    --surface-container-high:   #292a2f;
+    --surface-container-highest:#34343a;
+    --surface-container-lowest: #0d0e13;
+    --surface-dim:              #121318;
+    --surface-bright:           #38393f;
+    --surface-variant:          #45464f;
+    --on-surface:               #e3e1e9;
+    --on-surface-variant:       #c6c6d0;
+    --on-background:            #e3e1e9;
+    --background:               #121318;
+    --primary:                  #b5c4ff;
+    --primary-container:        #2e4a9c;
+    --on-primary:               #1c2d61;
+    --on-primary-container:     #dce1ff;
+    --outline:                  #8f909a;
+    --outline-variant:          #45464f;
     --error:                    #ffb4ab;
     --error-container:          #93000a;
-    --secondary:                #c9908e;
-    --secondary-container:      #4d2c2b;
-    --on-secondary:             #3a2020;
-    --on-secondary-container:   #ffdad8;
-    --inverse-surface:          #ede0df;
-    --inverse-on-surface:       #2a2020;
-    --inverse-primary:          #b52434;
+    --secondary:                #c1c5dd;
+    --secondary-container:      #414659;
+    --on-secondary:             #2b3042;
+    --on-secondary-container:   #dee1f9;
+    --inverse-surface:          #e3e1e9;
+    --inverse-on-surface:       #2f3036;
+    --inverse-primary:          #4c5c92;
   }
 
   body {
@@ -102,28 +102,28 @@
   .prose-diary h1 { @apply text-3xl md:text-4xl font-bold font-headline text-on-surface mb-5 mt-10; }
   .prose-diary h2 { @apply text-2xl md:text-3xl font-bold font-headline text-on-surface mb-4 mt-8; }
   .prose-diary h3 { @apply text-xl md:text-2xl font-semibold font-headline text-on-surface mb-3 mt-6; }
-  .prose-diary p  { color: #F5F0E8; @apply leading-[1.85] mb-6 text-base md:text-lg; }
+  .prose-diary p  { color: #E3E1E9; @apply leading-[1.85] mb-6 text-base md:text-lg; }
 
   /* Lists — use padding-left so bullets/numbers aren't clipped */
-  .prose-diary ul { color: #F5F0E8; @apply list-disc pl-6 space-y-2 mb-6 text-base md:text-lg; }
-  .prose-diary ol { color: #F5F0E8; @apply list-decimal pl-6 space-y-2 mb-6 text-base md:text-lg; }
-  .prose-diary li { color: #F5F0E8; @apply text-base md:text-lg leading-relaxed; }
+  .prose-diary ul { color: #E3E1E9; @apply list-disc pl-6 space-y-2 mb-6 text-base md:text-lg; }
+  .prose-diary ol { color: #E3E1E9; @apply list-decimal pl-6 space-y-2 mb-6 text-base md:text-lg; }
+  .prose-diary li { color: #E3E1E9; @apply text-base md:text-lg leading-relaxed; }
   .prose-diary li p { @apply mb-0; } /* Tiptap wraps li content in <p> — remove double spacing */
 
   /* Inline formatting */
   .prose-diary strong,
   .prose-diary b { color: var(--primary); @apply font-bold; }
   .prose-diary em,
-  .prose-diary i { color: #F5F0E8; @apply italic; }
-  .prose-diary u { @apply underline; color: #F5F0E8; }
-  .prose-diary s { @apply line-through; color: #F5F0E8; opacity: 0.7; }
+  .prose-diary i { color: #E3E1E9; @apply italic; }
+  .prose-diary u { @apply underline; color: #E3E1E9; }
+  .prose-diary s { @apply line-through; color: #E3E1E9; opacity: 0.7; }
   .prose-diary code { @apply font-mono text-sm px-1.5 py-0.5 rounded bg-surface-container text-primary; }
   .prose-diary pre  { @apply font-mono text-sm p-4 rounded-xl bg-surface-container text-primary overflow-x-auto mb-6; }
   .prose-diary pre code { @apply bg-transparent p-0; }
 
   /* Blockquote */
   .prose-diary blockquote {
-    color: #F5F0E8;
+    color: #E3E1E9;
     @apply border-l-4 border-primary pl-6 italic my-6 text-base md:text-lg;
     opacity: 0.85;
   }

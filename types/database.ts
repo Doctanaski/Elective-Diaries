@@ -49,6 +49,13 @@ export type DiaryInsert = Partial<Diary> & {
 
 export type DiaryUpdate = Partial<Diary>
 
+export interface SiteContent {
+  id: string
+  key: string
+  value: string
+  updated_at: string
+}
+
 // ── Database schema type (used by Supabase client) ──────────────────────────
 
 export interface Database {
