@@ -14,12 +14,16 @@ export default function HospitalCarousel({ hospitals }: Props) {
   const mid = Math.floor(hospitals.length / 2)
   const [activeIndex, setActiveIndex] = useState(mid)
   const [isMobile, setIsMobile] = useState(false)
+  const [vh, setVh] = useState(900)
 
   useEffect(() => {
-    const check = () => setIsMobile(window.innerWidth < 768)
-    check()
-    window.addEventListener('resize', check)
-    return () => window.removeEventListener('resize', check)
+    const update = () => {
+      setIsMobile(window.innerWidth < 768)
+      setVh(window.innerHeight)
+    }
+    update()
+    window.addEventListener('resize', update)
+    return () => window.removeEventListener('resize', update)
   }, [])
 
   if (hospitals.length === 0) return null
@@ -41,13 +45,13 @@ export default function HospitalCarousel({ hospitals }: Props) {
 
   const active = hospitals[activeIndex]
 
-  // Responsive values — scale cards to viewport width on mobile
-  // cardWidth = ~38vw on mobile (fits 3 cards across ~380px screen), fixed on desktop
+  // Responsive values — scale cards so the whole carousel (cards, name, button)
+  // fits inside the slide without the user needing to scroll
   const vw           = isMobile ? (typeof window !== 'undefined' ? window.innerWidth : 390) : 0
-  const cardWidth    = isMobile ? Math.round(vw * 0.38) : 320
-  const trackHeight  = isMobile ? Math.round(cardWidth * 1.45) : 560
+  const cardWidth    = isMobile ? Math.round(vw * 0.38) : Math.min(320, Math.round(vh * 0.36))
+  const trackHeight  = isMobile ? Math.round(cardWidth * 1.45) : Math.min(560, Math.round(vh * 0.5))
   const perspective  = isMobile ? 800  : 1400
-  const xSpacing     = isMobile ? Math.round(cardWidth * 0.62) : 170
+  const xSpacing     = isMobile ? Math.round(cardWidth * 0.62) : Math.round(cardWidth * 0.53)
   const arrowSize    = isMobile ? 'w-9 h-9' : 'w-14 h-14'
   const arrowIcon    = isMobile ? 'w-4 h-4' : 'w-7 h-7'
 

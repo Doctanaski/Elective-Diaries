@@ -227,7 +227,7 @@ export default function HomeScroll({ hospitals, hospitalCount, diaryCount }: Pro
         </section>
 
         {/* Section 2 — Hospitals carousel */}
-        <section className="snap-section relative min-h-screen flex flex-col items-center justify-center px-4 md:px-12 lg:px-24 py-12 md:py-20 max-w-7xl mx-auto w-full">
+        <section className="snap-section relative h-screen flex flex-col items-center justify-center px-4 md:px-12 lg:px-24 py-6 md:py-10 max-w-7xl mx-auto w-full">
           {hospitals.length > 0 ? (
             <div className="w-full"><HospitalCarousel hospitals={hospitals} /></div>
           ) : (
@@ -246,21 +246,21 @@ export default function HomeScroll({ hospitals, hospitalCount, diaryCount }: Pro
               By the numbers
             </p>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-10">
-              <div className="relative bg-surface-container-low rounded-3xl p-10 border border-outline-variant/20 flex flex-col items-center text-center">
-                <span className="material-symbols-outlined text-primary mb-6" style={{ fontSize: 40 }}>local_hospital</span>
-                <div className="font-headline font-extrabold text-7xl md:text-8xl text-primary leading-none mb-4">
+              <div className="relative bg-primary/8 border-2 border-primary/25 rounded-3xl p-10 md:p-12 flex flex-col items-center text-center shadow-lg shadow-primary/10">
+                <span className="material-symbols-outlined text-primary mb-6" style={{ fontSize: 44 }}>local_hospital</span>
+                <div className="font-headline font-extrabold text-8xl md:text-9xl text-primary leading-none mb-4">
                   <RollingNumber target={hospitalCount} duration={1600} />
                 </div>
-                <p className="font-label text-sm uppercase tracking-widest text-on-surface-variant">Affiliated Hospitals</p>
-                <p className="font-body text-xs text-on-surface-variant/50 mt-2">Partner facilities across Pakistan</p>
+                <p className="font-label text-base md:text-lg uppercase tracking-widest text-primary/90">Affiliated Hospitals</p>
+                <p className="font-body text-sm md:text-base text-primary/60 mt-2">Partner facilities across Pakistan</p>
               </div>
-              <div className="relative bg-surface-container-low rounded-3xl p-10 border border-outline-variant/20 flex flex-col items-center text-center">
-                <span className="material-symbols-outlined text-secondary mb-6" style={{ fontSize: 40 }}>auto_stories</span>
-                <div className="font-headline font-extrabold text-7xl md:text-8xl text-secondary leading-none mb-4">
+              <div className="relative bg-primary/8 border-2 border-primary/25 rounded-3xl p-10 md:p-12 flex flex-col items-center text-center shadow-lg shadow-primary/10">
+                <span className="material-symbols-outlined text-primary mb-6" style={{ fontSize: 44 }}>auto_stories</span>
+                <div className="font-headline font-extrabold text-8xl md:text-9xl text-primary leading-none mb-4">
                   <RollingNumber target={diaryCount} duration={2000} />
                 </div>
-                <p className="font-label text-sm uppercase tracking-widest text-on-surface-variant">Published Diaries</p>
-                <p className="font-body text-xs text-on-surface-variant/50 mt-2">Clinical elective experiences documented</p>
+                <p className="font-label text-base md:text-lg uppercase tracking-widest text-primary/90">Published Diaries</p>
+                <p className="font-body text-sm md:text-base text-primary/60 mt-2">Clinical elective experiences documented</p>
               </div>
             </div>
             <p className="text-center font-body text-sm text-on-surface-variant/30 italic mt-16 max-w-md mx-auto">
