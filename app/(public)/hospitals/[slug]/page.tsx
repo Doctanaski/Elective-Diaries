@@ -264,7 +264,7 @@ function DiarySlide({
 
           <Link
             href={`/hospitals/${hospitalSlug}/diaries/${diary.id}`}
-            className="mt-4 inline-flex items-center gap-3 px-7 py-4 rounded-xl bg-primary text-on-primary font-headline font-semibold text-sm hover:opacity-90 hover:shadow-[0_0_24px_rgba(181,36,52,0.35)] transition-all group"
+            className="mt-4 inline-flex items-center gap-3 px-7 py-4 rounded-xl bg-primary text-on-primary font-headline font-semibold text-sm hover:opacity-90 hover:shadow-[0_0_24px_rgba(46,74,156,0.35)] transition-all group"
           >
             <span>Read Diary</span>
             <span className="material-symbols-outlined group-hover:translate-x-1 transition-transform" style={{ fontSize: 18 }}>arrow_forward</span>

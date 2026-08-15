@@ -120,7 +120,7 @@ function MetaCard({ icon, label, value, sub }: {
   icon: string; label: string; value: string; sub?: string
 }) {
   return (
-    <div className="rounded-xl px-4 py-3.5 border flex items-start gap-3 bg-surface-container-lowest/60 border-white/8 backdrop-blur-sm">
+    <div className="rounded-xl px-4 py-3.5 border flex items-start gap-3 bg-surface-container-lowest/60 border-outline-variant/20 backdrop-blur-sm">
       <span className="material-symbols-outlined mt-0.5 shrink-0 text-on-surface-variant" style={{ fontSize: 18 }}>{icon}</span>
       <div className="min-w-0">
         <p className="font-label text-[10px] uppercase tracking-widest text-on-surface-variant mb-0.5">{label}</p>
@@ -161,12 +161,12 @@ export default function DiaryReader({
     <div className="bg-surface">
 
       {/* Fixed navbar */}
-      <div className="fixed top-0 left-0 right-0 z-50 bg-surface/80 backdrop-blur-md border-b border-white/5">
+      <div className="fixed top-0 left-0 right-0 z-50 bg-surface/80 backdrop-blur-md border-b border-outline-variant/30">
         <div className="max-w-screen-xl mx-auto px-4 md:px-12 py-3 flex items-center">
           <Link
             href={`/hospitals/${hospital.slug}`}
             className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl
-                       bg-surface-container border border-white/10
+                       bg-surface-container border border-outline-variant/30
                        text-on-surface-variant hover:text-primary font-label text-sm font-semibold
                        transition-all hover:border-primary/40"
           >
@@ -191,8 +191,8 @@ export default function DiaryReader({
               className="absolute inset-0 w-full h-full object-cover"
               style={{ filter: 'brightness(0.18) saturate(0.6)' }}
             />
-            {/* Gradient overlay — dark vignette matching site palette */}
-            <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-[#121318]/70 to-[#121318]" />
+            {/* Gradient overlay — white fade into body */}
+            <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-[#ffffff]/40 to-[#ffffff]" />
             {/* Subtle blue tint at top to tie into primary colour */}
             <div className="absolute inset-0 bg-gradient-to-br from-primary/8 via-transparent to-transparent" />
           </motion.div>
@@ -248,7 +248,7 @@ export default function DiaryReader({
                   initial={{ opacity: 0, y: 24, scale: 0.95 }}
                   animate={{ opacity: 1, y: 0, scale: 1 }}
                   transition={{ duration: 0.5, delay: 0.55, ease: [0.22, 1, 0.36, 1] }}
-                  className="rounded-xl px-4 py-3.5 border flex items-start gap-3 bg-surface-container-lowest/60 border-white/8 backdrop-blur-sm"
+                  className="rounded-xl px-4 py-3.5 border flex items-start gap-3 bg-surface-container-lowest/60 border-outline-variant/20 backdrop-blur-sm"
                 >
                   <span className="material-symbols-outlined mt-0.5 shrink-0 text-on-surface-variant" style={{ fontSize: 18 }}>psychology</span>
                   <div className="min-w-0">
@@ -258,7 +258,7 @@ export default function DiaryReader({
                         <span key={tag} className={`px-2 py-0.5 rounded-full font-label text-[11px] border cursor-default ${
                           i === 0 ? 'bg-secondary/20 text-secondary border-secondary/30'
                           : i % 3 === 1 ? 'bg-primary/20 text-primary border-primary/30'
-                          : 'bg-surface-container-highest text-on-surface border-white/5'
+                          : 'bg-surface-container-highest text-on-surface border-outline-variant/20'
                         }`}>{tag}</span>
                       ))}
                     </div>
@@ -292,14 +292,14 @@ export default function DiaryReader({
 
         {hasAnalysis && (
           <FadeSection>
-            <div className="pt-8 border-t border-white/5">
+            <div className="pt-8 border-t border-outline-variant/20">
               <h2 className="font-headline text-xl md:text-2xl font-bold text-on-surface mb-6 flex items-center gap-3">
                 <span className="material-symbols-outlined text-on-surface p-2 bg-surface-container-high rounded-lg" style={{ fontSize: 20 }}>compare_arrows</span>
                 Rotation Analysis
               </h2>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-6">
                 {pros.length > 0 && (
-                  <div className="bg-surface-container-low rounded-2xl p-5 md:p-6 border-t-2 border-secondary/60 border border-white/5">
+                  <div className="bg-surface-container-low rounded-2xl p-5 md:p-6 border-t-2 border-secondary/60 border border-outline-variant/20">
                     <h3 className="font-headline text-lg font-bold text-secondary mb-4 flex items-center gap-2">
                       <span className="material-symbols-outlined" style={{ fontSize: 20 }}>thumb_up</span>Pros
                     </h3>
@@ -314,7 +314,7 @@ export default function DiaryReader({
                   </div>
                 )}
                 {cons.length > 0 && (
-                  <div className="bg-surface-container-lowest rounded-2xl p-5 md:p-6 border-t-2 border-primary/60 border border-white/5">
+                  <div className="bg-surface-container-lowest rounded-2xl p-5 md:p-6 border-t-2 border-primary/60 border border-outline-variant/20">
                     <h3 className="font-headline text-lg font-bold text-primary mb-4 flex items-center gap-2">
                       <span className="material-symbols-outlined" style={{ fontSize: 20 }}>warning</span>Cons
                     </h3>

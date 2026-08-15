@@ -23,7 +23,7 @@ export default function AboutPage() {
       </div>
 
       <div className="space-y-8 text-primary leading-relaxed">
-        <div className="bg-surface-container rounded-2xl p-8 border border-white/5">
+        <div className="bg-surface-container rounded-2xl p-8 border border-outline-variant/20">
           <div className="flex items-start space-x-4">
             <span className="material-symbols-outlined text-primary mt-1">menu_book</span>
             <div>

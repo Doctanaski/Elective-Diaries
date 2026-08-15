@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 480" role="img" aria-label="President photo placeholder">
+  <defs>
+    <linearGradient id="ph-bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#f0f0f4"/>
+      <stop offset="100%" stop-color="#e1e1e7"/>
+    </linearGradient>
+    <linearGradient id="ph-body" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#d4d4dd"/>
+      <stop offset="100%" stop-color="#b9b9c5"/>
+    </linearGradient>
+  </defs>
+  <rect width="400" height="480" fill="url(#ph-bg)"/>
+  <rect width="400" height="480" fill="none" stroke="#c6c6d0" stroke-width="2"/>
+  <circle cx="200" cy="182" r="86" fill="#c6c6d0"/>
+  <circle cx="200" cy="152" r="46" fill="url(#ph-body)"/>
+  <path d="M200 300c-64 0-122 36-122 116v64h244v-64c0-80-58-116-122-116z" fill="url(#ph-body)"/>
+  <g fill="#767680" opacity="0.5">
+    <rect x="176" y="318" width="48" height="34" rx="6"/>
+    <path d="M188 318l5-8h14l5 8z"/>
+    <circle cx="200" cy="335" r="9"/>
+  </g>
+  <text x="200" y="392" text-anchor="middle" font-family="'Plus Jakarta Sans','Inter',Arial,sans-serif" font-size="16" font-weight="700" fill="#45464f">President&apos;s Photo</text>
+  <text x="200" y="414" text-anchor="middle" font-family="'Plus Jakarta Sans','Inter',Arial,sans-serif" font-size="12" fill="#767680">Placeholder image</text>
+</svg>

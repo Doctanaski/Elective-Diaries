@@ -55,7 +55,7 @@ export default function DiaryGallery({ images, diaryTitle }: DiaryGalleryProps) 
                 onOpen={() => setLightbox(i)}
               >
                 <div
-                  className="rounded-xl overflow-hidden border border-white/10"
+                  className="rounded-xl overflow-hidden border border-outline-variant/20"
                   style={{ width: 220, boxShadow: '0 8px 24px rgba(0,0,0,0.55)' }}
                 >
                   <div className="relative bg-surface-container" style={{ width: 220, height: 220 }}>
@@ -116,7 +116,7 @@ export default function DiaryGallery({ images, diaryTitle }: DiaryGalleryProps) 
 
             {/* Counter */}
             <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-10
-                            px-4 py-1.5 rounded-full bg-surface/70 backdrop-blur-md border border-white/10">
+                            px-4 py-1.5 rounded-full bg-surface/70 backdrop-blur-md border border-outline-variant/20">
               <p className="font-label text-xs text-on-surface-variant tracking-widest">
                 {lightbox + 1} / {images.length}
               </p>
@@ -127,7 +127,7 @@ export default function DiaryGallery({ images, diaryTitle }: DiaryGalleryProps) 
               type="button"
               onClick={() => setLightbox(null)}
               className="absolute top-5 right-5 z-10 w-10 h-10 rounded-full flex items-center justify-center
-                         bg-surface/80 backdrop-blur-md border border-white/10
+                         bg-surface/80 backdrop-blur-md border border-outline-variant/20
                          text-on-surface-variant hover:text-on-surface transition-colors"
             >
               <span className="material-symbols-outlined" style={{ fontSize: 20 }}>close</span>
@@ -139,7 +139,7 @@ export default function DiaryGallery({ images, diaryTitle }: DiaryGalleryProps) 
                 type="button"
                 onClick={(e) => { e.stopPropagation(); prev() }}
                 className="absolute left-4 top-1/2 -translate-y-1/2 z-10 w-11 h-11 rounded-full flex items-center justify-center
-                           bg-surface/80 backdrop-blur-md border border-white/10
+                           bg-surface/80 backdrop-blur-md border border-outline-variant/20
                            text-on-surface-variant hover:text-on-surface transition-colors"
               >
                 <span className="material-symbols-outlined" style={{ fontSize: 24 }}>chevron_left</span>
@@ -152,7 +152,7 @@ export default function DiaryGallery({ images, diaryTitle }: DiaryGalleryProps) 
                 type="button"
                 onClick={(e) => { e.stopPropagation(); next() }}
                 className="absolute right-4 top-1/2 -translate-y-1/2 z-10 w-11 h-11 rounded-full flex items-center justify-center
-                           bg-surface/80 backdrop-blur-md border border-white/10
+                           bg-surface/80 backdrop-blur-md border border-outline-variant/20
                            text-on-surface-variant hover:text-on-surface transition-colors"
               >
                 <span className="material-symbols-outlined" style={{ fontSize: 24 }}>chevron_right</span>

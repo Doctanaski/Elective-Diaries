@@ -28,7 +28,7 @@ export default async function AdminHospitalsPage() {
           hospitals.map((hospital) => (
             <div
               key={hospital.id}
-              className="bg-surface-container-lowest border border-white/5 rounded-2xl p-5 flex items-center justify-between hover:border-primary/30 transition-all"
+              className="bg-surface-container-lowest border border-outline-variant/20 rounded-2xl p-5 flex items-center justify-between hover:border-primary/30 transition-all"
             >
               <div className="flex items-center space-x-4">
                 <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center flex-shrink-0">
@@ -59,7 +59,7 @@ export default async function AdminHospitalsPage() {
             </div>
           ))
         ) : (
-          <div className="text-center py-16 text-primary bg-surface-container-lowest border border-white/5 rounded-2xl">
+          <div className="text-center py-16 text-primary bg-surface-container-lowest border border-outline-variant/20 rounded-2xl">
             <span className="material-symbols-outlined text-5xl block mb-3 opacity-30">local_hospital</span>
             <p className="font-medium">No hospitals yet.</p>
             <Link href="/admin/hospitals/new" className="text-primary hover:underline text-sm mt-1 inline-block">

@@ -61,8 +61,13 @@ function RollingNumber({ target, duration = 1800 }: { target: number; duration?:
 }
 
 export default function HomeScroll({ hospitals, hospitalCount, diaryCount }: Props) {
+  const containerRef = useRef<HTMLDivElement>(null)
   const heroRef = useRef<HTMLDivElement>(null)
-  const { scrollYProgress } = useScroll({ target: heroRef, offset: ['start start', 'end start'] })
+  const { scrollYProgress } = useScroll({
+    container: containerRef,
+    target: heroRef,
+    offset: ['start start', 'end start'],
+  })
   // Only animate opacity — no translateY on mobile to avoid compositing cost
   const heroOpacity = useTransform(scrollYProgress, [0, 0.65], [1, 0])
 
@@ -83,7 +88,7 @@ export default function HomeScroll({ hospitals, hospitalCount, diaryCount }: Pro
         @keyframes float-down { 0%,100%{transform:translateY(0)} 50%{transform:translateY(10px)}  }
         .med-icon {
           position:absolute; pointer-events:none; user-select:none;
-          color:rgba(181,196,255,0.13); opacity:0; will-change:transform;
+          color:rgba(46,74,156,0.16); opacity:0; will-change:transform;
         }
         .med-icon.up   { animation: icon-in 0.5s cubic-bezier(0.22,1,0.36,1) var(--d) forwards, float-up   7s ease-in-out calc(var(--d) + 0.5s) infinite }
         .med-icon.down { animation: icon-in 0.5s cubic-bezier(0.22,1,0.36,1) var(--d) forwards, float-down 7s ease-in-out calc(var(--d) + 0.5s) infinite }
@@ -91,10 +96,10 @@ export default function HomeScroll({ hospitals, hospitalCount, diaryCount }: Pro
         /* ── Background: static radial gradients, no animation ── */
         .hero-bg {
           background:
-            radial-gradient(ellipse 60% 50% at 15% 25%, rgba(46,74,156,0.28) 0%, transparent 100%),
-            radial-gradient(ellipse 50% 60% at 85% 75%, rgba(27,44,106,0.24) 0%, transparent 100%),
-            radial-gradient(ellipse 40% 40% at 50% 5%,  rgba(76,92,146,0.18) 0%, transparent 100%),
-            #121318;
+            radial-gradient(ellipse 60% 50% at 15% 25%, rgba(46,74,156,0.12) 0%, transparent 100%),
+            radial-gradient(ellipse 50% 60% at 85% 75%, rgba(27,44,106,0.10) 0%, transparent 100%),
+            radial-gradient(ellipse 40% 40% at 50% 5%,  rgba(76,92,146,0.08) 0%, transparent 100%),
+            #ffffff;
         }
 
         /* ── ECG: only stroke-dashoffset animates (GPU composited in modern browsers) ── */
@@ -113,17 +118,22 @@ export default function HomeScroll({ hospitals, hospitalCount, diaryCount }: Pro
 
         /* ── Vignette ── */
         .hero-vignette {
-          background: radial-gradient(ellipse at 50% 50%, transparent 25%, rgba(18,19,24,0.8) 100%);
+          background: radial-gradient(ellipse at 50% 50%, transparent 25%, rgba(46,74,156,0.18) 100%);
         }
 
-        html { scroll-snap-type: y mandatory; scroll-behavior: smooth }
+        /* ── Snap scroll ── */
         .snap-section { scroll-snap-align: start; scroll-snap-stop: always }
       `}</style>
 
-      <div className="bg-surface overflow-x-hidden">
+      {/* Self-contained snap-scroll container — mirrors the cinematic hospital viewer */}
+      <div
+        ref={containerRef}
+        className="h-screen overflow-y-scroll scrollbar-hide overscroll-contain -mt-20 bg-surface"
+        style={{ scrollSnapType: 'y mandatory' }}
+      >
 
         {/* Section 1 — Hero */}
-        <section ref={heroRef} className="snap-section relative min-h-screen flex items-center justify-center px-6 overflow-hidden">
+        <section ref={heroRef} className="snap-section relative h-screen flex items-center justify-center px-6 overflow-hidden">
 
           {/* Static gradient background — no animation, no CPU cost */}
           <div className="hero-bg absolute inset-0 z-0" />
@@ -136,10 +146,10 @@ export default function HomeScroll({ hospitals, hospitalCount, diaryCount }: Pro
             <svg viewBox="0 0 800 80" preserveAspectRatio="none" className="w-full" style={{ height: 80 }}>
               <defs>
                 <linearGradient id="ecg-grad" x1="0%" y1="0%" x2="100%" y2="0%">
-                  <stop offset="0%"   stopColor="rgba(181,196,255,0)" />
-                  <stop offset="25%"  stopColor="rgba(181,196,255,0.85)" />
-                  <stop offset="75%"  stopColor="rgba(181,196,255,0.85)" />
-                  <stop offset="100%" stopColor="rgba(181,196,255,0)" />
+                  <stop offset="0%"   stopColor="rgba(46,74,156,0)" />
+                  <stop offset="25%"  stopColor="rgba(46,74,156,0.7)" />
+                  <stop offset="75%"  stopColor="rgba(46,74,156,0.7)" />
+                  <stop offset="100%" stopColor="rgba(46,74,156,0)" />
                 </linearGradient>
               </defs>
               <path
@@ -152,7 +162,7 @@ export default function HomeScroll({ hospitals, hospitalCount, diaryCount }: Pro
                 strokeLinejoin="round"
               />
               {/* Dot — no drop-shadow filter */}
-              <circle className="ecg-dot" cx="590" cy="40" r="3" fill="rgba(181,196,255,1)" />
+              <circle className="ecg-dot" cx="590" cy="40" r="3" fill="rgba(46,74,156,1)" />
             </svg>
           </div>
 
@@ -172,7 +182,7 @@ export default function HomeScroll({ hospitals, hospitalCount, diaryCount }: Pro
 
           {/* Hero text — only opacity fades on scroll, no y transform */}
           <motion.div
-            className="text-center max-w-4xl mx-auto w-full relative z-10"
+            className="text-center max-w-4xl mx-auto w-full relative z-10 pt-20"
             style={{ opacity: heroOpacity }}
           >
             <h1 className="hs-title font-headline font-extrabold text-5xl md:text-6xl lg:text-7xl leading-tight text-primary tracking-tight mb-6">
@@ -199,8 +209,8 @@ export default function HomeScroll({ hospitals, hospitalCount, diaryCount }: Pro
           </motion.div>
         </section>
 
-        {/* Section 2 — Carousel */}
-        <section className="snap-section flex flex-col items-center justify-center px-4 md:px-12 lg:px-24 py-12 md:py-20 max-w-7xl mx-auto w-full">
+        {/* Section 2 — Hospitals carousel */}
+        <section className="snap-section relative min-h-screen flex flex-col items-center justify-center px-4 md:px-12 lg:px-24 py-12 md:py-20 max-w-7xl mx-auto w-full">
           {hospitals.length > 0 ? (
             <div className="w-full"><HospitalCarousel hospitals={hospitals} /></div>
           ) : (
@@ -212,14 +222,14 @@ export default function HomeScroll({ hospitals, hospitalCount, diaryCount }: Pro
         </section>
 
         {/* Section 3 — Stats */}
-        <section className="snap-section min-h-screen flex flex-col items-center justify-center px-6 relative overflow-hidden">
+        <section className="snap-section relative min-h-screen flex flex-col items-center justify-center px-6 overflow-hidden">
           <div className="absolute inset-0 -z-10 bg-primary/3 rounded-full blur-3xl opacity-40 scale-150 pointer-events-none" />
           <div className="max-w-4xl mx-auto w-full">
             <p className="font-label text-xs uppercase tracking-[0.25em] text-on-surface-variant/40 text-center mb-16">
               By the numbers
             </p>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-10">
-              <div className="relative bg-surface-container-low rounded-3xl p-10 border border-white/5 flex flex-col items-center text-center">
+              <div className="relative bg-surface-container-low rounded-3xl p-10 border border-outline-variant/20 flex flex-col items-center text-center">
                 <span className="material-symbols-outlined text-primary mb-6" style={{ fontSize: 40 }}>local_hospital</span>
                 <div className="font-headline font-extrabold text-7xl md:text-8xl text-primary leading-none mb-4">
                   <RollingNumber target={hospitalCount} duration={1600} />
@@ -227,7 +237,7 @@ export default function HomeScroll({ hospitals, hospitalCount, diaryCount }: Pro
                 <p className="font-label text-sm uppercase tracking-widest text-on-surface-variant">Affiliated Hospitals</p>
                 <p className="font-body text-xs text-on-surface-variant/50 mt-2">Partner facilities across Pakistan</p>
               </div>
-              <div className="relative bg-surface-container-low rounded-3xl p-10 border border-white/5 flex flex-col items-center text-center">
+              <div className="relative bg-surface-container-low rounded-3xl p-10 border border-outline-variant/20 flex flex-col items-center text-center">
                 <span className="material-symbols-outlined text-secondary mb-6" style={{ fontSize: 40 }}>auto_stories</span>
                 <div className="font-headline font-extrabold text-7xl md:text-8xl text-secondary leading-none mb-4">
                   <RollingNumber target={diaryCount} duration={2000} />
@@ -239,6 +249,50 @@ export default function HomeScroll({ hospitals, hospitalCount, diaryCount }: Pro
             <p className="text-center font-body text-sm text-on-surface-variant/30 italic mt-16 max-w-md mx-auto">
               "Every rotation is a chapter. Every chapter shapes a doctor."
             </p>
+          </div>
+        </section>
+
+        {/* Section 4 — President's Message */}
+        <section className="snap-section relative min-h-screen flex items-center justify-center px-6 md:px-12 lg:px-24 overflow-hidden">
+          <div className="hero-bg absolute inset-0 z-0 opacity-60 pointer-events-none" />
+          <div className="relative z-10 max-w-6xl mx-auto w-full grid grid-cols-1 md:grid-cols-2 gap-12 md:gap-20 items-center py-16 md:py-0">
+            {/* Message — left side */}
+            <div className="order-1">
+              <p className="font-label text-xs uppercase tracking-[0.25em] text-on-surface-variant/40 mb-4">
+                Leadership
+              </p>
+              <h2 className="font-headline font-extrabold text-4xl md:text-5xl text-on-surface leading-tight mb-6">
+                A Message from the President
+              </h2>
+              <div className="space-y-4 mb-8">
+                <p className="font-body text-primary/80 text-lg leading-relaxed">
+                  Welcome to The Elective Diaries — a living archive of the clinical journeys
+                  undertaken by our students across affiliated hospitals.
+                </p>
+                <p className="font-body text-primary/80 text-lg leading-relaxed">
+                  Every diary captures real experiences, hard-earned lessons, and the people
+                  met along the way. I encourage every KMC student to explore these pages,
+                  contribute their own story, and pass on the knowledge to those who follow.
+                </p>
+              </div>
+              <div className="inline-flex items-center gap-3">
+                <div className="w-12 h-px bg-primary" />
+                <p className="font-headline font-bold text-primary text-lg">President, KMC Local Council</p>
+              </div>
+            </div>
+
+            {/* Placeholder image — right side */}
+            <div className="order-2 flex justify-center md:justify-end">
+              <div className="relative">
+                <img
+                  src="/president-placeholder.svg"
+                  alt="President placeholder"
+                  className="w-64 md:w-80 rounded-3xl shadow-xl border border-outline-variant/20"
+                />
+                <div className="absolute -bottom-6 -left-6 w-24 h-24 bg-primary/10 rounded-full blur-2xl -z-10 pointer-events-none" />
+                <div className="absolute -top-5 -right-5 w-20 h-20 bg-secondary/10 rounded-full blur-2xl -z-10 pointer-events-none" />
+              </div>
+            </div>
           </div>
         </section>
 

@@ -29,8 +29,8 @@ https://github.com/Doctanaski/Elective-Diaries
 ```
 elective-diaries/
 ├── app/
-│   ├── layout.tsx                       # Root layout — fonts, Analytics, <html class="dark"> hardcoded
-│   ├── globals.css                      # Dark mode CSS tokens only (light mode removed)
+│   ├── layout.tsx                       # Root layout — fonts, Analytics, light mode (no .dark class)
+│   ├── globals.css                      # Light mode CSS tokens (dark tokens kept unused)
 │   ├── (public)/
 │   │   ├── layout.tsx                   # Client layout: renders Navbar+Footer normally,
 │   │   │                                # but renders children ONLY on /hospitals/[slug] and /hospitals/[slug]/diaries/[id]
@@ -108,13 +108,13 @@ Add INSERT policy for authenticated users on both buckets.
 
 ---
 
-## Design System — Dark Mode Only
-- **Always dark** — `<html class="dark">` hardcoded in `app/layout.tsx`. No ThemeProvider, no ThemeToggle.
-- Light mode tokens still exist in globals.css `:root` but are never used.
-- Dark mode background: `#121318`, cards: `#1a1b21` / `#1e1f25`
-- Primary SCORE blue: `#b5c4ff` (dark mode), `#2e4a9c` (light mode — inactive)
+## Design System — Light Mode
+- **Always light** — `<html>` has no `dark` class in `app/layout.tsx`. No ThemeProvider, no ThemeToggle.
+- Dark tokens still exist in globals.css `.dark` but are never used.
+- Background: `#ffffff`, cards: `#f0f0f4` / `#f7f7fa`
+- Primary SCORE blue: `#2e4a9c`, container: `#1b2c6a` (on primary: `#ffffff`)
 - **`text-on-surface-variant` is NOT used** — replaced with `text-primary` throughout the entire site
-- **Card borders use `border-white/5`** — barely-visible dark borders, consistent across all pages
+- **Card borders use `border-outline-variant/20`** — subtle gray borders, consistent across all pages
 - Font: Plus Jakarta Sans (headline), Inter (body), Work Sans (label)
 - Material Symbols loaded with `display=block` (no FOUT icon text flash)
 
@@ -165,7 +165,7 @@ Add INSERT policy for authenticated users on both buckets.
 4. **Public layout is a client component** (`'use client'`): Uses `usePathname()` to suppress
    Navbar/Footer on `/hospitals/[slug]` and `/hospitals/[slug]/diaries/[id]`.
 
-5. **No ThemeProvider**: Dark mode is permanent. `<html class="dark">` is hardcoded.
+5. **No ThemeProvider**: Light mode is permanent. `<html>` has no `dark` class.
    Do NOT add ThemeProvider or ThemeToggle — they were intentionally removed.
 
 6. **Material Symbols FOUT fix**: Font loaded with `display=block` in `<head>` via `app/layout.tsx`

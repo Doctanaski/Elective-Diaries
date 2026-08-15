@@ -25,11 +25,11 @@ export default async function AdminDiariesPage() {
         </Link>
       </div>
 
-      <div className="bg-surface-container-lowest border border-white/5 rounded-2xl overflow-hidden">
+      <div className="bg-surface-container-lowest border border-outline-variant/20 rounded-2xl overflow-hidden">
         {diaries && diaries.length > 0 ? (
           <table className="w-full text-sm">
             <thead>
-              <tr className="border-b border-white/5 bg-surface-container/50">
+              <tr className="border-b border-outline-variant/20 bg-surface-container/50">
                 <th className="text-left px-6 py-3 font-semibold text-primary">Title</th>
                 <th className="text-left px-6 py-3 font-semibold text-primary">Hospital</th>
                 <th className="text-left px-6 py-3 font-semibold text-primary">Author</th>
@@ -40,7 +40,7 @@ export default async function AdminDiariesPage() {
             </thead>
             <tbody>
               {diaries.map((diary: any) => (
-                <tr key={diary.id} className="border-b border-white/5 hover:bg-surface-container/30 transition-colors">
+                <tr key={diary.id} className="border-b border-outline-variant/20 hover:bg-surface-container/30 transition-colors">
                   <td className="px-6 py-4 font-medium text-on-surface max-w-xs truncate">{diary.title}</td>
                   <td className="px-6 py-4 text-primary">{diary.hospitals?.name ?? '—'}</td>
                   <td className="px-6 py-4 text-primary">{diary.author_name}</td>
@@ -69,7 +69,7 @@ export default async function AdminDiariesPage() {
             </tbody>
           </table>
         ) : (
-          <div className="text-center py-16 text-primary bg-surface-container-lowest border border-white/5 rounded-2xl">
+          <div className="text-center py-16 text-primary bg-surface-container-lowest border border-outline-variant/20 rounded-2xl">
             <span className="material-symbols-outlined text-5xl block mb-3 opacity-30">menu_book</span>
             <p className="font-medium">No diaries yet.</p>
             <Link href="/admin/diaries/new" className="text-primary hover:underline text-sm mt-1 inline-block">

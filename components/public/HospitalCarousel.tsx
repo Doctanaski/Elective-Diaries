@@ -64,9 +64,9 @@ export default function HospitalCarousel({ hospitals }: Props) {
           onClick={toPrev}
           disabled={activeIndex === 0}
           className={`absolute left-0 z-[200] ${arrowSize} rounded-full flex items-center justify-center
-                     bg-white/10 backdrop-blur-md border border-white/20
-                     text-white hover:bg-white/20 hover:border-white/50 hover:scale-110
-                     transition-all shadow-lg disabled:opacity-20 disabled:cursor-not-allowed disabled:hover:scale-100`}
+                     bg-surface/80 backdrop-blur-md border border-outline-variant/40
+                     text-primary hover:bg-surface-container hover:border-primary/50 hover:scale-110
+                     transition-all shadow-lg disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:scale-100`}
         >
           <ChevronLeft className={arrowIcon} />
         </button>
@@ -76,9 +76,9 @@ export default function HospitalCarousel({ hospitals }: Props) {
           onClick={toNext}
           disabled={activeIndex === hospitals.length - 1}
           className={`absolute right-0 z-[200] ${arrowSize} rounded-full flex items-center justify-center
-                     bg-white/10 backdrop-blur-md border border-white/20
-                     text-white hover:bg-white/20 hover:border-white/50 hover:scale-110
-                     transition-all shadow-lg disabled:opacity-20 disabled:cursor-not-allowed disabled:hover:scale-100`}
+                     bg-surface/80 backdrop-blur-md border border-outline-variant/40
+                     text-primary hover:bg-surface-container hover:border-primary/50 hover:scale-110
+                     transition-all shadow-lg disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:scale-100`}
         >
           <ChevronRight className={arrowIcon} />
         </button>
@@ -111,7 +111,7 @@ export default function HospitalCarousel({ hospitals }: Props) {
               transition={{ type: 'spring', stiffness: 220, damping: 26 }}
               onClick={(e) => toSlide(e, i)}
             >
-              <div className="w-full h-full rounded-2xl overflow-hidden shadow-2xl border border-white/10">
+              <div className="w-full h-full rounded-2xl overflow-hidden shadow-2xl border border-outline-variant/20">
                 {hospital.image_url ? (
                   <img
                     src={hospital.image_url}
@@ -141,11 +141,11 @@ export default function HospitalCarousel({ hospitals }: Props) {
         transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
         className="text-center max-w-md px-4"
       >
-        <h2 className="font-headline font-extrabold text-xl md:text-3xl text-white mb-2">
+        <h2 className="font-headline font-extrabold text-xl md:text-3xl text-on-surface mb-2">
           {active.name}
         </h2>
         {active.description && (
-          <p className="text-white/50 text-sm leading-relaxed mb-4 line-clamp-2">
+          <p className="text-on-surface-variant text-sm leading-relaxed mb-4 line-clamp-2">
             {active.description}
           </p>
         )}
@@ -168,7 +168,7 @@ export default function HospitalCarousel({ hospitals }: Props) {
             key={i}
             onClick={(e) => toSlide(e, i)}
             className={`rounded-full cursor-pointer h-1 transition-all duration-300 ${
-              activeIndex === i ? 'w-4 bg-white' : 'w-1 bg-white/30 hover:bg-white/50'
+              activeIndex === i ? 'w-4 bg-primary' : 'w-1 bg-on-surface/20 hover:bg-primary/40'
             }`}
           />
         ))}

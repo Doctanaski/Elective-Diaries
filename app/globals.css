@@ -11,19 +11,19 @@
 
   /* ── Light mode tokens — SCORE IFMSA palette (seed #2e4a9c) ── */
   :root {
-    --surface:                  #faf8ff;
-    --surface-container-low:    #f4f3fa;
-    --surface-container:        #eeedf4;
-    --surface-container-high:   #e9e7ef;
-    --surface-container-highest:#e3e1e9;
+    --surface:                  #ffffff;
+    --surface-container-low:    #f7f7fa;
+    --surface-container:        #f0f0f4;
+    --surface-container-high:   #e9e9ee;
+    --surface-container-highest:#e1e1e7;
     --surface-container-lowest: #ffffff;
-    --surface-dim:              #dad9e0;
-    --surface-bright:           #faf8ff;
+    --surface-dim:              #ddddE3;
+    --surface-bright:           #ffffff;
     --surface-variant:          #e2e1ec;
     --on-surface:               #1a1b21;
     --on-surface-variant:       #45464f;
     --on-background:            #1a1b21;
-    --background:               #faf8ff;
+    --background:               #ffffff;
     --primary:                  #2e4a9c;
     --primary-container:        #1b2c6a;
     --on-primary:               #ffffff;
@@ -102,28 +102,28 @@
   .prose-diary h1 { @apply text-3xl md:text-4xl font-bold font-headline text-on-surface mb-5 mt-10; }
   .prose-diary h2 { @apply text-2xl md:text-3xl font-bold font-headline text-on-surface mb-4 mt-8; }
   .prose-diary h3 { @apply text-xl md:text-2xl font-semibold font-headline text-on-surface mb-3 mt-6; }
-  .prose-diary p  { color: #E3E1E9; @apply leading-[1.85] mb-6 text-base md:text-lg; }
+  .prose-diary p  { color: #1A1B21; @apply leading-[1.85] mb-6 text-base md:text-lg; }
 
   /* Lists — use padding-left so bullets/numbers aren't clipped */
-  .prose-diary ul { color: #E3E1E9; @apply list-disc pl-6 space-y-2 mb-6 text-base md:text-lg; }
-  .prose-diary ol { color: #E3E1E9; @apply list-decimal pl-6 space-y-2 mb-6 text-base md:text-lg; }
-  .prose-diary li { color: #E3E1E9; @apply text-base md:text-lg leading-relaxed; }
+  .prose-diary ul { color: #1A1B21; @apply list-disc pl-6 space-y-2 mb-6 text-base md:text-lg; }
+  .prose-diary ol { color: #1A1B21; @apply list-decimal pl-6 space-y-2 mb-6 text-base md:text-lg; }
+  .prose-diary li { color: #1A1B21; @apply text-base md:text-lg leading-relaxed; }
   .prose-diary li p { @apply mb-0; } /* Tiptap wraps li content in <p> — remove double spacing */
 
   /* Inline formatting */
   .prose-diary strong,
   .prose-diary b { color: var(--primary); @apply font-bold; }
   .prose-diary em,
-  .prose-diary i { color: #E3E1E9; @apply italic; }
-  .prose-diary u { @apply underline; color: #E3E1E9; }
-  .prose-diary s { @apply line-through; color: #E3E1E9; opacity: 0.7; }
+  .prose-diary i { color: #1A1B21; @apply italic; }
+  .prose-diary u { @apply underline; color: #1A1B21; }
+  .prose-diary s { @apply line-through; color: #1A1B21; opacity: 0.7; }
   .prose-diary code { @apply font-mono text-sm px-1.5 py-0.5 rounded bg-surface-container text-primary; }
   .prose-diary pre  { @apply font-mono text-sm p-4 rounded-xl bg-surface-container text-primary overflow-x-auto mb-6; }
   .prose-diary pre code { @apply bg-transparent p-0; }
 
   /* Blockquote */
   .prose-diary blockquote {
-    color: #E3E1E9;
+    color: #1A1B21;
     @apply border-l-4 border-primary pl-6 italic my-6 text-base md:text-lg;
     opacity: 0.85;
   }
@@ -136,7 +136,7 @@
   .prose-diary img { @apply rounded-xl my-8 w-full max-w-full object-cover; }
 
   /* Horizontal rule */
-  .prose-diary hr { @apply border-white/10 my-8; }
+  .prose-diary hr { @apply border-outline-variant/40 my-8; }
 
   /* Tiptap editor styling */
   .tiptap { @apply outline-none min-h-[400px]; }

@@ -34,7 +34,7 @@ export default async function AdminDashboard() {
           <Link
             key={label}
             href={href}
-            className="bg-surface-container-lowest border border-white/5 rounded-2xl p-6 hover:border-primary/30 hover:shadow-md transition-all group"
+            className="bg-surface-container-lowest border border-outline-variant/20 rounded-2xl p-6 hover:border-primary/30 hover:shadow-md transition-all group"
           >
             <div className="flex items-center justify-between">
               <div>
@@ -60,7 +60,7 @@ export default async function AdminDashboard() {
         </Link>
         <Link
           href="/admin/hospitals/new"
-          className="inline-flex items-center space-x-2 border border-white/10 text-on-surface px-5 py-2.5 rounded-xl font-semibold text-sm hover:bg-surface-container transition-colors"
+          className="inline-flex items-center space-x-2 border border-outline-variant/30 text-on-surface px-5 py-2.5 rounded-xl font-semibold text-sm hover:bg-surface-container transition-colors"
         >
           <span className="material-symbols-outlined" style={{ fontSize: 18 }}>add</span>
           <span>New Hospital</span>
@@ -70,11 +70,11 @@ export default async function AdminDashboard() {
       {/* Recent Diaries */}
       <div>
         <h2 className="font-headline font-bold text-xl text-on-surface mb-4">Recent Diaries</h2>
-        <div className="bg-surface-container-lowest border border-white/5 rounded-2xl overflow-hidden">
+        <div className="bg-surface-container-lowest border border-outline-variant/20 rounded-2xl overflow-hidden">
           {recentDiaries && recentDiaries.length > 0 ? (
             <table className="w-full text-sm">
               <thead>
-                <tr className="border-b border-white/5 bg-surface-container/50">
+                <tr className="border-b border-outline-variant/20 bg-surface-container/50">
                   <th className="text-left px-6 py-3 font-semibold text-primary">Title</th>
                   <th className="text-left px-6 py-3 font-semibold text-primary">Author</th>
                   <th className="text-left px-6 py-3 font-semibold text-primary">Status</th>
@@ -84,7 +84,7 @@ export default async function AdminDashboard() {
               </thead>
               <tbody>
                 {recentDiaries.map((diary: any) => (
-                  <tr key={diary.id} className="border-b border-white/5 hover:bg-surface-container/30 transition-colors">
+                  <tr key={diary.id} className="border-b border-outline-variant/20 hover:bg-surface-container/30 transition-colors">
                     <td className="px-6 py-4 font-medium text-on-surface">{diary.title}</td>
                     <td className="px-6 py-4 text-primary">{diary.author_name}</td>
                     <td className="px-6 py-4">

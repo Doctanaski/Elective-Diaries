@@ -15,12 +15,12 @@ export const metadata: Metadata = {
 export const viewport: Viewport = {
   width: 'device-width',
   initialScale: 1,
-  themeColor: '#121318',
+  themeColor: '#ffffff',
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className="dark">
+    <html lang="en">
       <head>
         {/* DNS prefetch + preconnect for Google Fonts */}
         <link rel="dns-prefetch" href="https://fonts.googleapis.com" />
