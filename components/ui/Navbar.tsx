@@ -7,7 +7,11 @@ import { subscribeNavVisibility, getNavVisibility } from '@/lib/nav-visibility'
 
 export default function Navbar() {
   const pathname = usePathname()
-  const hidden = useSyncExternalStore(subscribeNavVisibility, getNavVisibility)
+  const hidden = useSyncExternalStore(
+    subscribeNavVisibility,
+    getNavVisibility,
+    getNavVisibility,
+  )
 
   return (
     <nav
