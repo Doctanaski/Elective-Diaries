@@ -157,8 +157,16 @@ export default function DiaryReader({
   const chunks = chunkParagraphs(paras, images.length)
   const heroImageUrl = getSpecialtyImage(specialtyTags)
 
+  // Force the page body dark while the diary is open so overscroll bounce
+  // doesn't reveal the light theme behind it.
+  useEffect(() => {
+    const prev = document.body.style.backgroundColor
+    document.body.style.backgroundColor = '#121318'
+    return () => { document.body.style.backgroundColor = prev }
+  }, [])
+
   return (
-    <div className="bg-surface">
+    <div className="dark bg-surface min-h-screen">
 
       {/* Fixed navbar */}
       <div className="fixed top-0 left-0 right-0 z-50 bg-surface/80 backdrop-blur-md border-b border-outline-variant/30">
@@ -191,8 +199,8 @@ export default function DiaryReader({
               className="absolute inset-0 w-full h-full object-cover"
               style={{ filter: 'brightness(0.18) saturate(0.6)' }}
             />
-            {/* Gradient overlay — white fade into body */}
-            <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-[#ffffff]/40 to-[#ffffff]" />
+            {/* Gradient overlay — dark fade into the reader body */}
+            <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-[#121318]/40 to-[#121318]" />
             {/* Subtle blue tint at top to tie into primary colour */}
             <div className="absolute inset-0 bg-gradient-to-br from-primary/8 via-transparent to-transparent" />
           </motion.div>

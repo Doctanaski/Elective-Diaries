@@ -58,7 +58,6 @@ export default function HospitalCarousel({ hospitals }: Props) {
   const cardScale    = isMobile ? Math.max(0.72, cardWidth / baseW) : Math.min(1, Math.max(0.8, cardWidth / baseW))
   const arrowPx      = isMobile ? Math.max(26, Math.round(32 * cardScale)) : Math.round(48 * cardScale)
   const arrowIconPx  = isMobile ? Math.max(13, Math.round(16 * cardScale)) : Math.round(22 * cardScale)
-  const arrowGap     = isMobile ? 6 : 8
   const namePx       = isMobile ? Math.max(15, Math.round(18 * cardScale)) : Math.round(27 * cardScale)
   const descPx       = isMobile ? 14 : Math.round(15 * cardScale)
   const ctaFontPx    = isMobile ? 14 : Math.round(15 * cardScale)
@@ -74,7 +73,7 @@ export default function HospitalCarousel({ hospitals }: Props) {
         className="w-full flex justify-center items-center relative"
         style={{ height: trackHeight, perspective }}
       >
-        {/* Left arrow — hugs the active tab */}
+        {/* Left arrow — anchored to the left end of the carousel */}
         <button
           onClick={toPrev}
           disabled={activeIndex === 0}
@@ -85,14 +84,13 @@ export default function HospitalCarousel({ hospitals }: Props) {
           style={{
             width: arrowPx,
             height: arrowPx,
-            left: `calc(50% - ${Math.round(cardWidth / 2 + arrowPx / 2 + arrowGap)}px)`,
-            transform: 'translateX(-50%)',
+            left: 0,
           }}
         >
           <ChevronLeft size={arrowIconPx} />
         </button>
 
-        {/* Right arrow — hugs the active tab */}
+        {/* Right arrow — anchored to the right end of the carousel */}
         <button
           onClick={toNext}
           disabled={activeIndex === hospitals.length - 1}
@@ -103,8 +101,7 @@ export default function HospitalCarousel({ hospitals }: Props) {
           style={{
             width: arrowPx,
             height: arrowPx,
-            left: `calc(50% + ${Math.round(cardWidth / 2 + arrowPx / 2 + arrowGap)}px)`,
-            transform: 'translateX(-50%)',
+            right: 0,
           }}
         >
           <ChevronRight size={arrowIconPx} />

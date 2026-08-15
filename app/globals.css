@@ -141,6 +141,20 @@
     border-color: color-mix(in srgb, var(--outline-variant) 40%, transparent);
   }
 
+  /* Dark mode — public diary reader flips the .dark tokens on its wrapper, so
+     the hardcoded light-on-body text colours below need to follow suit. */
+  .dark .prose-diary p,
+  .dark .prose-diary ul,
+  .dark .prose-diary ol,
+  .dark .prose-diary li,
+  .dark .prose-diary em,
+  .dark .prose-diary i,
+  .dark .prose-diary u,
+  .dark .prose-diary s,
+  .dark .prose-diary blockquote {
+    color: var(--on-surface);
+  }
+
   /* Tiptap editor styling */
   .tiptap { @apply outline-none min-h-[400px]; }
   .tiptap p.is-editor-empty:first-child::before {

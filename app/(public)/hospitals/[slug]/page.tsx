@@ -188,22 +188,22 @@ function DiarySlide({
             <span className="text-primary">{diary.author_name.split(' ').slice(1).join(' ')}</span>
           </h2>
 
-          {/* Specialty + Year/date boxes */}
-          <div className="flex flex-wrap items-center gap-3">
+          {/* Specialty + Year/date boxes — always side by side */}
+          <div className="flex items-center gap-3 min-w-0">
             {diary.specialty && (
-              <div className="flex items-center gap-3 px-4 py-3 bg-primary rounded-lg text-on-primary w-fit">
-                <span className="material-symbols-outlined" style={{ fontSize: 22 }}>{getSpecialtyIcon(diary.specialty)}</span>
-                <div>
+              <div className="flex items-center gap-3 px-4 py-3 bg-primary rounded-lg text-on-primary min-w-0">
+                <span className="material-symbols-outlined shrink-0" style={{ fontSize: 22 }}>{getSpecialtyIcon(diary.specialty)}</span>
+                <div className="min-w-0">
                   <p className="font-label text-xs text-on-primary/70 uppercase tracking-wider">Department</p>
-                  <p className="font-headline text-base text-on-primary font-semibold">{diary.specialty}</p>
+                  <p className="font-headline text-base text-on-primary font-semibold truncate">{diary.specialty}</p>
                 </div>
               </div>
             )}
 
             {/* Year + date */}
-            <div className="flex items-center gap-3 px-4 py-3 bg-primary rounded-lg text-on-primary w-fit">
-              <span className="material-symbols-outlined" style={{ fontSize: 22 }}>calendar_month</span>
-              <div>
+            <div className="flex items-center gap-3 px-4 py-3 bg-primary rounded-lg text-on-primary shrink-0">
+              <span className="material-symbols-outlined shrink-0" style={{ fontSize: 22 }}>calendar_month</span>
+              <div className="min-w-0">
                 <p className="font-label text-xs text-on-primary/70 uppercase tracking-wider">Year / Date</p>
                 <p className="font-headline text-base text-on-primary font-semibold">
                   {diary.author_year}
@@ -246,22 +246,22 @@ function DiarySlide({
             <span className="text-primary">{diary.author_name.split(' ').slice(1).join(' ')}</span>
           </h2>
 
-          {/* Specialty + Year/date boxes */}
-          <div className="flex flex-wrap items-center gap-4">
+          {/* Specialty + Year/date boxes — always side by side */}
+          <div className="flex items-center gap-4 min-w-0">
             {diary.specialty && (
-              <div className="flex items-center gap-4 px-5 py-3.5 bg-primary rounded-lg text-on-primary w-fit">
-                <span className="material-symbols-outlined text-2xl">{getSpecialtyIcon(diary.specialty)}</span>
-                <div>
+              <div className="flex items-center gap-4 px-5 py-3.5 bg-primary rounded-lg text-on-primary min-w-0">
+                <span className="material-symbols-outlined text-2xl shrink-0">{getSpecialtyIcon(diary.specialty)}</span>
+                <div className="min-w-0">
                   <p className="font-label text-xs text-on-primary/70 uppercase tracking-wider">Department</p>
-                  <p className="font-headline text-lg text-on-primary font-semibold">{diary.specialty}</p>
+                  <p className="font-headline text-lg text-on-primary font-semibold truncate">{diary.specialty}</p>
                 </div>
               </div>
             )}
 
             {/* Year + date */}
-            <div className="flex items-center gap-4 px-5 py-3.5 bg-primary rounded-lg text-on-primary w-fit">
-              <span className="material-symbols-outlined text-2xl">calendar_month</span>
-              <div>
+            <div className="flex items-center gap-4 px-5 py-3.5 bg-primary rounded-lg text-on-primary shrink-0">
+              <span className="material-symbols-outlined text-2xl shrink-0">calendar_month</span>
+              <div className="min-w-0">
                 <p className="font-label text-xs text-on-primary/70 uppercase tracking-wider">Year / Date</p>
                 <p className="font-headline text-lg text-on-primary font-semibold">
                   {diary.author_year}
