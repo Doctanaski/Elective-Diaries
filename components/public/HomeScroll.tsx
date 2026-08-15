@@ -3,6 +3,7 @@
 import { useRef, useEffect, useState } from 'react'
 import { motion, useScroll, useTransform } from 'motion/react'
 import HospitalCarousel from './HospitalCarousel'
+import { setNavVisibility } from '@/lib/nav-visibility'
 import type { Hospital } from '@/types/database'
 
 interface Props {
@@ -71,6 +72,22 @@ export default function HomeScroll({ hospitals, hospitalCount, diaryCount }: Pro
   // Only animate opacity — no translateY on mobile to avoid compositing cost
   const heroOpacity = useTransform(scrollYProgress, [0, 0.65], [1, 0])
 
+  // Hide the fixed top strip once the hero has scrolled up (i.e. past the hero,
+  // into the hospitals section). Reset on unmount so other pages keep it visible.
+  useEffect(() => {
+    const el = containerRef.current
+    if (!el) return
+    const onScroll = () => {
+      setNavVisibility(el.scrollTop > el.clientHeight * 0.4)
+    }
+    onScroll()
+    el.addEventListener('scroll', onScroll, { passive: true })
+    return () => {
+      el.removeEventListener('scroll', onScroll)
+      setNavVisibility(false)
+    }
+  }, [])
+
   return (
     <>
       <style>{`
@@ -88,7 +105,7 @@ export default function HomeScroll({ hospitals, hospitalCount, diaryCount }: Pro
         @keyframes float-down { 0%,100%{transform:translateY(0)} 50%{transform:translateY(10px)}  }
         .med-icon {
           position:absolute; pointer-events:none; user-select:none;
-          color:rgba(46,74,156,0.16); opacity:0; will-change:transform;
+          color:rgba(46,74,156,0.32); opacity:0; will-change:transform;
         }
         .med-icon.up   { animation: icon-in 0.5s cubic-bezier(0.22,1,0.36,1) var(--d) forwards, float-up   7s ease-in-out calc(var(--d) + 0.5s) infinite }
         .med-icon.down { animation: icon-in 0.5s cubic-bezier(0.22,1,0.36,1) var(--d) forwards, float-down 7s ease-in-out calc(var(--d) + 0.5s) infinite }
@@ -142,13 +159,13 @@ export default function HomeScroll({ hospitals, hospitalCount, diaryCount }: Pro
           <div className="hero-vignette absolute inset-0 z-0 pointer-events-none" />
 
           {/* ECG line — only dashoffset animates */}
-          <div className="absolute inset-0 z-0 flex items-center pointer-events-none overflow-hidden" style={{ opacity: 0.2 }}>
+          <div className="absolute inset-0 z-0 flex items-center pointer-events-none overflow-hidden" style={{ opacity: 0.5 }}>
             <svg viewBox="0 0 800 80" preserveAspectRatio="none" className="w-full" style={{ height: 80 }}>
               <defs>
                 <linearGradient id="ecg-grad" x1="0%" y1="0%" x2="100%" y2="0%">
                   <stop offset="0%"   stopColor="rgba(46,74,156,0)" />
-                  <stop offset="25%"  stopColor="rgba(46,74,156,0.7)" />
-                  <stop offset="75%"  stopColor="rgba(46,74,156,0.7)" />
+                  <stop offset="25%"  stopColor="rgba(46,74,156,0.9)" />
+                  <stop offset="75%"  stopColor="rgba(46,74,156,0.9)" />
                   <stop offset="100%" stopColor="rgba(46,74,156,0)" />
                 </linearGradient>
               </defs>

@@ -64,8 +64,8 @@ export default function HospitalCarousel({ hospitals }: Props) {
           onClick={toPrev}
           disabled={activeIndex === 0}
           className={`absolute left-0 z-[200] ${arrowSize} rounded-full flex items-center justify-center
-                     bg-surface/80 backdrop-blur-md border border-outline-variant/40
-                     text-primary hover:bg-surface-container hover:border-primary/50 hover:scale-110
+                     bg-primary text-on-primary border border-primary
+                     hover:bg-primary-container hover:scale-110
                      transition-all shadow-lg disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:scale-100`}
         >
           <ChevronLeft className={arrowIcon} />
@@ -76,8 +76,8 @@ export default function HospitalCarousel({ hospitals }: Props) {
           onClick={toNext}
           disabled={activeIndex === hospitals.length - 1}
           className={`absolute right-0 z-[200] ${arrowSize} rounded-full flex items-center justify-center
-                     bg-surface/80 backdrop-blur-md border border-outline-variant/40
-                     text-primary hover:bg-surface-container hover:border-primary/50 hover:scale-110
+                     bg-primary text-on-primary border border-primary
+                     hover:bg-primary-container hover:scale-110
                      transition-all shadow-lg disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:scale-100`}
         >
           <ChevronRight className={arrowIcon} />

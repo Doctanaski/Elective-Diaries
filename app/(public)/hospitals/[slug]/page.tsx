@@ -56,10 +56,9 @@ export default async function HospitalPage({ params }: Props) {
       {/* Back button — fixed overlay */}
       <Link
         href="/"
-        className="fixed top-6 left-6 z-50 inline-flex items-center gap-1.5 px-3 py-2 rounded-xl
-                   bg-surface-container-lowest/80 backdrop-blur-md border border-outline-variant/20
-                   text-on-surface-variant hover:text-primary text-sm font-label font-semibold
-                   transition-all hover:border-primary/40 shadow-lg"
+        className="fixed top-6 left-6 z-50 inline-flex items-center gap-1.5 px-5 py-2.5 rounded-xl
+                   bg-primary text-on-primary font-label text-sm font-semibold
+                   hover:bg-primary-container active:scale-95 transition-all shadow-lg"
       >
         <span className="material-symbols-outlined" style={{ fontSize: 16 }}>arrow_back</span>
         All Hospitals
@@ -172,8 +171,6 @@ function DiarySlide({
               <span className="material-symbols-outlined text-outline opacity-20" style={{ fontSize: 64 }}>description</span>
             </div>
           )}
-          {/* Fade bottom into content area */}
-          <div className="absolute inset-0 bg-gradient-to-t from-surface via-surface/40 to-transparent" />
         </div>
 
         {/* Bottom half: text content */}
@@ -281,9 +278,7 @@ function DiarySlide({
                 <span className="material-symbols-outlined text-outline opacity-30" style={{ fontSize: 48 }}>description</span>
               </div>
             )}
-            <div className="absolute inset-0 bg-gradient-to-t from-surface/70 via-transparent to-transparent" />
           </div>
-          <div className={`absolute -bottom-6 ${isEven ? '-right-6' : '-left-6'} w-28 h-28 bg-primary/10 rounded-full blur-2xl`} />
         </div>
       </div>
 
@@ -303,7 +298,7 @@ function DiarySlide({
       {index === total - 1 && (
         <div className="hidden md:flex absolute bottom-8 left-1/2 -translate-x-1/2 z-20 flex-col items-center gap-2 opacity-60 hover:opacity-100 transition-opacity">
           <span className="font-label text-xs uppercase tracking-widest text-on-surface-variant">All caught up</span>
-          <Link href="/" className="inline-flex items-center gap-1.5 text-primary font-label text-xs font-semibold hover:underline">
+          <Link href="/" className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-primary text-on-primary font-label text-xs font-semibold hover:bg-primary-container active:scale-95 transition-all shadow-lg">
             <span className="material-symbols-outlined" style={{ fontSize: 14 }}>arrow_back</span>
             Back to Hospitals
           </Link>
