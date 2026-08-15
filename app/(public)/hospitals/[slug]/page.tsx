@@ -188,29 +188,37 @@ function DiarySlide({
             <span className="text-primary">{diary.author_name.split(' ').slice(1).join(' ')}</span>
           </h2>
 
-          {/* Specialty strip */}
-          {diary.specialty && (
+          {/* Specialty + Year/date boxes */}
+          <div className="flex flex-wrap items-center gap-3">
+            {diary.specialty && (
+              <div className="flex items-center gap-3 px-4 py-3 bg-primary rounded-lg text-on-primary w-fit">
+                <span className="material-symbols-outlined" style={{ fontSize: 22 }}>{getSpecialtyIcon(diary.specialty)}</span>
+                <div>
+                  <p className="font-label text-xs text-on-primary/70 uppercase tracking-wider">Department</p>
+                  <p className="font-headline text-base text-on-primary font-semibold">{diary.specialty}</p>
+                </div>
+              </div>
+            )}
+
+            {/* Year + date */}
             <div className="flex items-center gap-3 px-4 py-3 bg-primary rounded-lg text-on-primary w-fit">
-              <span className="material-symbols-outlined" style={{ fontSize: 22 }}>{getSpecialtyIcon(diary.specialty)}</span>
+              <span className="material-symbols-outlined" style={{ fontSize: 22 }}>calendar_month</span>
               <div>
-                <p className="font-label text-xs text-on-primary/70 uppercase tracking-wider">Department</p>
-                <p className="font-headline text-base text-on-primary font-semibold">{diary.specialty}</p>
+                <p className="font-label text-xs text-on-primary/70 uppercase tracking-wider">Year / Date</p>
+                <p className="font-headline text-base text-on-primary font-semibold">
+                  {diary.author_year}
+                  {diary.created_at && (
+                    <span> · {new Date(diary.created_at).toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}</span>
+                  )}
+                </p>
               </div>
             </div>
-          )}
-
-          {/* Year + date */}
-          <p className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-primary text-on-primary font-label text-sm font-semibold w-fit">
-            {diary.author_year}
-            {diary.created_at && (
-              <span>· {new Date(diary.created_at).toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}</span>
-            )}
-          </p>
+          </div>
 
           {/* CTA */}
           <Link
             href={`/hospitals/${hospitalSlug}/diaries/${diary.id}`}
-            className="inline-flex items-center gap-2 px-6 py-3.5 rounded-xl bg-primary text-on-primary font-headline font-semibold text-sm hover:opacity-90 transition-all group w-full justify-center"
+            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg bg-primary text-on-primary font-headline font-semibold text-sm hover:opacity-90 transition-all group w-fit"
           >
             <span>Read Diary</span>
             <span className="material-symbols-outlined group-hover:translate-x-1 transition-transform" style={{ fontSize: 18 }}>arrow_forward</span>
@@ -238,26 +246,36 @@ function DiarySlide({
             <span className="text-primary">{diary.author_name.split(' ').slice(1).join(' ')}</span>
           </h2>
 
-          {diary.specialty && (
+          {/* Specialty + Year/date boxes */}
+          <div className="flex flex-wrap items-center gap-4">
+            {diary.specialty && (
+              <div className="flex items-center gap-4 px-5 py-3.5 bg-primary rounded-lg text-on-primary w-fit">
+                <span className="material-symbols-outlined text-2xl">{getSpecialtyIcon(diary.specialty)}</span>
+                <div>
+                  <p className="font-label text-xs text-on-primary/70 uppercase tracking-wider">Department</p>
+                  <p className="font-headline text-lg text-on-primary font-semibold">{diary.specialty}</p>
+                </div>
+              </div>
+            )}
+
+            {/* Year + date */}
             <div className="flex items-center gap-4 px-5 py-3.5 bg-primary rounded-lg text-on-primary w-fit">
-              <span className="material-symbols-outlined text-2xl">{getSpecialtyIcon(diary.specialty)}</span>
+              <span className="material-symbols-outlined text-2xl">calendar_month</span>
               <div>
-                <p className="font-label text-xs text-on-primary/70 uppercase tracking-wider">Department</p>
-                <p className="font-headline text-lg text-on-primary font-semibold">{diary.specialty}</p>
+                <p className="font-label text-xs text-on-primary/70 uppercase tracking-wider">Year / Date</p>
+                <p className="font-headline text-lg text-on-primary font-semibold">
+                  {diary.author_year}
+                  {diary.created_at && (
+                    <span> · {new Date(diary.created_at).toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}</span>
+                  )}
+                </p>
               </div>
             </div>
-          )}
-
-          <p className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-primary text-on-primary font-label text-sm font-semibold w-fit">
-            {diary.author_year}
-            {diary.created_at && (
-              <span>· {new Date(diary.created_at).toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}</span>
-            )}
-          </p>
+          </div>
 
           <Link
             href={`/hospitals/${hospitalSlug}/diaries/${diary.id}`}
-            className="mt-1 inline-flex items-center gap-3 px-7 py-4 rounded-xl bg-primary text-on-primary font-headline font-semibold text-sm hover:opacity-90 hover:shadow-[0_0_24px_rgba(46,74,156,0.35)] transition-all group w-fit"
+            className="inline-flex items-center gap-3 px-5 py-3 rounded-xl bg-primary text-on-primary font-headline font-semibold text-sm hover:opacity-90 hover:shadow-[0_0_24px_rgba(46,74,156,0.35)] transition-all group w-fit"
           >
             <span>Read Diary</span>
             <span className="material-symbols-outlined group-hover:translate-x-1 transition-transform" style={{ fontSize: 18 }}>arrow_forward</span>
