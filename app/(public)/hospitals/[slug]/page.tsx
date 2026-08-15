@@ -176,7 +176,7 @@ function DiarySlide({
         {/* Bottom half: text content */}
         <div className="flex-1 overflow-y-auto px-6 pb-20 pt-4 space-y-4 bg-surface">
           {/* Hospital badge */}
-          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-surface-container border border-outline-variant/30 text-on-surface-variant font-label text-xs uppercase tracking-widest">
+          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-primary text-on-primary font-label text-xs uppercase tracking-widest">
             <span className="material-symbols-outlined" style={{ fontSize: 13 }}>local_hospital</span>
             {hospitalName}
           </div>
@@ -200,10 +200,10 @@ function DiarySlide({
           )}
 
           {/* Year + date */}
-          <p className="font-label text-sm text-on-surface-variant">
+          <p className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-primary/10 border border-primary/20 text-primary font-label text-sm font-semibold w-fit">
             {diary.author_year}
             {diary.created_at && (
-              <span className="ml-2 opacity-60">· {new Date(diary.created_at).toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}</span>
+              <span>· {new Date(diary.created_at).toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}</span>
             )}
           </p>
 
@@ -227,7 +227,7 @@ function DiarySlide({
       <div className={`hidden md:flex relative z-10 w-full max-w-5xl px-12 items-center justify-between gap-12 ${isEven ? 'flex-row' : 'flex-row-reverse'}`}>
         {/* Text column */}
         <div className="flex-1 space-y-5">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-surface-container border border-outline-variant/30 text-on-surface-variant font-label text-xs uppercase tracking-widest">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary text-on-primary font-label text-xs uppercase tracking-widest">
             <span className="material-symbols-outlined" style={{ fontSize: 14 }}>local_hospital</span>
             {hospitalName}
           </div>
@@ -248,10 +248,10 @@ function DiarySlide({
             </div>
           )}
 
-          <p className="font-label text-sm text-on-surface-variant">
+          <p className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-primary/10 border border-primary/20 text-primary font-label text-sm font-semibold w-fit">
             {diary.author_year}
             {diary.created_at && (
-              <span className="ml-3 opacity-60">· {new Date(diary.created_at).toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}</span>
+              <span>· {new Date(diary.created_at).toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}</span>
             )}
           </p>
 
@@ -292,16 +292,6 @@ function DiarySlide({
         <div className="hidden md:flex absolute bottom-8 left-1/2 -translate-x-1/2 z-20 flex-col items-center gap-1 opacity-50 hover:opacity-100 transition-opacity cursor-pointer select-none">
           <span className="font-label text-xs uppercase tracking-widest text-on-surface-variant">Next Entry</span>
           <span className="material-symbols-outlined text-primary animate-bounce">keyboard_arrow_down</span>
-        </div>
-      )}
-
-      {index === total - 1 && (
-        <div className="hidden md:flex absolute bottom-8 left-1/2 -translate-x-1/2 z-20 flex-col items-center gap-2 opacity-60 hover:opacity-100 transition-opacity">
-          <span className="font-label text-xs uppercase tracking-widest text-on-surface-variant">All caught up</span>
-          <Link href="/" className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-primary text-on-primary font-label text-xs font-semibold hover:bg-primary-container active:scale-95 transition-all shadow-lg">
-            <span className="material-symbols-outlined" style={{ fontSize: 14 }}>arrow_back</span>
-            Back to Hospitals
-          </Link>
         </div>
       )}
     </section>

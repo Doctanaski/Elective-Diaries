@@ -46,14 +46,23 @@ export default function HospitalCarousel({ hospitals }: Props) {
   const active = hospitals[activeIndex]
 
   // Responsive values — scale cards so the whole carousel (cards, name, button)
-  // fits inside the slide without the user needing to scroll
+  // fits inside the slide without the user needing to scroll, and scale the
+  // arrows / name / CTA with the card size so proportions stay balanced
   const vw           = isMobile ? (typeof window !== 'undefined' ? window.innerWidth : 390) : 0
   const cardWidth    = isMobile ? Math.round(vw * 0.38) : Math.min(320, Math.round(vh * 0.36))
   const trackHeight  = isMobile ? Math.round(cardWidth * 1.45) : Math.min(560, Math.round(vh * 0.5))
   const perspective  = isMobile ? 800  : 1400
   const xSpacing     = isMobile ? Math.round(cardWidth * 0.62) : Math.round(cardWidth * 0.53)
-  const arrowSize    = isMobile ? 'w-9 h-9' : 'w-14 h-14'
-  const arrowIcon    = isMobile ? 'w-4 h-4' : 'w-7 h-7'
+
+  const cardScale    = isMobile ? Math.max(0.72, cardWidth / 150) : Math.min(1, Math.max(0.8, cardWidth / 320))
+  const arrowPx      = isMobile ? Math.max(26, Math.round(30 * cardScale)) : Math.round(44 * cardScale)
+  const arrowIconPx  = isMobile ? Math.max(13, Math.round(15 * cardScale)) : Math.round(20 * cardScale)
+  const namePx       = isMobile ? Math.max(15, Math.round(17 * cardScale)) : Math.round(25 * cardScale)
+  const descPx       = isMobile ? 13 : Math.round(14 * cardScale)
+  const ctaFontPx    = isMobile ? 13 : Math.round(14 * cardScale)
+  const ctaPadX      = isMobile ? Math.max(16, Math.round(20 * cardScale)) : Math.round(24 * cardScale)
+  const ctaPadY      = isMobile ? Math.max(9, Math.round(11 * cardScale)) : Math.round(13 * cardScale)
+  const ctaIconPx    = isMobile ? 15 : Math.round(16 * cardScale)
 
   return (
     <div className="flex flex-col items-center gap-4">
@@ -67,24 +76,26 @@ export default function HospitalCarousel({ hospitals }: Props) {
         <button
           onClick={toPrev}
           disabled={activeIndex === 0}
-          className={`absolute left-0 z-[200] ${arrowSize} rounded-full flex items-center justify-center
+          className="absolute left-0 z-[200] rounded-full flex items-center justify-center
                      bg-primary text-on-primary border border-primary
                      hover:bg-primary-container hover:scale-110
-                     transition-all shadow-lg disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:scale-100`}
+                     transition-all shadow-lg disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:scale-100"
+          style={{ width: arrowPx, height: arrowPx }}
         >
-          <ChevronLeft className={arrowIcon} />
+          <ChevronLeft size={arrowIconPx} />
         </button>
 
         {/* Right arrow */}
         <button
           onClick={toNext}
           disabled={activeIndex === hospitals.length - 1}
-          className={`absolute right-0 z-[200] ${arrowSize} rounded-full flex items-center justify-center
+          className="absolute right-0 z-[200] rounded-full flex items-center justify-center
                      bg-primary text-on-primary border border-primary
                      hover:bg-primary-container hover:scale-110
-                     transition-all shadow-lg disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:scale-100`}
+                     transition-all shadow-lg disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:scale-100"
+          style={{ width: arrowPx, height: arrowPx }}
         >
-          <ChevronRight className={arrowIcon} />
+          <ChevronRight size={arrowIconPx} />
         </button>
 
         {/* Cards */}
@@ -145,23 +156,24 @@ export default function HospitalCarousel({ hospitals }: Props) {
         transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
         className="text-center max-w-md px-4"
       >
-        <h2 className="font-headline font-extrabold text-xl md:text-3xl text-on-surface mb-2">
+        <h2 className="font-headline font-extrabold text-on-surface mb-2" style={{ fontSize: namePx }}>
           {active.name}
         </h2>
         {active.description && (
-          <p className="text-on-surface-variant text-sm leading-relaxed mb-4 line-clamp-2">
+          <p className="text-on-surface-variant leading-relaxed mb-3 line-clamp-2" style={{ fontSize: descPx }}>
             {active.description}
           </p>
         )}
         <Link
           href={`/hospitals/${active.slug}`}
           prefetch
-          className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl
-                     bg-primary text-on-primary font-label text-sm font-bold
+          className="inline-flex items-center rounded-xl
+                     bg-primary text-on-primary font-label font-bold
                      hover:bg-primary-container active:scale-95 transition-all"
+          style={{ padding: `${ctaPadY}px ${ctaPadX}px`, gap: 6, fontSize: ctaFontPx }}
         >
           View Diaries
-          <span className="material-symbols-outlined" style={{ fontSize: 16 }}>arrow_forward</span>
+          <span className="material-symbols-outlined" style={{ fontSize: ctaIconPx }}>arrow_forward</span>
         </Link>
       </motion.div>
 

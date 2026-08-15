@@ -242,7 +242,7 @@ export default function HomeScroll({ hospitals, hospitalCount, diaryCount }: Pro
         <section className="snap-section relative min-h-screen flex flex-col items-center justify-center px-6 overflow-hidden">
           <div className="absolute inset-0 -z-10 bg-primary/3 rounded-full blur-3xl opacity-40 scale-150 pointer-events-none" />
           <div className="max-w-4xl mx-auto w-full">
-            <p className="font-label text-xs uppercase tracking-[0.25em] text-on-surface-variant/40 text-center mb-16">
+            <p className="font-label text-sm font-bold uppercase tracking-[0.25em] text-on-surface text-center mb-16">
               By the numbers
             </p>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-10">
