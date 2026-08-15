@@ -1,5 +1,18 @@
 import type { Config } from 'tailwindcss'
 
+/**
+ * Resolve a CSS-variable token (e.g. --surface) as a color that supports
+ * Tailwind's opacity modifiers (bg-surface/80, text-primary/70, ...).
+ * Tailwind v3 cannot apply alpha to a bare `var()` color, so we emit
+ * `color-mix()` for modifiers and the raw variable otherwise.
+ */
+const svar = (name: string): any => ({ opacityValue }: { opacityValue?: string | number }) => {
+  if (opacityValue === undefined) return `var(--${name})`
+  const num = typeof opacityValue === 'number' ? opacityValue : parseFloat(opacityValue)
+  const pct = Number.isFinite(num) ? Math.round(num * 100) : 100
+  return `color-mix(in srgb, var(--${name}) ${pct}%, transparent)`
+}
+
 const config: Config = {
   darkMode: 'class',
   content: [
@@ -10,34 +23,34 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        'surface':                  'var(--surface)',
-        'surface-container-low':    'var(--surface-container-low)',
-        'surface-container':        'var(--surface-container)',
-        'surface-container-high':   'var(--surface-container-high)',
-        'surface-container-highest':'var(--surface-container-highest)',
-        'surface-container-lowest': 'var(--surface-container-lowest)',
-        'surface-dim':              'var(--surface-dim)',
-        'surface-bright':           'var(--surface-bright)',
-        'surface-variant':          'var(--surface-variant)',
-        'on-surface':               'var(--on-surface)',
-        'on-surface-variant':       'var(--on-surface-variant)',
-        'on-background':            'var(--on-background)',
-        'background':               'var(--background)',
-        'primary':                  'var(--primary)',
-        'primary-container':        'var(--primary-container)',
-        'on-primary':               'var(--on-primary)',
-        'on-primary-container':     'var(--on-primary-container)',
-        'outline':                  'var(--outline)',
-        'outline-variant':          'var(--outline-variant)',
-        'error':                    'var(--error)',
-        'error-container':          'var(--error-container)',
-        'secondary':                'var(--secondary)',
-        'secondary-container':      'var(--secondary-container)',
-        'on-secondary':             'var(--on-secondary)',
-        'on-secondary-container':   'var(--on-secondary-container)',
-        'inverse-surface':          'var(--inverse-surface)',
-        'inverse-on-surface':       'var(--inverse-on-surface)',
-        'inverse-primary':          'var(--inverse-primary)',
+        'surface':                  svar('surface'),
+        'surface-container-low':    svar('surface-container-low'),
+        'surface-container':        svar('surface-container'),
+        'surface-container-high':   svar('surface-container-high'),
+        'surface-container-highest':svar('surface-container-highest'),
+        'surface-container-lowest': svar('surface-container-lowest'),
+        'surface-dim':              svar('surface-dim'),
+        'surface-bright':           svar('surface-bright'),
+        'surface-variant':          svar('surface-variant'),
+        'on-surface':               svar('on-surface'),
+        'on-surface-variant':       svar('on-surface-variant'),
+        'on-background':            svar('on-background'),
+        'background':               svar('background'),
+        'primary':                  svar('primary'),
+        'primary-container':        svar('primary-container'),
+        'on-primary':               svar('on-primary'),
+        'on-primary-container':     svar('on-primary-container'),
+        'outline':                  svar('outline'),
+        'outline-variant':          svar('outline-variant'),
+        'error':                    svar('error'),
+        'error-container':          svar('error-container'),
+        'secondary':                svar('secondary'),
+        'secondary-container':      svar('secondary-container'),
+        'on-secondary':             svar('on-secondary'),
+        'on-secondary-container':   svar('on-secondary-container'),
+        'inverse-surface':          svar('inverse-surface'),
+        'inverse-on-surface':       svar('inverse-on-surface'),
+        'inverse-primary':          svar('inverse-primary'),
         // Keep static aliases that are used directly
         'tertiary':                 '#745470',
         'tertiary-container':       '#ffd7f6',
@@ -58,6 +71,10 @@ const config: Config = {
         'on-tertiary-fixed':        '#2c122a',
         'on-tertiary-fixed-variant':'#5b3d57',
         'surface-tint':             '#2e4a9c',
+      },
+      opacity: {
+        '3': '0.03',
+        '8': '0.08',
       },
       borderRadius: {
         DEFAULT: '0.5rem',

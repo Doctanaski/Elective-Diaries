@@ -136,7 +136,10 @@
   .prose-diary img { @apply rounded-xl my-8 w-full max-w-full object-cover; }
 
   /* Horizontal rule */
-  .prose-diary hr { @apply border-outline-variant/40 my-8; }
+  .prose-diary hr {
+    @apply my-8;
+    border-color: color-mix(in srgb, var(--outline-variant) 40%, transparent);
+  }
 
   /* Tiptap editor styling */
   .tiptap { @apply outline-none min-h-[400px]; }
