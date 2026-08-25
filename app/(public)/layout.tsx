@@ -3,7 +3,6 @@
 import { useEffect } from 'react'
 import { usePathname } from 'next/navigation'
 import Navbar from '@/components/ui/Navbar'
-import Footer from '@/components/ui/Footer'
 
 export default function PublicLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname()
@@ -31,7 +30,6 @@ export default function PublicLayout({ children }: { children: React.ReactNode }
       <main className="flex-grow pt-20">
         {children}
       </main>
-      <Footer />
     </div>
   )
 }

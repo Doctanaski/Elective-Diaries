@@ -3,6 +3,7 @@
 import { useRef, useEffect, useState } from 'react'
 import { motion, useScroll, useTransform } from 'motion/react'
 import HospitalCarousel from './HospitalCarousel'
+import Contributors from './Contributors'
 import { setNavVisibility } from '@/lib/nav-visibility'
 import type { Hospital } from '@/types/database'
 
@@ -310,6 +311,15 @@ export default function HomeScroll({ hospitals, hospitalCount, diaryCount }: Pro
                 <div className="absolute -top-5 -right-5 w-20 h-20 bg-secondary/10 rounded-full blur-2xl -z-10 pointer-events-none" />
               </div>
             </div>
+          </div>
+        </section>
+
+        {/* Section 5 — Contributors */}
+        <section className="snap-section relative min-h-screen flex items-center justify-center px-6 md:px-12 lg:px-24 py-16 md:py-20 overflow-hidden">
+          <div className="hero-bg absolute inset-0 z-0 opacity-40 pointer-events-none" />
+          <div className="absolute inset-x-0 bottom-0 h-64 bg-gradient-to-t from-primary/5 to-transparent -z-0 pointer-events-none" />
+          <div className="relative z-10 w-full">
+            <Contributors />
           </div>
         </section>
 

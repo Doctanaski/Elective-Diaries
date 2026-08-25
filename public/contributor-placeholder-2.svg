@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 480" role="img" aria-label="Contributor photo placeholder">
+  <defs>
+    <linearGradient id="cp2-bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#f7eff6"/>
+      <stop offset="100%" stop-color="#ecdfe9"/>
+    </linearGradient>
+    <linearGradient id="cp2-body" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#dcc8d6"/>
+      <stop offset="100%" stop-color="#c3a5b8"/>
+    </linearGradient>
+  </defs>
+  <rect width="400" height="480" fill="url(#cp2-bg)"/>
+  <rect width="400" height="480" fill="none" stroke="#d3bcca" stroke-width="2"/>
+  <circle cx="200" cy="182" r="86" fill="#d3bcca"/>
+  <circle cx="200" cy="152" r="46" fill="url(#cp2-body)"/>
+  <path d="M200 300c-64 0-122 36-122 116v64h244v-64c0-80-58-116-122-116z" fill="url(#cp2-body)"/>
+  <text x="200" y="396" text-anchor="middle" font-family="'Plus Jakarta Sans','Inter',Arial,sans-serif" font-size="16" font-weight="700" fill="#5b3d57">Contributor Photo 2</text>
+  <text x="200" y="418" text-anchor="middle" font-family="'Plus Jakarta Sans','Inter',Arial,sans-serif" font-size="12" fill="#7d5f74">Replace with real photo</text>
+</svg>
