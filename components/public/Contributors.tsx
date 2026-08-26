@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import type { Contributor } from '@/types/database'
 
 interface ContributorDetail {
   icon: string
@@ -8,7 +9,7 @@ interface ContributorDetail {
   value: string
 }
 
-interface Contributor {
+interface ContributorView {
   id: string
   name: string
   role: string
@@ -18,7 +19,7 @@ interface Contributor {
   bio: string
 }
 
-const CONTRIBUTORS: Contributor[] = [
+const DEFAULT_CONTRIBUTORS: ContributorView[] = [
   {
     id: 'ayesha-khan',
     name: 'Ayesha Khan',
@@ -63,9 +64,25 @@ const CONTRIBUTORS: Contributor[] = [
   },
 ]
 
-export default function Contributors() {
-  const [activeId, setActiveId] = useState(CONTRIBUTORS[0].id)
-  const active = CONTRIBUTORS.find(c => c.id === activeId) ?? CONTRIBUTORS[0]
+function toView(c: Contributor, index: number): ContributorView {
+  return {
+    id: c.id,
+    name: c.name,
+    role: c.role ?? '',
+    photo: c.photo_url || `/contributor-placeholder-${(index % 3) + 1}.svg`,
+    tagline: c.tagline ?? '',
+    details: (c.details ?? []).filter(d => d.label?.trim() || d.value?.trim()),
+    bio: c.bio ?? '',
+  }
+}
+
+export default function Contributors({ contributors }: { contributors?: Contributor[] }) {
+  const views = contributors && contributors.length > 0
+    ? contributors.map(toView)
+    : DEFAULT_CONTRIBUTORS
+
+  const [activeId, setActiveId] = useState(views[0]?.id)
+  const active = views.find(c => c.id === activeId) ?? views[0]
 
   return (
     <div className="max-w-5xl mx-auto w-full">
@@ -89,7 +106,7 @@ export default function Contributors() {
         aria-label="Contributors"
         className="flex flex-wrap items-center justify-center gap-2 md:gap-3 mb-8"
       >
-        {CONTRIBUTORS.map(c => {
+        {views.map(c => {
           const selected = c.id === active.id
           return (
             <button

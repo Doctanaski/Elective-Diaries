@@ -5,12 +5,14 @@ import { motion, useScroll, useTransform } from 'motion/react'
 import HospitalCarousel from './HospitalCarousel'
 import Contributors from './Contributors'
 import { setNavVisibility } from '@/lib/nav-visibility'
-import type { Hospital } from '@/types/database'
+import type { Hospital, Contributor } from '@/types/database'
 
 interface Props {
   hospitals: Hospital[]
   hospitalCount: number
   diaryCount: number
+  presidentContent: Record<string, string>
+  contributors: Contributor[]
 }
 
 const MEDICAL_ICONS = [
@@ -62,7 +64,14 @@ function RollingNumber({ target, duration = 1800 }: { target: number; duration?:
   return <span ref={ref} className="tabular-nums">{display}</span>
 }
 
-export default function HomeScroll({ hospitals, hospitalCount, diaryCount }: Props) {
+export default function HomeScroll({ hospitals, hospitalCount, diaryCount, presidentContent, contributors }: Props) {
+  const presidentMsg1 = presidentContent['president_message_1'] ||
+    'Welcome to The Elective Diaries — a living archive of the clinical journeys undertaken by our students across affiliated hospitals.'
+  const presidentMsg2 = presidentContent['president_message_2'] ||
+    'Every diary captures real experiences, hard-earned lessons, and the people met along the way. I encourage every KMC student to explore these pages, contribute their own story, and pass on the knowledge to those who follow.'
+  const presidentSignoff = presidentContent['president_signoff'] || 'President, KMC Local Council'
+  const presidentImage = presidentContent['president_image'] || '/president-placeholder.svg'
+
   const containerRef = useRef<HTMLDivElement>(null)
   const heroRef = useRef<HTMLDivElement>(null)
   const { scrollYProgress } = useScroll({
@@ -284,18 +293,15 @@ export default function HomeScroll({ hospitals, hospitalCount, diaryCount }: Pro
               </h2>
               <div className="space-y-4 mb-8">
                 <p className="font-body text-primary/80 text-lg leading-relaxed">
-                  Welcome to The Elective Diaries — a living archive of the clinical journeys
-                  undertaken by our students across affiliated hospitals.
+                  {presidentMsg1}
                 </p>
                 <p className="font-body text-primary/80 text-lg leading-relaxed">
-                  Every diary captures real experiences, hard-earned lessons, and the people
-                  met along the way. I encourage every KMC student to explore these pages,
-                  contribute their own story, and pass on the knowledge to those who follow.
+                  {presidentMsg2}
                 </p>
               </div>
               <div className="inline-flex items-center gap-3">
                 <div className="w-12 h-px bg-primary" />
-                <p className="font-headline font-bold text-primary text-lg">President, KMC Local Council</p>
+                <p className="font-headline font-bold text-primary text-lg">{presidentSignoff}</p>
               </div>
             </div>
 
@@ -303,8 +309,8 @@ export default function HomeScroll({ hospitals, hospitalCount, diaryCount }: Pro
             <div className="order-2 flex justify-center md:justify-end">
               <div className="relative">
                 <img
-                  src="/president-placeholder.svg"
-                  alt="President placeholder"
+                  src={presidentImage}
+                  alt="President"
                   className="w-64 md:w-80 rounded-3xl shadow-xl border border-outline-variant/20"
                 />
                 <div className="absolute -bottom-6 -left-6 w-24 h-24 bg-primary/10 rounded-full blur-2xl -z-10 pointer-events-none" />
@@ -319,7 +325,7 @@ export default function HomeScroll({ hospitals, hospitalCount, diaryCount }: Pro
           <div className="hero-bg absolute inset-0 z-0 opacity-40 pointer-events-none" />
           <div className="absolute inset-x-0 bottom-0 h-64 bg-gradient-to-t from-primary/5 to-transparent -z-0 pointer-events-none" />
           <div className="relative z-10 w-full">
-            <Contributors />
+            <Contributors contributors={contributors} />
           </div>
         </section>
 

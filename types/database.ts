@@ -56,6 +56,25 @@ export interface SiteContent {
   updated_at: string
 }
 
+export interface ContributorDetail {
+  icon: string
+  label: string
+  value: string
+}
+
+export interface Contributor {
+  id: string
+  name: string
+  role: string
+  tagline: string | null
+  bio: string | null
+  photo_url: string | null
+  details: ContributorDetail[] | null
+  sort_order: number | null
+  created_at: string
+  updated_at: string
+}
+
 // ── Database schema type (used by Supabase client) ──────────────────────────
 
 export interface Database {
@@ -70,6 +89,16 @@ export interface Database {
         Row: Diary
         Insert: DiaryInsert
         Update: DiaryUpdate
+      }
+      site_content: {
+        Row: SiteContent
+        Insert: Partial<SiteContent> & { key: string }
+        Update: Partial<SiteContent>
+      }
+      contributors: {
+        Row: Contributor
+        Insert: Partial<Contributor> & { name: string }
+        Update: Partial<Contributor>
       }
     }
     Views: Record<string, never>

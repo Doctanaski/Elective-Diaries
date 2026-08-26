@@ -8,6 +8,7 @@ const navItems = [
   { href: '/admin', label: 'Dashboard', icon: 'dashboard' },
   { href: '/admin/diaries', label: 'Diaries', icon: 'menu_book' },
   { href: '/admin/hospitals', label: 'Hospitals', icon: 'local_hospital' },
+  { href: '/admin/content', label: 'Site Content', icon: 'tune' },
 ]
 
 export default function AdminSidebar() {
