@@ -24,8 +24,9 @@ export default async function AdminContentPage() {
       </div>
 
       <section className="mb-12">
-        <h2 className="font-headline font-bold text-xl text-on-surface mb-4">President&apos;s Section</h2>
+        <h2 className="font-headline font-bold text-xl text-on-surface mb-4">Message from the LEO</h2>
         <PresidentMessageForm
+          heading={content['president_heading'] ?? ''}
           message1={content['president_message_1'] ?? ''}
           message2={content['president_message_2'] ?? ''}
           signoff={content['president_signoff'] ?? ''}

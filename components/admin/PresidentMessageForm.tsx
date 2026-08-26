@@ -5,19 +5,21 @@ import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 
 interface Props {
+  heading: string
   message1: string
   message2: string
   signoff: string
   imageUrl: string
 }
 
-const PRESIDENT_KEYS = ['president_message_1', 'president_message_2', 'president_signoff', 'president_image'] as const
+const PRESIDENT_KEYS = ['president_heading', 'president_message_1', 'president_message_2', 'president_signoff', 'president_image'] as const
 
-export default function PresidentMessageForm({ message1, message2, signoff, imageUrl }: Props) {
+export default function PresidentMessageForm({ heading, message1, message2, signoff, imageUrl }: Props) {
   const router = useRouter()
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const supabase = createClient() as any
 
+  const [headingText, setHeadingText] = useState(heading)
   const [msg1, setMsg1] = useState(message1)
   const [msg2, setMsg2] = useState(message2)
   const [signoffText, setSignoffText] = useState(signoff)
@@ -74,6 +76,7 @@ export default function PresidentMessageForm({ message1, message2, signoff, imag
     setSaved(false)
 
     const values: Record<(typeof PRESIDENT_KEYS)[number], string> = {
+      president_heading: headingText,
       president_message_1: msg1,
       president_message_2: msg2,
       president_signoff: signoffText,
@@ -103,7 +106,7 @@ export default function PresidentMessageForm({ message1, message2, signoff, imag
   return (
     <div className="bg-surface-container-lowest border border-outline-variant/20 rounded-2xl p-6">
       <div className="flex items-center justify-between mb-5">
-        <p className="text-sm text-on-surface-variant">Shown on the homepage &ldquo;A Message from the President&rdquo; section.</p>
+        <p className="text-sm text-on-surface-variant">Shown on the homepage &ldquo;A Message from the LEO&rdquo; section.</p>
         <button
           onClick={handleSave}
           disabled={saving || uploading}
@@ -123,6 +126,17 @@ export default function PresidentMessageForm({ message1, message2, signoff, imag
       )}
 
       <div className="space-y-5">
+        <div>
+          <label className="block text-sm font-semibold text-on-surface mb-2">Heading</label>
+          <input
+            type="text"
+            value={headingText}
+            onChange={(e) => setHeadingText(e.target.value)}
+            placeholder="A Message from the LEO"
+            className={inputClass}
+          />
+        </div>
+
         <div>
           <label className="block text-sm font-semibold text-on-surface mb-2">Message — Paragraph 1</label>
           <textarea value={msg1} onChange={(e) => setMsg1(e.target.value)} rows={3} className={inputClass} />
@@ -145,12 +159,12 @@ export default function PresidentMessageForm({ message1, message2, signoff, imag
         </div>
 
         <div>
-          <label className="block text-sm font-semibold text-on-surface mb-2">President&apos;s Photo</label>
+          <label className="block text-sm font-semibold text-on-surface mb-2">LEO&apos;s Photo</label>
 
           {photoUrl && (
             <div className="relative mb-3 rounded-xl overflow-hidden border border-outline-variant/30 bg-surface-container w-40 aspect-[400/480]">
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={photoUrl} alt="President preview" className="absolute inset-0 w-full h-full object-cover" />
+              <img src={photoUrl} alt="LEO photo preview" className="absolute inset-0 w-full h-full object-cover" />
               <button
                 type="button"
                 onClick={clearImage}

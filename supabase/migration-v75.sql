@@ -129,11 +129,18 @@ end $$;
 
 -- ── 3. PRESIDENT SECTION KEYS ────────────────────────────────
 insert into public.site_content (key, value) values
+  ('president_heading',   'A Message from the LEO'),
   ('president_message_1', 'Welcome to The Elective Diaries — a living archive of the clinical journeys undertaken by our students across affiliated hospitals.'),
   ('president_message_2', 'Every diary captures real experiences, hard-earned lessons, and the people met along the way. I encourage every KMC student to explore these pages, contribute their own story, and pass on the knowledge to those who follow.'),
-  ('president_signoff',   'President, KMC Local Council'),
+  ('president_signoff',   'LEO, KMC Local Council'),
   ('president_image',     '')
 on conflict (key) do nothing;
+
+-- If you ran an earlier version of this migration, update the old wording:
+update public.site_content set value = 'A Message from the LEO'
+  where key = 'president_heading' and value = 'A Message from the President';
+update public.site_content set value = 'LEO, KMC Local Council'
+  where key = 'president_signoff' and value = 'President, KMC Local Council';
 
 -- ── 4. STORAGE BUCKET + POLICIES ─────────────────────────────
 insert into storage.buckets (id, name, public)

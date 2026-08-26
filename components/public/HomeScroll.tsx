@@ -65,11 +65,12 @@ function RollingNumber({ target, duration = 1800 }: { target: number; duration?:
 }
 
 export default function HomeScroll({ hospitals, hospitalCount, diaryCount, presidentContent, contributors }: Props) {
+  const presidentHeading = presidentContent['president_heading'] || 'A Message from the LEO'
   const presidentMsg1 = presidentContent['president_message_1'] ||
     'Welcome to The Elective Diaries — a living archive of the clinical journeys undertaken by our students across affiliated hospitals.'
   const presidentMsg2 = presidentContent['president_message_2'] ||
     'Every diary captures real experiences, hard-earned lessons, and the people met along the way. I encourage every KMC student to explore these pages, contribute their own story, and pass on the knowledge to those who follow.'
-  const presidentSignoff = presidentContent['president_signoff'] || 'President, KMC Local Council'
+  const presidentSignoff = presidentContent['president_signoff'] || 'LEO, KMC Local Council'
   const presidentImage = presidentContent['president_image'] || '/president-placeholder.svg'
 
   const containerRef = useRef<HTMLDivElement>(null)
@@ -289,7 +290,7 @@ export default function HomeScroll({ hospitals, hospitalCount, diaryCount, presi
                 Leadership
               </p>
               <h2 className="font-headline font-extrabold text-4xl md:text-5xl text-on-surface leading-tight mb-6">
-                A Message from the President
+                {presidentHeading}
               </h2>
               <div className="space-y-4 mb-8">
                 <p className="font-body text-primary/80 text-lg leading-relaxed">
@@ -310,7 +311,7 @@ export default function HomeScroll({ hospitals, hospitalCount, diaryCount, presi
               <div className="relative">
                 <img
                   src={presidentImage}
-                  alt="President"
+                  alt="LEO"
                   className="w-64 md:w-80 rounded-3xl shadow-xl border border-outline-variant/20"
                 />
                 <div className="absolute -bottom-6 -left-6 w-24 h-24 bg-primary/10 rounded-full blur-2xl -z-10 pointer-events-none" />

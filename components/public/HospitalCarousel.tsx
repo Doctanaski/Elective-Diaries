@@ -10,16 +10,21 @@ interface Props {
   hospitals: Hospital[]
 }
 
+interface Viewport {
+  isMobile: boolean
+  vh: number
+}
+
 export default function HospitalCarousel({ hospitals }: Props) {
   const mid = Math.floor(hospitals.length / 2)
   const [activeIndex, setActiveIndex] = useState(mid)
-  const [isMobile, setIsMobile] = useState(false)
-  const [vh, setVh] = useState(900)
+  // null until measured — SSR and first client render use the CSS fallback,
+  // so the server HTML already matches the final layout (no size flash)
+  const [vp, setVp] = useState<Viewport | null>(null)
 
   useEffect(() => {
     const update = () => {
-      setIsMobile(window.innerWidth < 768)
-      setVh(window.innerHeight)
+      setVp({ isMobile: window.innerWidth < 768, vh: window.innerHeight })
     }
     update()
     window.addEventListener('resize', update)
@@ -45,10 +50,64 @@ export default function HospitalCarousel({ hospitals }: Props) {
 
   const active = hospitals[activeIndex]
 
+  // ── Pre-hydration fallback: pure CSS sizing, no inline pixel styles ──
+  if (!vp) {
+    return (
+      <div className="flex flex-col items-center gap-4 w-full">
+        <div className="w-full flex justify-center items-center relative h-[min(580px,52vh)]">
+          <div className="absolute rounded-2xl overflow-hidden shadow-2xl border border-outline-variant/20 aspect-[3/4] w-[min(340px,38vh)] max-md:w-[40vw]">
+            {active.image_url ? (
+              <img
+                src={active.image_url}
+                alt={active.name}
+                className="w-full h-full object-cover"
+                referrerPolicy="no-referrer"
+              />
+            ) : (
+              <div className="w-full h-full bg-surface-container flex items-center justify-center">
+                <span className="material-symbols-outlined text-on-surface-variant opacity-30 text-5xl max-md:text-3xl">local_hospital</span>
+              </div>
+            )}
+          </div>
+        </div>
+
+        <div className="text-center max-w-md px-4">
+          <h2 className="font-headline font-extrabold text-on-surface text-2xl mb-2">{active.name}</h2>
+          {active.description && (
+            <p className="text-on-surface-variant leading-relaxed mb-3 line-clamp-2 text-[15px]">{active.description}</p>
+          )}
+          <Link
+            href={`/hospitals/${active.slug}`}
+            prefetch
+            className="inline-flex items-center gap-1.5 rounded-xl bg-primary text-on-primary font-label font-bold px-[26px] py-[14px] text-[15px]
+                       hover:bg-primary-container active:scale-95 transition-all"
+          >
+            View Diaries
+            <span className="material-symbols-outlined" style={{ fontSize: 17 }}>arrow_forward</span>
+          </Link>
+        </div>
+
+        <div className="flex items-center gap-1.5 mt-1">
+          {hospitals.map((_, i) => (
+            <div
+              key={i}
+              onClick={(e) => toSlide(e, i)}
+              className={`rounded-full cursor-pointer h-1 transition-all duration-300 ${
+                activeIndex === i ? 'w-4 bg-primary' : 'w-1 bg-on-surface/20 hover:bg-primary/40'
+              }`}
+            />
+          ))}
+        </div>
+      </div>
+    )
+  }
+
+  const { isMobile, vh } = vp
+
   // Responsive values — scale cards so the whole carousel (cards, name, button)
   // fits inside the slide without the user needing to scroll, and scale the
   // arrows / name / CTA with the card size so proportions stay balanced
-  const vw           = isMobile ? (typeof window !== 'undefined' ? window.innerWidth : 390) : 0
+  const vw           = isMobile ? window.innerWidth : 0
   const cardWidth    = isMobile ? Math.round(vw * 0.40) : Math.min(340, Math.round(vh * 0.38))
   const trackHeight  = isMobile ? Math.round(cardWidth * 1.45) : Math.min(580, Math.round(vh * 0.52))
   const perspective  = isMobile ? 800  : 1400
