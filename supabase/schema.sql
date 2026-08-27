@@ -152,6 +152,28 @@ insert into public.site_content (key, value) values
 on conflict (key) do nothing;
 
 -- ============================================================
+-- v80 MIGRATION — Add sort_order to diaries for per-hospital ordering
+-- Run this once in: Supabase Dashboard → SQL Editor → New Query
+-- ============================================================
+alter table public.diaries add column if not exists sort_order integer not null default 0;
+
+-- Backfill sort_order for existing diaries per hospital (ordered by created_at)
+do $$
+declare
+  h record;
+  i integer;
+  r record;
+begin
+  for h in select id from public.hospitals loop
+    i := 1;
+    for r in select id from public.diaries where hospital_id = h.id order by created_at asc loop
+      update public.diaries set sort_order = i where id = r.id;
+      i := i + 1;
+    end loop;
+  end loop;
+end $$;
+
+-- ============================================================
 -- v75 MIGRATION — Editable President section + Contributors
 -- Run this once in: Supabase Dashboard → SQL Editor → New Query
 -- ============================================================

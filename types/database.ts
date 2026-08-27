@@ -30,6 +30,7 @@ export interface Diary {
   elective_duration: string | null
   supervisor: string | null
   published: boolean
+  sort_order: number
   created_at: string
   updated_at: string
 }

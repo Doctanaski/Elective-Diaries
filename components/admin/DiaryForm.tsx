@@ -149,7 +149,15 @@ export default function DiaryForm({ hospitals, diary }: DiaryFormProps) {
       const { error } = await supabase.from('diaries').update(payload).eq('id', diary.id)
       if (error) { setError(error.message); setSaving(false); return }
     } else {
-      const { error } = await supabase.from('diaries').insert(payload)
+      // Fetch current max sort_order for this hospital to append at the end
+      const { data: existing } = await supabase
+        .from('diaries')
+        .select('sort_order')
+        .eq('hospital_id', hospitalId)
+        .order('sort_order', { ascending: false })
+        .limit(1)
+      const maxSort = (existing?.[0]?.sort_order ?? 0) + 1
+      const { error } = await supabase.from('diaries').insert({ ...payload, sort_order: maxSort })
       if (error) { setError(error.message); setSaving(false); return }
     }
 

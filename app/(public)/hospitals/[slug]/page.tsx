@@ -47,7 +47,7 @@ export default async function HospitalPage({ params }: Props) {
     .select('*')
     .eq('hospital_id', hospital.id)
     .eq('published', true)
-    .order('created_at', { ascending: false })
+    .order('sort_order', { ascending: true })
 
   const diaries = (diariesRaw ?? []) as Diary[]
 
